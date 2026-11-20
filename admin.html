@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>لوحة إدارة SKIN MASH</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#120E12;--card:#1D171D;--elev:#271F27;--tx:#fff;--tx2:#CFC2C9;--mut:#9A8B93;--ac:#D89BA8;--acs:rgba(216,155,168,.14);--bd:rgba(216,155,168,.22);--red:#ef4444;--ok:#22c55e;--btn:#120E12}
+@media (prefers-color-scheme:light){:root{--bg:#F4FAF9;--card:#fff;--elev:#E8F6F4;--tx:#0B1F24;--tx2:#3D5A60;--mut:#6A8388;--ac:#0B8A7F;--acs:rgba(11,138,127,.1);--bd:rgba(11,138,127,.2);--btn:#fff}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0}
+body{background:var(--bg);color:var(--tx);font-family:Cairo,Tahoma,sans-serif;padding-bottom:calc(90px + env(safe-area-inset-bottom,0px))}
+button{font-family:inherit;cursor:pointer;border:0}
+input,select,textarea{font-family:inherit;font-size:16px;width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--bd);background:var(--elev);color:var(--tx);outline:none}
+input:focus,select:focus,textarea:focus{border-color:var(--ac)}
+textarea{resize:vertical;min-height:90px}
+label{display:block;font-size:13px;font-weight:700;color:var(--tx2);margin:14px 0 6px}
+.hidden{display:none!important}
+header{position:sticky;top:0;z-index:20;background:var(--card);border-bottom:1px solid var(--bd);padding:calc(12px + env(safe-area-inset-top,0px)) 16px 12px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:10px;max-width:900px;margin:auto}
+h1{font-size:18px;margin:0}
+.lnk{color:var(--ac);font-size:13px;font-weight:700;text-decoration:none;padding:8px 12px;border-radius:10px;background:var(--acs)}
+.tools{max-width:900px;margin:10px auto 0;display:flex;flex-direction:column;gap:8px}
+.chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;padding:7px 14px;border-radius:999px;background:var(--elev);color:var(--tx2);font-size:13px;font-weight:700;border:1px solid transparent}
+.chip.on{background:var(--ac);color:var(--btn)}
+main{max-width:900px;margin:16px auto;padding:0 16px}
+.stat{font-size:13px;color:var(--mut);margin-bottom:10px}
+.grid{display:grid;grid-template-columns:1fr;gap:10px}
+@media(min-width:640px){.grid{grid-template-columns:1fr 1fr}}
+.item{display:flex;gap:12px;background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:10px;align-items:center}
+.item img{width:72px;height:72px;border-radius:12px;object-fit:cover;background:var(--elev);flex:none}
+.item .inf{flex:1;min-width:0}
+.item .nm{font-weight:700;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.item .mt{font-size:12px;color:var(--mut);margin-top:2px}
+.item .pr{color:var(--ac);font-weight:800;font-size:14px;margin-top:3px}
+.acts{display:flex;flex-direction:column;gap:6px}
+.ib{padding:8px 12px;border-radius:10px;font-size:12px;font-weight:700;background:var(--elev);color:var(--tx)}
+.ib.del{color:var(--red)}
+.fab{position:fixed;inset-inline-start:16px;bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:30;background:var(--ac);color:var(--btn);padding:14px 22px;border-radius:999px;font-weight:800;font-size:15px;box-shadow:0 10px 30px rgba(0,0,0,.4)}
+.empty{text-align:center;color:var(--mut);padding:50px 10px}
+/* sheet */
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:40;display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--card);width:100%;max-width:620px;max-height:94vh;border-radius:24px 24px 0 0;display:flex;flex-direction:column;border:1px solid var(--bd)}
+@media(min-width:640px){.ov{align-items:center}.sheet{border-radius:24px}}
+.sh{display:flex;justify-content:space-between;align-items:center;padding:16px 18px;border-bottom:1px solid var(--bd)}
+.sh h2{margin:0;font-size:17px}
+.x{width:36px;height:36px;border-radius:12px;background:var(--elev);color:var(--tx);font-size:18px}
+.sb{padding:4px 18px 18px;overflow-y:auto}
+.sf{padding:12px 18px calc(12px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--bd);display:flex;gap:8px}
+.pri{flex:1;padding:14px;border-radius:14px;background:var(--ac);color:var(--btn);font-weight:800;font-size:15px}
+.sec{padding:14px 18px;border-radius:14px;background:var(--elev);color:var(--tx);font-weight:700}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.imgbox{display:flex;gap:12px;align-items:center}
+.imgbox img{width:90px;height:90px;border-radius:14px;object-fit:cover;background:var(--elev);flex:none}
+.up{display:inline-block;padding:11px 16px;border-radius:12px;background:var(--acs);color:var(--ac);font-weight:700;font-size:13px;cursor:pointer}
+.chk{display:flex;align-items:center;gap:10px;margin-top:14px;font-size:14px}
+.chk input{width:20px;height:20px;padding:0}
+.toast{position:fixed;top:calc(14px + env(safe-area-inset-top,0px));left:50%;transform:translate(-50%,-90px);background:var(--ok);color:#fff;padding:10px 20px;border-radius:12px;font-weight:700;font-size:14px;z-index:99;transition:transform .3s}
+.toast.show{transform:translate(-50%,0)}
+.login{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.lb{background:var(--card);border:1px solid var(--bd);border-radius:24px;padding:28px;width:100%;max-width:360px;text-align:center}
+.lb h1{margin-bottom:6px}.lb p{color:var(--mut);font-size:13px;margin:0 0 16px}
+.err{color:var(--red);font-size:13px;margin-top:8px}
+.menu{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.menu button,.menu label.up{background:var(--elev);color:var(--tx);padding:14px;border-radius:14px;font-weight:700;font-size:14px;text-align:center;margin:0}
+.spin{text-align:center;color:var(--mut);padding:40px 10px}.pri:disabled{opacity:.6}
+</style>
+</head>
+<body>
+
+<div id="login" class="login hidden">
+  <form class="lb" onsubmit="doLogin(event)">
+    <h1>SKIN MASH</h1><p>لوحة إدارة المتجر</p>
+    <input id="em" type="email" placeholder="البريد الإلكتروني" autocomplete="username" style="text-align:center;margin-bottom:10px" required>
+    <input id="pw" type="password" placeholder="كلمة المرور" autocomplete="current-password" style="text-align:center" required>
+    <div id="lerr" class="err hidden">البريد أو كلمة المرور غير صحيحة</div>
+    <button id="lbtn" class="pri" style="width:100%;margin-top:14px">دخول</button>
+  </form>
+</div>
+
+<div id="app" class="hidden">
+  <header>
+    <div class="top">
+      <h1>إدارة المنتجات</h1>
+      <div style="display:flex;gap:8px">
+        <button class="lnk" onclick="openMenu()" style="border:0">⚙ المزيد</button>
+        <a class="lnk" href="index.html">← الموقع</a>
+      </div>
+    </div>
+    <div class="tools">
+      <input id="q" type="search" placeholder="🔍 ابحث عن منتج..." oninput="render()">
+      <div class="chips" id="chips"></div>
+    </div>
+  </header>
+  <main>
+    <div class="stat" id="stat"></div>
+    <div class="grid" id="list"><div class="spin" style="grid-column:1/-1">جارٍ التحميل...</div></div>
+  </main>
+  <button class="fab" onclick="openForm()">＋ إضافة منتج</button>
+</div>
+
+<div id="formOv" class="ov hidden" onclick="if(event.target===this)closeForm()">
+  <div class="sheet">
+    <div class="sh"><h2 id="ft">منتج جديد</h2><button class="x" onclick="closeForm()">✕</button></div>
+    <div class="sb">
+      <label>صورة المنتج</label>
+      <div class="imgbox">
+        <img id="fimg" src="" alt="">
+        <div>
+          <label class="up">📷 اختيار صورة<input id="ffile" type="file" accept="image/*" class="hidden" onchange="pickImage(event)"></label>
+          <div style="font-size:11px;color:var(--mut);margin-top:6px">تُصغَّر وتُرفع تلقائياً</div>
+        </div>
+      </div>
+      <label>اسم المنتج *</label>
+      <input id="fname" placeholder="مثال: كريم مرطب للوجه">
+      <div class="row2">
+        <div><label>القسم</label><select id="fcat" onchange="fillSubs()"></select></div>
+        <div><label>القسم الفرعي</label><select id="fsub"></select></div>
+      </div>
+      <label>السعر (ج.م) *</label>
+      <input id="fprice" type="number" inputmode="decimal" min="0" placeholder="110">
+      <label>الوصف</label>
+      <textarea id="fdesc" placeholder="وصف مختصر للمنتج..."></textarea>
+      <label class="chk"><input id="fmen" type="checkbox"> منتج رجالي (يظهر عليه شارة رجالي)</label>
+    </div>
+    <div class="sf">
+      <button class="sec" onclick="closeForm()">إلغاء</button>
+      <button id="savebtn" class="pri" onclick="saveForm()">💾 حفظ</button>
+    </div>
+  </div>
+</div>
+
+<div id="menuOv" class="ov hidden" onclick="if(event.target===this)closeMenu()">
+  <div class="sheet">
+    <div class="sh"><h2>المزيد</h2><button class="x" onclick="closeMenu()">✕</button></div>
+    <div class="sb">
+      <div class="menu">
+        <button onclick="exportJSON()">⬇ نسخة احتياطية من المنتجات</button>
+        <button onclick="logout()">تسجيل الخروج</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+const CAT = {"العناية بالجسم": ["لوشن الجسم", "سكراب ومقشر", "زبدة الجسم", "شاور جل"], "العناية بالشعر": ["حمام كريم", "زيوت الشعر", "شامبو وبلسم", "سيروم الشعر", "ماسكات الشعر"], "العناية بالبشرة": ["غسول الوجه", "سيروم البشرة", "كريمات ترطيب", "ماسكات البشرة"], "العطور": ["رجالي", "عطور حريمي", "بادي سبلاش", "مزيل عرق حريمي"], "الإكسسوارات": ["إكسسوارات شعر", "أطقم وعقود", "أساور وخواتم", "حلقان"]};
+const SB_URL = "https://unnexzitkirtqvhmynwh.supabase.co";
+const SB_KEY = "sb_publishable_ESabG0uyEwunnj3YGYN_og_aghmi7YU";
+const BUCKET = "product-images";
+const SESS = "sm-sb-session";
+const $ = id => document.getElementById(id);
+let P = [], filterCat = "الكل", editId = null, curImg = "", curBlob = null, busy = false;
+
+function toast(m, bad){ const t=$("toast"); t.textContent=m; t.style.background = bad ? "#ef4444" : ""; t.classList.add("show"); clearTimeout(toast.t); toast.t=setTimeout(()=>t.classList.remove("show"), bad?3500:1800); }
+function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+
+/* ---------- الجلسة ---------- */
+function getSess(){ try { return JSON.parse(localStorage.getItem(SESS)||"null"); } catch(e){ return null; } }
+function setSess(s){ if (s) localStorage.setItem(SESS, JSON.stringify(s)); else localStorage.removeItem(SESS); }
+function toSess(j){ return { access_token:j.access_token, refresh_token:j.refresh_token, expires_at: Math.floor(Date.now()/1000) + (j.expires_in||3600) }; }
+async function authCall(grant, body){
+  const r = await fetch(`${SB_URL}/auth/v1/token?grant_type=${grant}`, { method:"POST", headers:{apikey:SB_KEY,"Content-Type":"application/json"}, body:JSON.stringify(body) });
+  if (!r.ok) throw new Error("auth");
+  return toSess(await r.json());
+}
+async function token(){
+  let s = getSess(); if (!s) throw new Error("nosession");
+  if (s.expires_at - 60 < Date.now()/1000){
+    try { s = await authCall("refresh_token", {refresh_token:s.refresh_token}); setSess(s); }
+    catch(e){ setSess(null); showLogin(); throw new Error("expired"); }
+  }
+  return s.access_token;
+}
+async function api(path, opts){
+  opts = opts || {};
+  const t = await token();
+  const r = await fetch(SB_URL + path, Object.assign({}, opts, { headers: Object.assign({ apikey:SB_KEY, Authorization:"Bearer "+t }, opts.headers||{}) }));
+  if (!r.ok){ let m=""; try{ m=(await r.json()).message||""; }catch(e){} throw new Error(m || ("HTTP "+r.status)); }
+  return r;
+}
+
+async function doLogin(e){
+  e.preventDefault();
+  const b=$("lbtn"); b.disabled=true; b.textContent="جارٍ الدخول..."; $("lerr").classList.add("hidden");
+  try {
+    const s = await authCall("password", {email:$("em").value.trim(), password:$("pw").value});
+    setSess(s); start();
+  } catch(err){ $("lerr").classList.remove("hidden"); }
+  b.disabled=false; b.textContent="دخول";
+}
+function logout(){ setSess(null); location.reload(); }
+function showLogin(){ $("app").classList.add("hidden"); $("login").classList.remove("hidden"); }
+
+/* ---------- البيانات ---------- */
+function fromRow(r){ return { id:r.id, name:r.name, category:r.category, subCategory:r.sub_category||"", price:Number(r.price)||0, description:r.description||"", image:r.image||"", fallback:r.fallback||r.image||"", isMen:!!r.is_men }; }
+async function loadProducts(){
+  try {
+    const r = await api("/rest/v1/products?select=*&order=id.asc");
+    P = (await r.json()).map(fromRow); render();
+  } catch(e){ $("list").innerHTML = `<div class="empty">تعذّر تحميل المنتجات<br><small>${esc(e.message)}</small></div>`; }
+}
+
+/* ---------- عرض ---------- */
+function render(){
+  const cats = ["الكل"].concat(Object.keys(CAT));
+  $("chips").innerHTML = cats.map(c=>`<button class="chip ${c===filterCat?"on":""}" onclick="setCat(this.dataset.c)" data-c="${esc(c)}">${esc(c)}</button>`).join("");
+  const q = $("q").value.trim().toLowerCase();
+  const list = P.filter(p => (filterCat==="الكل" || p.category===filterCat) && (!q || (p.name+" "+p.subCategory).toLowerCase().includes(q)));
+  $("stat").textContent = `${list.length} منتج من ${P.length}`;
+  $("list").innerHTML = list.length ? list.map(p=>`
+    <div class="item">
+      <img src="${esc(p.image)}" onerror="this.onerror=null;this.src='${esc(p.fallback)}'" alt="">
+      <div class="inf">
+        <div class="nm">${esc(p.name)}</div>
+        <div class="mt">${esc(p.category)} · ${esc(p.subCategory)}</div>
+        <div class="pr">${p.price} ج.م</div>
+      </div>
+      <div class="acts">
+        <button class="ib" onclick="openForm(${p.id})">تعديل</button>
+        <button class="ib del" onclick="del(${p.id})">حذف</button>
+      </div>
+    </div>`).join("") : `<div class="empty" style="grid-column:1/-1">لا توجد منتجات مطابقة</div>`;
+}
+function setCat(c){ filterCat=c; render(); }
+
+/* ---------- النموذج ---------- */
+function fillCats(){ $("fcat").innerHTML = Object.keys(CAT).map(c=>`<option>${esc(c)}</option>`).join(""); }
+function fillSubs(sel){ $("fsub").innerHTML = (CAT[$("fcat").value]||[]).map(s=>`<option ${s===sel?"selected":""}>${esc(s)}</option>`).join(""); }
+function openForm(id){
+  editId = id==null ? null : id;
+  const p = editId==null ? null : P.find(x=>x.id===editId);
+  $("ft").textContent = p ? "تعديل المنتج" : "منتج جديد";
+  fillCats();
+  $("fname").value = p ? p.name : "";
+  $("fcat").value = p ? p.category : (filterCat!=="الكل" ? filterCat : Object.keys(CAT)[0]);
+  fillSubs(p ? p.subCategory : null);
+  $("fprice").value = p ? p.price : "";
+  $("fdesc").value = p ? p.description : "";
+  $("fmen").checked = !!(p && p.isMen);
+  curImg = p ? p.image : ""; curBlob = null;
+  $("fimg").src = curImg; $("ffile").value = "";
+  $("formOv").classList.remove("hidden"); document.body.style.overflow = "hidden";
+}
+function closeForm(){ if (busy) return; $("formOv").classList.add("hidden"); document.body.style.overflow = ""; }
+
+function pickImage(e){
+  const f = e.target.files[0]; if (!f) return;
+  const url = URL.createObjectURL(f), img = new Image();
+  img.onload = () => {
+    const MAX = 800, k = Math.min(1, MAX/Math.max(img.width, img.height));
+    const c = document.createElement("canvas"); c.width = Math.round(img.width*k); c.height = Math.round(img.height*k);
+    const x = c.getContext("2d"); x.fillStyle="#fff"; x.fillRect(0,0,c.width,c.height); x.drawImage(img,0,0,c.width,c.height);
+    c.toBlob(b => { curBlob = b; $("fimg").src = URL.createObjectURL(b); }, "image/jpeg", .85);
+    URL.revokeObjectURL(url);
+  };
+  img.onerror = () => toast("تعذّر قراءة الصورة", true);
+  img.src = url;
+}
+async function uploadImage(blob){
+  const name = Date.now() + "-" + Math.random().toString(36).slice(2,8) + ".jpg";
+  await api(`/storage/v1/object/${BUCKET}/${name}`, { method:"POST", headers:{"Content-Type":"image/jpeg"}, body: blob });
+  return `${SB_URL}/storage/v1/object/public/${BUCKET}/${name}`;
+}
+
+async function saveForm(){
+  if (busy) return;
+  const name = $("fname").value.trim(), priceStr = $("fprice").value, price = Number(priceStr);
+  if (!name){ toast("اكتب اسم المنتج", true); return; }
+  if (priceStr==="" || !(price>=0)){ toast("اكتب السعر", true); return; }
+  busy = true; const b=$("savebtn"); b.disabled=true; b.textContent="جارٍ الحفظ...";
+  try {
+    let image = curImg;
+    if (curBlob) image = await uploadImage(curBlob);
+    const row = { name, category:$("fcat").value, sub_category:$("fsub").value, price, description:$("fdesc").value.trim(), image, fallback:image, is_men:$("fmen").checked };
+    const isNew = editId==null;
+    if (isNew) await api("/rest/v1/products", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(row) });
+    else await api(`/rest/v1/products?id=eq.${editId}`, { method:"PATCH", headers:{"Content-Type":"application/json"}, body:JSON.stringify(row) });
+    busy=false; closeForm(); await loadProducts(); toast(isNew ? "تمت إضافة المنتج ✓" : "تم حفظ التعديل ✓");
+  } catch(err){ toast("فشل الحفظ: " + err.message, true); }
+  busy=false; b.disabled=false; b.textContent="💾 حفظ";
+}
+async function del(id){
+  const p = P.find(x=>x.id===id);
+  if (!p || !confirm(`حذف "${p.name}" نهائياً؟`)) return;
+  try { await api(`/rest/v1/products?id=eq.${id}`, {method:"DELETE"}); await loadProducts(); toast("تم الحذف"); }
+  catch(err){ toast("فشل الحذف: " + err.message, true); }
+}
+
+/* ---------- المزيد ---------- */
+function openMenu(){ $("menuOv").classList.remove("hidden"); }
+function closeMenu(){ $("menuOv").classList.add("hidden"); }
+function exportJSON(){
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([JSON.stringify(P,null,2)],{type:"application/json"}));
+  a.download = "skinmash-products.json"; a.click(); closeMenu();
+}
+
+function start(){ $("login").classList.add("hidden"); $("app").classList.remove("hidden"); loadProducts(); }
+if (getSess()) start(); else showLogin();
+</script>
+</body>
+</html>
