@@ -539,7 +539,7 @@ let j={};try{j=await r.json()}catch(e){}
 if(!r.ok||j.error)throw new Error(r.status===404?"دالة describe-product غير منشورة في Supabase (الكود في ملف describe-product.ts)":(j.error||j.message||"HTTP "+r.status));return j}
 /* لو الذكاء الاصطناعي مقدرش يتعرف على المنتج: بنملى كل الخانات بقيم مناسبة ماعدا السعر */
 function aiNorm(j,fb,cat){j=j||{};const cs=Object.keys(CAT),c=CAT[j.category]?j.category:(cat&&CAT[cat]?cat:cs[0]),sb=(CAT[c]||[]).includes(j.sub_category)?j.sub_category:(CAT[c]||[])[0]||"";
-const nm=(j.name||"").trim()||fb||"منتج جديد";return{name:nm,name_en:(j.name_en||"").trim(),description:(j.description||"").trim()||"منتج من SKIN MASH للعناية والجمال.",description_en:(j.description_en||"").trim()||"A SKIN MASH beauty & self-care product.",category:c,sub_category:sb,is_men:typeof j.is_men==="boolean"?j.is_men:false}}
+const gen=x=>!x||/^\s*(منتج|منتج جديد|new product|product)\s*$/i.test(x),nm=!gen((j.name||"").trim())?j.name.trim():(!gen(fb)?fb:"منتج جديد");return{name:nm,name_en:(j.name_en||"").trim(),description:(j.description||"").trim()||"منتج من SKIN MASH للعناية والجمال.",description_en:(j.description_en||"").trim()||"A SKIN MASH beauty & self-care product.",category:c,sub_category:sb,is_men:typeof j.is_men==="boolean"?j.is_men:false}}
 const fnm=f=>(f&&f.name?f.name.replace(/\.[^.]+$/,"").replace(/[-_]+/g," ").replace(/^\d+\s*/,"").trim():"")
 async function aiFill(){const b=$("aib");let src=blob;if(!src&&img){try{const rr=await fetch(img);if(rr.ok)src=await rr.blob()}catch(e){}}
 if(!src)return aiMsg("ارفع صورة المنتج الأول (أو الصورة الحالية مش بتتحمّل)",1);
