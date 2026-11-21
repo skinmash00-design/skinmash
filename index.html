@@ -1281,12 +1281,38 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
 .pay-note{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-radius:16px;font-size:12.5px;line-height:1.8;font-weight:600;
   background:var(--accent-soft);border:1px solid var(--border-strong);color:var(--text-primary)}
 .pay-note .ic{flex-shrink:0;font-size:19px;color:var(--accent-primary);margin-top:2px}
+
+/* ===== v4: تابع طلبك + النوع + رسالة الحساب + وضع نهاري هادي ===== */
+.trk{display:flex;align-items:flex-start;margin:12px 2px 6px}
+.trk .ts{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;position:relative;font-size:10.5px;font-weight:700;color:var(--text-muted);text-align:center}
+.trk .ts i{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:var(--surface-card);border:1px solid var(--border-subtle);z-index:1;font-style:normal;font-size:16px;transition:transform .2s}
+.trk .ts em{font-style:normal;line-height:1.3}
+.trk .ts::before{content:"";position:absolute;top:15px;inset-inline-start:50%;width:100%;height:3px;border-radius:3px;background:var(--border-subtle)}
+.trk .ts:last-child::before{display:none}
+.trk .ts.on{color:var(--accent-primary)}.trk .ts.on i{background:var(--accent-primary);color:var(--btn-primary-text);border-color:transparent}.trk .ts.on:not(.cur)::before{background:var(--accent-primary)}
+.trk .ts.s-processing.on{color:#d97706}.trk .ts.s-processing.on i{background:linear-gradient(160deg,#F2B35C,#DB8A1E);color:#fff}.trk .ts.s-processing.on:not(.cur)::before{background:#DB8A1E}
+.trk .ts.s-shipped.on{color:#3b82f6}.trk .ts.s-shipped.on i{background:linear-gradient(160deg,#7FB2F7,#3b82f6);color:#fff}.trk .ts.s-shipped.on:not(.cur)::before{background:#3b82f6}
+.trk .ts.s-completed.on{color:#2EA06E}.trk .ts.s-completed.on i{background:linear-gradient(160deg,#6FD3A3,#2EA06E);color:#fff}
+.trk .ts.cur i{box-shadow:0 0 0 4px var(--accent-soft);transform:scale(1.08)}
+.gd-pick{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.gd{position:relative;cursor:pointer}.gd input{position:absolute;opacity:0;inset:0;cursor:pointer}
+.gd span{display:flex;align-items:center;justify-content:center;gap:8px;padding:11px 10px;border-radius:14px;font-weight:700;font-size:14px;background:var(--surface-elevated);border:1.5px solid var(--border-subtle);color:var(--text-secondary);transition:all .2s}
+.gd span .ic{font-size:19px}.gd input:checked+span{border-color:var(--accent-primary);background:var(--accent-soft);color:var(--accent-primary)}
+.dock-avatar.has-dot::after{content:"";position:absolute;top:6px;inset-inline-end:6px;width:9px;height:9px;border-radius:50%;background:#E5566D;border:2px solid var(--surface-card)}
+#acct-modal .am-ico{width:62px;height:62px;border-radius:20px;margin:0 auto 12px;display:grid;place-items:center;font-size:30px;background:var(--accent-soft);color:var(--accent-primary)}
+#acct-modal.bl .am-ico{background:rgba(229,86,109,.14);color:#E5566D}
+.home-cat.no-img{background:linear-gradient(150deg,var(--surface-elevated),var(--accent-soft));min-height:120px;border:1px solid var(--border-subtle)}
+/* الوضع النهاري: ألوان هادية مريحة للعين وزخرفة أخف */
+[data-theme="light"]{--bg-primary:#EEF1F0;--bg-secondary:#E8EDEC;--surface-card:#F6F8F7;--surface-elevated:#E6ECEB;--surface-dock:rgba(246,248,247,.94);--text-primary:#26393D;--text-secondary:#4A6064;--text-muted:#7A8D90;--accent-primary:#4A8F89;--accent-hover:#3A7771;--accent-secondary:#78AAA5;--accent-soft:rgba(74,143,137,.09);--border-subtle:rgba(74,143,137,.14);--border-strong:rgba(74,143,137,.32);--shadow-soft:0 6px 18px rgba(30,60,60,.06);--shadow-dock:0 8px 22px rgba(30,60,60,.08);--shadow-glow:0 0 18px rgba(74,143,137,.14);--heading-grad:linear-gradient(90deg,#26393D,#4A8F89,#78AAA5,#3A7771,#26393D);--logo-text:#26393D;--logo-subtext:#4A6064;--men-badge-bg:rgba(38,57,61,.07);--men-badge-text:#26393D}
+[data-theme="light"] body{background-color:#EEF1F0}
+[data-theme="light"] #hero{background:linear-gradient(180deg,rgba(232,237,236,.7) 0%,rgba(238,241,240,0) 100%)}
+[data-theme="light"] body::before{opacity:.3}
 </style>
 </head>
 <body class="min-h-screen flex flex-col">
 
     <!-- مكتبة الأيقونات (SVG مدمجة) -->
-    <svg xmlns="http://www.w3.org/2000/svg" style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true"><symbol id="i-search" viewBox="0 0 24 24"><circle class="d" cx="10.5" cy="10.5" r="6.5"/><circle cx="10.5" cy="10.5" r="6.5"/><path d="M8 8.3a3.6 3.6 0 0 1 2.6-1.1"/><path d="m15.4 15.4 4.9 4.9" stroke-width="2.2"/></symbol><symbol id="i-x" viewBox="0 0 24 24"><path d="M6.5 6.5l11 11"/><path d="M17.5 6.5l-11 11"/></symbol><symbol id="i-bag" viewBox="0 0 24 24"><path class="d" d="M5.1 8.2h13.8l.9 11a1.7 1.7 0 0 1-1.7 1.8H5.9a1.7 1.7 0 0 1-1.7-1.8z"/><path d="M5.1 8.2h13.8l.9 11a1.7 1.7 0 0 1-1.7 1.8H5.9a1.7 1.7 0 0 1-1.7-1.8z"/><path d="M8.6 8.2V7a3.4 3.4 0 0 1 6.8 0v1.2"/><path d="M9.2 12.3a2.8 2.8 0 0 0 5.6 0"/></symbol><symbol id="i-cart" viewBox="0 0 24 24"><path class="d" d="M6.4 7.2h13.6l-1.6 6.2a1.7 1.7 0 0 1-1.6 1.3H8.7z"/><path d="M2.8 4h2.3l.9 3.4 1.4 5.8a1.7 1.7 0 0 0 1.6 1.3h7.9a1.7 1.7 0 0 0 1.6-1.3l1.6-6.3H6"/><circle cx="9.6" cy="19" r="1.5"/><circle cx="16.6" cy="19" r="1.5"/></symbol><symbol id="i-plus" viewBox="0 0 24 24"><path d="M5.5 12h13"/><path d="M12 5.5v13"/></symbol><symbol id="i-minus" viewBox="0 0 24 24"><path d="M5.5 12h13"/></symbol><symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.8 4.4 4.4L19 7.4"/></symbol><symbol id="i-arrow-down" viewBox="0 0 24 24"><path d="M12 5v14"/><path d="m6 13 6 6 6-6"/></symbol><symbol id="i-arrow-left" viewBox="0 0 24 24"><path d="M19 12H5.2"/><path d="m11.2 6-6 6 6 6"/></symbol><symbol id="i-home" viewBox="0 0 24 24"><path class="d" d="M5 10.4 12 4.5l7 5.9V19a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1z"/><path d="M3.6 11.3 12 4.2l8.4 7.1"/><path d="M5.6 9.9V19a1 1 0 0 0 1 1h10.8a1 1 0 0 0 1-1V9.9"/><path d="M10 20v-5h4v5"/></symbol><symbol id="i-wand" viewBox="0 0 24 24"><path class="d" d="M10 4.6 11.9 9.7 17 11.6l-5.1 1.9L10 18.6l-1.9-5.1L3 11.6l5.1-1.9z"/><path d="M10 4.6 11.9 9.7 17 11.6l-5.1 1.9L10 18.6l-1.9-5.1L3 11.6l5.1-1.9z"/><path d="M18.5 3.2v3.6M16.7 5h3.6"/><path d="M18.5 16.6v3.6M16.7 18.4h3.6"/></symbol><symbol id="i-upload" viewBox="0 0 24 24"><path class="d" d="M4.5 15.2h15v3a1.8 1.8 0 0 1-1.8 1.8H6.3a1.8 1.8 0 0 1-1.8-1.8z"/><path d="M12 15V4.5"/><path d="m7.6 8.8 4.4-4.4 4.4 4.4"/><path d="M4.5 15.2v3A1.8 1.8 0 0 0 6.3 20h11.4a1.8 1.8 0 0 0 1.8-1.8v-3"/></symbol><symbol id="i-info" viewBox="0 0 24 24"><circle class="d" cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="9"/><path d="M12 11v5.2"/><path d="M12 7.7v.01" stroke-width="2.2"/></symbol><symbol id="i-trash" viewBox="0 0 24 24"><path class="d" d="M6.6 8.2h10.8l-.8 10.9a1.6 1.6 0 0 1-1.6 1.5H9a1.6 1.6 0 0 1-1.6-1.5z"/><path d="M4.4 8.2h15.2"/><path d="M9.2 8.2V5.6A1.6 1.6 0 0 1 10.8 4h2.4a1.6 1.6 0 0 1 1.6 1.6v2.6"/><path d="M6.6 8.2l.8 10.9A1.6 1.6 0 0 0 9 20.6h6a1.6 1.6 0 0 0 1.6-1.5l.8-10.9"/><path d="M10.2 11.6v5.2M13.8 11.6v5.2"/></symbol><symbol id="i-lotion" viewBox="0 0 24 24"><rect class="d" x="6.4" y="10.2" width="11.2" height="10.8" rx="3"/><rect x="6.4" y="10.2" width="11.2" height="10.8" rx="3"/><path d="M9.6 10.2V8.2h4.8v2"/><path d="M12 8.2V4.4h3.8"/><path d="M9.6 15.6h4.8"/></symbol><symbol id="i-hair" viewBox="0 0 24 24"><path class="d" d="M5.5 3.6c3.4 1.2 5.5 5 5.5 8.9 0 3.5-1.6 6.3-3.9 8"/><path d="M7.6 3.2c-2.4 3.2 2 5.5 0 9.2-1.4 2.6-.8 5.2.8 8.4"/><path d="M12.4 3.2c-2.4 3.2 2 5.5 0 9.2-1.4 2.6-.8 5.2.8 8.4"/><path d="M17.2 3.2c-2.4 3.2 2 5.5 0 9.2-1.4 2.6-.8 5.2.8 8.4"/></symbol><symbol id="i-droplet" viewBox="0 0 24 24"><path class="d" d="M12 3.4c3.1 3.8 6.2 6.7 6.2 10.5a6.2 6.2 0 0 1-12.4 0c0-3.8 3.1-6.7 6.2-10.5z"/><path d="M12 3.4c3.1 3.8 6.2 6.7 6.2 10.5a6.2 6.2 0 0 1-12.4 0c0-3.8 3.1-6.7 6.2-10.5z"/><path d="M9 14.4a3.2 3.2 0 0 0 2.4 2.8"/></symbol><symbol id="i-spray" viewBox="0 0 24 24"><rect class="d" x="5.4" y="10.4" width="11.2" height="10.4" rx="3.2"/><rect x="5.4" y="10.4" width="11.2" height="10.4" rx="3.2"/><path d="M8.8 10.4V8.6h4.4v1.8"/><rect x="8" y="5.2" width="6" height="3.4" rx="1"/><path d="M17.8 6.4h2.6M17.6 4.2l2.2-1M17.6 8.6l2.2 1"/><path d="M8.6 15.6h4.8"/></symbol><symbol id="i-gem" viewBox="0 0 24 24"><path class="d" d="M6.6 4h10.8L21 9.2 12 20 3 9.2z"/><path d="M6.6 4h10.8L21 9.2 12 20 3 9.2z"/><path d="M3 9.2h18"/><path d="m9.6 4 2.4 5.2L14.4 4"/><path d="m8.6 9.2 3.4 10.8 3.4-10.8"/></symbol><symbol id="i-leaf" viewBox="0 0 24 24"><path class="d" d="M5 19c-.5-7 3-13 14-14 .5 8.5-3.5 13.8-11 14z"/><path d="M5 19c-.5-7 3-13 14-14 .5 8.5-3.5 13.8-11 14z"/><path d="M5 19c3-4 6-6.6 9-8.4"/></symbol><symbol id="i-wind" viewBox="0 0 24 24"><path d="M3 9.5h11.2a2.7 2.7 0 1 0-2.7-2.7"/><path d="M3 14h15a2.7 2.7 0 1 1-2.7 2.7"/><path d="M3 18.2h7.4"/></symbol><symbol id="i-sun" viewBox="0 0 24 24"><circle class="d" cx="12" cy="12" r="4.2"/><circle cx="12" cy="12" r="4.2"/><path d="M12 2.8v2M12 19.2v2M2.8 12h2M19.2 12h2M5.5 5.5l1.4 1.4M17.1 17.1l1.4 1.4M5.5 18.5l1.4-1.4M17.1 6.9l1.4-1.4"/></symbol><symbol id="i-moon" viewBox="0 0 24 24"><path class="d" d="M20.2 14.6A8.2 8.2 0 0 1 9.4 3.8 8.4 8.4 0 1 0 20.2 14.6z"/><path d="M20.2 14.6A8.2 8.2 0 0 1 9.4 3.8 8.4 8.4 0 1 0 20.2 14.6z"/></symbol><symbol id="i-globe" viewBox="0 0 24 24"><circle class="d" cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="9"/><path d="M3.2 12h17.6"/><path d="M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z"/></symbol><symbol id="i-mars" viewBox="0 0 24 24"><circle class="d" cx="10" cy="14" r="5.6"/><circle cx="10" cy="14" r="5.6"/><path d="m14 10 6-6"/><path d="M15.2 4H20v4.8"/></symbol><symbol id="i-chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol><symbol id="i-wa" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"></path></symbol><symbol id="i-fb" viewBox="0 0 24 24"><path class="d" d="M12 2C6.477 2 2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987H7.898V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12c0-5.523-4.477-10-10-10z"/><path d="M15.905 14.89l.443-2.89h-2.773v-1.876c0-.79.387-1.562 1.63-1.562h1.26v-2.46s-1.144-.195-2.238-.195c-2.285 0-3.777 1.384-3.777 3.89V12H7.898v2.89h2.552v6.988a10.12 10.12 0 003.105 0V14.89h2.35z"/></symbol><symbol id="i-user" viewBox="0 0 24 24"><circle class="d" cx="12" cy="8.2" r="3.9"/><circle cx="12" cy="8.2" r="3.9"/><path class="d" d="M4.6 20c.6-3.6 3.6-5.8 7.4-5.8s6.8 2.2 7.4 5.8z"/><path d="M4.6 20c.6-3.6 3.6-5.8 7.4-5.8s6.8 2.2 7.4 5.8"/></symbol><symbol id="i-more" viewBox="0 0 24 24"><circle cx="12" cy="5.5" r="1.6" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/><circle cx="12" cy="18.5" r="1.6" fill="currentColor" stroke="none"/></symbol><symbol id="i-settings" viewBox="0 0 24 24"><path class="d" d="M12 8a4 4 0 100 8 4 4 0 000-8z"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></symbol><symbol id="i-heart" viewBox="0 0 24 24"><path class="d" d="M12 20.2s-7.6-4.6-7.6-10.2A4.3 4.3 0 0 1 12 7.6a4.3 4.3 0 0 1 7.6 2.4c0 5.6-7.6 10.2-7.6 10.2z"/><path d="M12 20.2s-7.6-4.6-7.6-10.2A4.3 4.3 0 0 1 12 7.6a4.3 4.3 0 0 1 7.6 2.4c0 5.6-7.6 10.2-7.6 10.2z"/></symbol><symbol id="i-receipt" viewBox="0 0 24 24"><path class="d" d="M5 4.5a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1V21l-2.6-1.8L14 21l-2-1.8L10 21l-2.4-1.8L5 21z"/><path d="M5 4.5a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1V21l-2.6-1.8L14 21l-2-1.8L10 21l-2.4-1.8L5 21z"/><path d="M8.8 8.4h6.4M8.8 12h6.4"/></symbol><symbol id="i-phone" viewBox="0 0 24 24"><path class="d" d="M5 4h3.2l1.6 4-2 1.3a11 11 0 0 0 5.9 5.9l1.3-2 4 1.6V18a2 2 0 0 1-2.2 2A15 15 0 0 1 3 6.2 2 2 0 0 1 5 4z"/><path d="M5 4h3.2l1.6 4-2 1.3a11 11 0 0 0 5.9 5.9l1.3-2 4 1.6V18a2 2 0 0 1-2.2 2A15 15 0 0 1 3 6.2 2 2 0 0 1 5 4z"/></symbol><symbol id="i-pencil" viewBox="0 0 24 24"><path class="d" d="M4 20l1-4.2L16.6 4.2a2 2 0 0 1 2.8 0l.4.4a2 2 0 0 1 0 2.8L8.2 19z"/><path d="M4 20l1-4.2L16.6 4.2a2 2 0 0 1 2.8 0l.4.4a2 2 0 0 1 0 2.8L8.2 19z"/><path d="m14.5 6.3 3.2 3.2"/></symbol><symbol id="i-camera" viewBox="0 0 24 24"><path class="d" d="M4 8.5A1.5 1.5 0 0 1 5.5 7h2l1.2-2h6.6l1.2 2h2A1.5 1.5 0 0 1 20 8.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 17.5z"/><path d="M4 8.5A1.5 1.5 0 0 1 5.5 7h2l1.2-2h6.6l1.2 2h2A1.5 1.5 0 0 1 20 8.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 17.5z"/><circle cx="12" cy="13" r="3.3"/></symbol><symbol id="i-pin" viewBox="0 0 24 24"><path class="d" d="M12 21s6.5-5.6 6.5-11a6.5 6.5 0 0 0-13 0c0 5.4 6.5 11 6.5 11z"/><path d="M12 21s6.5-5.6 6.5-11a6.5 6.5 0 0 0-13 0c0 5.4 6.5 11 6.5 11z"/><circle cx="12" cy="10" r="2.4"/></symbol><symbol id="i-alert" viewBox="0 0 24 24"><path class="d" d="M12 4 21 19.5H3z"/><path d="M12 4 21 19.5H3z"/><path d="M12 10v4.4"/><path d="M12 17v.01" stroke-width="2.2"/></symbol><symbol id="i-mail" viewBox="0 0 24 24"><rect class="d" x="3.5" y="5.5" width="17" height="13" rx="2.5"/><rect x="3.5" y="5.5" width="17" height="13" rx="2.5"/><path d="M4.5 7.7l7.5 5.8 7.5-5.8"/></symbol></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true"><symbol id="i-venus" viewBox="0 0 24 24"><circle cx="12" cy="9" r="5"/><path d="M12 14v8M8.5 18h7"/></symbol><symbol id="i-search" viewBox="0 0 24 24"><circle class="d" cx="10.5" cy="10.5" r="6.5"/><circle cx="10.5" cy="10.5" r="6.5"/><path d="M8 8.3a3.6 3.6 0 0 1 2.6-1.1"/><path d="m15.4 15.4 4.9 4.9" stroke-width="2.2"/></symbol><symbol id="i-x" viewBox="0 0 24 24"><path d="M6.5 6.5l11 11"/><path d="M17.5 6.5l-11 11"/></symbol><symbol id="i-bag" viewBox="0 0 24 24"><path class="d" d="M5.1 8.2h13.8l.9 11a1.7 1.7 0 0 1-1.7 1.8H5.9a1.7 1.7 0 0 1-1.7-1.8z"/><path d="M5.1 8.2h13.8l.9 11a1.7 1.7 0 0 1-1.7 1.8H5.9a1.7 1.7 0 0 1-1.7-1.8z"/><path d="M8.6 8.2V7a3.4 3.4 0 0 1 6.8 0v1.2"/><path d="M9.2 12.3a2.8 2.8 0 0 0 5.6 0"/></symbol><symbol id="i-cart" viewBox="0 0 24 24"><path class="d" d="M6.4 7.2h13.6l-1.6 6.2a1.7 1.7 0 0 1-1.6 1.3H8.7z"/><path d="M2.8 4h2.3l.9 3.4 1.4 5.8a1.7 1.7 0 0 0 1.6 1.3h7.9a1.7 1.7 0 0 0 1.6-1.3l1.6-6.3H6"/><circle cx="9.6" cy="19" r="1.5"/><circle cx="16.6" cy="19" r="1.5"/></symbol><symbol id="i-plus" viewBox="0 0 24 24"><path d="M5.5 12h13"/><path d="M12 5.5v13"/></symbol><symbol id="i-minus" viewBox="0 0 24 24"><path d="M5.5 12h13"/></symbol><symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.8 4.4 4.4L19 7.4"/></symbol><symbol id="i-arrow-down" viewBox="0 0 24 24"><path d="M12 5v14"/><path d="m6 13 6 6 6-6"/></symbol><symbol id="i-arrow-left" viewBox="0 0 24 24"><path d="M19 12H5.2"/><path d="m11.2 6-6 6 6 6"/></symbol><symbol id="i-home" viewBox="0 0 24 24"><path class="d" d="M5 10.4 12 4.5l7 5.9V19a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1z"/><path d="M3.6 11.3 12 4.2l8.4 7.1"/><path d="M5.6 9.9V19a1 1 0 0 0 1 1h10.8a1 1 0 0 0 1-1V9.9"/><path d="M10 20v-5h4v5"/></symbol><symbol id="i-wand" viewBox="0 0 24 24"><path class="d" d="M10 4.6 11.9 9.7 17 11.6l-5.1 1.9L10 18.6l-1.9-5.1L3 11.6l5.1-1.9z"/><path d="M10 4.6 11.9 9.7 17 11.6l-5.1 1.9L10 18.6l-1.9-5.1L3 11.6l5.1-1.9z"/><path d="M18.5 3.2v3.6M16.7 5h3.6"/><path d="M18.5 16.6v3.6M16.7 18.4h3.6"/></symbol><symbol id="i-upload" viewBox="0 0 24 24"><path class="d" d="M4.5 15.2h15v3a1.8 1.8 0 0 1-1.8 1.8H6.3a1.8 1.8 0 0 1-1.8-1.8z"/><path d="M12 15V4.5"/><path d="m7.6 8.8 4.4-4.4 4.4 4.4"/><path d="M4.5 15.2v3A1.8 1.8 0 0 0 6.3 20h11.4a1.8 1.8 0 0 0 1.8-1.8v-3"/></symbol><symbol id="i-info" viewBox="0 0 24 24"><circle class="d" cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="9"/><path d="M12 11v5.2"/><path d="M12 7.7v.01" stroke-width="2.2"/></symbol><symbol id="i-trash" viewBox="0 0 24 24"><path class="d" d="M6.6 8.2h10.8l-.8 10.9a1.6 1.6 0 0 1-1.6 1.5H9a1.6 1.6 0 0 1-1.6-1.5z"/><path d="M4.4 8.2h15.2"/><path d="M9.2 8.2V5.6A1.6 1.6 0 0 1 10.8 4h2.4a1.6 1.6 0 0 1 1.6 1.6v2.6"/><path d="M6.6 8.2l.8 10.9A1.6 1.6 0 0 0 9 20.6h6a1.6 1.6 0 0 0 1.6-1.5l.8-10.9"/><path d="M10.2 11.6v5.2M13.8 11.6v5.2"/></symbol><symbol id="i-lotion" viewBox="0 0 24 24"><rect class="d" x="6.4" y="10.2" width="11.2" height="10.8" rx="3"/><rect x="6.4" y="10.2" width="11.2" height="10.8" rx="3"/><path d="M9.6 10.2V8.2h4.8v2"/><path d="M12 8.2V4.4h3.8"/><path d="M9.6 15.6h4.8"/></symbol><symbol id="i-hair" viewBox="0 0 24 24"><path class="d" d="M5.5 3.6c3.4 1.2 5.5 5 5.5 8.9 0 3.5-1.6 6.3-3.9 8"/><path d="M7.6 3.2c-2.4 3.2 2 5.5 0 9.2-1.4 2.6-.8 5.2.8 8.4"/><path d="M12.4 3.2c-2.4 3.2 2 5.5 0 9.2-1.4 2.6-.8 5.2.8 8.4"/><path d="M17.2 3.2c-2.4 3.2 2 5.5 0 9.2-1.4 2.6-.8 5.2.8 8.4"/></symbol><symbol id="i-droplet" viewBox="0 0 24 24"><path class="d" d="M12 3.4c3.1 3.8 6.2 6.7 6.2 10.5a6.2 6.2 0 0 1-12.4 0c0-3.8 3.1-6.7 6.2-10.5z"/><path d="M12 3.4c3.1 3.8 6.2 6.7 6.2 10.5a6.2 6.2 0 0 1-12.4 0c0-3.8 3.1-6.7 6.2-10.5z"/><path d="M9 14.4a3.2 3.2 0 0 0 2.4 2.8"/></symbol><symbol id="i-spray" viewBox="0 0 24 24"><rect class="d" x="5.4" y="10.4" width="11.2" height="10.4" rx="3.2"/><rect x="5.4" y="10.4" width="11.2" height="10.4" rx="3.2"/><path d="M8.8 10.4V8.6h4.4v1.8"/><rect x="8" y="5.2" width="6" height="3.4" rx="1"/><path d="M17.8 6.4h2.6M17.6 4.2l2.2-1M17.6 8.6l2.2 1"/><path d="M8.6 15.6h4.8"/></symbol><symbol id="i-gem" viewBox="0 0 24 24"><path class="d" d="M6.6 4h10.8L21 9.2 12 20 3 9.2z"/><path d="M6.6 4h10.8L21 9.2 12 20 3 9.2z"/><path d="M3 9.2h18"/><path d="m9.6 4 2.4 5.2L14.4 4"/><path d="m8.6 9.2 3.4 10.8 3.4-10.8"/></symbol><symbol id="i-leaf" viewBox="0 0 24 24"><path class="d" d="M5 19c-.5-7 3-13 14-14 .5 8.5-3.5 13.8-11 14z"/><path d="M5 19c-.5-7 3-13 14-14 .5 8.5-3.5 13.8-11 14z"/><path d="M5 19c3-4 6-6.6 9-8.4"/></symbol><symbol id="i-wind" viewBox="0 0 24 24"><path d="M3 9.5h11.2a2.7 2.7 0 1 0-2.7-2.7"/><path d="M3 14h15a2.7 2.7 0 1 1-2.7 2.7"/><path d="M3 18.2h7.4"/></symbol><symbol id="i-sun" viewBox="0 0 24 24"><circle class="d" cx="12" cy="12" r="4.2"/><circle cx="12" cy="12" r="4.2"/><path d="M12 2.8v2M12 19.2v2M2.8 12h2M19.2 12h2M5.5 5.5l1.4 1.4M17.1 17.1l1.4 1.4M5.5 18.5l1.4-1.4M17.1 6.9l1.4-1.4"/></symbol><symbol id="i-moon" viewBox="0 0 24 24"><path class="d" d="M20.2 14.6A8.2 8.2 0 0 1 9.4 3.8 8.4 8.4 0 1 0 20.2 14.6z"/><path d="M20.2 14.6A8.2 8.2 0 0 1 9.4 3.8 8.4 8.4 0 1 0 20.2 14.6z"/></symbol><symbol id="i-globe" viewBox="0 0 24 24"><circle class="d" cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="9"/><path d="M3.2 12h17.6"/><path d="M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z"/></symbol><symbol id="i-mars" viewBox="0 0 24 24"><circle class="d" cx="10" cy="14" r="5.6"/><circle cx="10" cy="14" r="5.6"/><path d="m14 10 6-6"/><path d="M15.2 4H20v4.8"/></symbol><symbol id="i-chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol><symbol id="i-wa" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"></path></symbol><symbol id="i-fb" viewBox="0 0 24 24"><path class="d" d="M12 2C6.477 2 2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987H7.898V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12c0-5.523-4.477-10-10-10z"/><path d="M15.905 14.89l.443-2.89h-2.773v-1.876c0-.79.387-1.562 1.63-1.562h1.26v-2.46s-1.144-.195-2.238-.195c-2.285 0-3.777 1.384-3.777 3.89V12H7.898v2.89h2.552v6.988a10.12 10.12 0 003.105 0V14.89h2.35z"/></symbol><symbol id="i-user" viewBox="0 0 24 24"><circle class="d" cx="12" cy="8.2" r="3.9"/><circle cx="12" cy="8.2" r="3.9"/><path class="d" d="M4.6 20c.6-3.6 3.6-5.8 7.4-5.8s6.8 2.2 7.4 5.8z"/><path d="M4.6 20c.6-3.6 3.6-5.8 7.4-5.8s6.8 2.2 7.4 5.8"/></symbol><symbol id="i-more" viewBox="0 0 24 24"><circle cx="12" cy="5.5" r="1.6" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/><circle cx="12" cy="18.5" r="1.6" fill="currentColor" stroke="none"/></symbol><symbol id="i-settings" viewBox="0 0 24 24"><path class="d" d="M12 8a4 4 0 100 8 4 4 0 000-8z"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></symbol><symbol id="i-heart" viewBox="0 0 24 24"><path class="d" d="M12 20.2s-7.6-4.6-7.6-10.2A4.3 4.3 0 0 1 12 7.6a4.3 4.3 0 0 1 7.6 2.4c0 5.6-7.6 10.2-7.6 10.2z"/><path d="M12 20.2s-7.6-4.6-7.6-10.2A4.3 4.3 0 0 1 12 7.6a4.3 4.3 0 0 1 7.6 2.4c0 5.6-7.6 10.2-7.6 10.2z"/></symbol><symbol id="i-receipt" viewBox="0 0 24 24"><path class="d" d="M5 4.5a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1V21l-2.6-1.8L14 21l-2-1.8L10 21l-2.4-1.8L5 21z"/><path d="M5 4.5a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1V21l-2.6-1.8L14 21l-2-1.8L10 21l-2.4-1.8L5 21z"/><path d="M8.8 8.4h6.4M8.8 12h6.4"/></symbol><symbol id="i-phone" viewBox="0 0 24 24"><path class="d" d="M5 4h3.2l1.6 4-2 1.3a11 11 0 0 0 5.9 5.9l1.3-2 4 1.6V18a2 2 0 0 1-2.2 2A15 15 0 0 1 3 6.2 2 2 0 0 1 5 4z"/><path d="M5 4h3.2l1.6 4-2 1.3a11 11 0 0 0 5.9 5.9l1.3-2 4 1.6V18a2 2 0 0 1-2.2 2A15 15 0 0 1 3 6.2 2 2 0 0 1 5 4z"/></symbol><symbol id="i-pencil" viewBox="0 0 24 24"><path class="d" d="M4 20l1-4.2L16.6 4.2a2 2 0 0 1 2.8 0l.4.4a2 2 0 0 1 0 2.8L8.2 19z"/><path d="M4 20l1-4.2L16.6 4.2a2 2 0 0 1 2.8 0l.4.4a2 2 0 0 1 0 2.8L8.2 19z"/><path d="m14.5 6.3 3.2 3.2"/></symbol><symbol id="i-camera" viewBox="0 0 24 24"><path class="d" d="M4 8.5A1.5 1.5 0 0 1 5.5 7h2l1.2-2h6.6l1.2 2h2A1.5 1.5 0 0 1 20 8.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 17.5z"/><path d="M4 8.5A1.5 1.5 0 0 1 5.5 7h2l1.2-2h6.6l1.2 2h2A1.5 1.5 0 0 1 20 8.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 17.5z"/><circle cx="12" cy="13" r="3.3"/></symbol><symbol id="i-pin" viewBox="0 0 24 24"><path class="d" d="M12 21s6.5-5.6 6.5-11a6.5 6.5 0 0 0-13 0c0 5.4 6.5 11 6.5 11z"/><path d="M12 21s6.5-5.6 6.5-11a6.5 6.5 0 0 0-13 0c0 5.4 6.5 11 6.5 11z"/><circle cx="12" cy="10" r="2.4"/></symbol><symbol id="i-alert" viewBox="0 0 24 24"><path class="d" d="M12 4 21 19.5H3z"/><path d="M12 4 21 19.5H3z"/><path d="M12 10v4.4"/><path d="M12 17v.01" stroke-width="2.2"/></symbol><symbol id="i-mail" viewBox="0 0 24 24"><rect class="d" x="3.5" y="5.5" width="17" height="13" rx="2.5"/><rect x="3.5" y="5.5" width="17" height="13" rx="2.5"/><path d="M4.5 7.7l7.5 5.8 7.5-5.8"/></symbol></svg>
 
 
     <!-- =========================================================
@@ -2781,6 +2807,43 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
         function getOrders() { return store.get("sm-orders", []); }
         function addOrder(o) { const l = getOrders(); l.unshift(o); store.set("sm-orders", l.slice(0, 30)); }
         function getFavs() { return store.get("sm-favs", []); }
+        const SM_SB = "https://unnexzitkirtqvhmynwh.supabase.co", SM_KEY = "sb_publishable_ESabG0uyEwunnj3YGYN_og_aghmi7YU";
+        function smRpc(fn, body) { return fetch(SM_SB + "/rest/v1/rpc/" + fn, { method: "POST", headers: { apikey: SM_KEY, Authorization: "Bearer " + SM_KEY, "Content-Type": "application/json" }, body: JSON.stringify(body), keepalive: true }); }
+        function gn() { const p = getProfile(); return p && p.gender === "m" ? "m" : "f"; }
+        function gv(f, m) { return gn() === "m" ? m : f; }
+        function tg(f, m) { return t(gv(f, m)); }
+        function genderLabel(g) { return g === "m" ? t("ذكر") : g === "f" ? t("أنثى") : "—"; }
+        function genderPicker(cur, quick) {
+            const on = quick ? ' onchange="setGender(this.value)"' : "";
+            return `<div class="gd-pick" id="pf-gender-box" role="radiogroup">
+                <label class="gd"><input type="radio" name="pf-gender" value="f" ${cur === "f" ? "checked" : ""}${on}><span><svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><use href="#i-venus"/></svg>${t("أنثى")}</span></label>
+                <label class="gd"><input type="radio" name="pf-gender" value="m" ${cur === "m" ? "checked" : ""}${on}><span><svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><use href="#i-mars"/></svg>${t("ذكر")}</span></label></div>`;
+        }
+        function pushGender(phone, g) { if (phone && (g === "f" || g === "m")) { try { smRpc("set_customer_gender", { p_phone: phone, p_gender: g }); } catch (e) {} } }
+        function setGender(g) { const p = getProfile(); if (!p) return; p.gender = g; store.set("sm-profile", p); pushGender(p.phone, g); renderSheet(); showToast(t("تم حفظ بياناتك")); }
+        async function acctStatus(phone) {
+            try { const r = await smRpc("customer_status", { p_phone: phone }); if (r.ok) { const j = await r.json(); if (typeof j === "string") return j; } } catch (e) {}
+            return null;
+        }
+        function logAttempt(phone, name, action) { try { smRpc("log_blocked_attempt", { p_phone: phone, p_name: name || "", p_action: action }); } catch (e) {} }
+        function closeAcct() { const m = document.getElementById("acct-modal"); if (m) { m.classList.add("hidden"); m.classList.remove("flex"); } }
+        function acctFresh() { closeAcct(); openSheet("profile"); }
+        function showAcct(kind, p) {
+            const m = document.getElementById("acct-modal"); if (!m) return;
+            const mm = !!(p && p.gender === "m"), bl = kind === "blocked";
+            m.classList.toggle("bl", bl);
+            document.getElementById("am-ico").innerHTML = `<svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><use href="#${bl ? "i-alert" : "i-user"}"/></svg>`;
+            document.getElementById("am-title").textContent = t(bl ? "تم إيقاف حسابك" : "تم حذف حسابك");
+            document.getElementById("am-text").textContent = t(bl
+                ? (mm ? "تم إيقاف حسابك مؤقتاً ولا يمكنك الطلب حالياً. تواصل مع فريق SKIN MASH لحل المشكلة." : "تم إيقاف حسابك مؤقتاً ولا يمكنك الطلب حالياً. تواصلي مع فريق SKIN MASH لحل المشكلة.")
+                : (mm ? "تم حذف حسابك من الموقع. لمتابعة الطلب أنشئ حساباً جديداً ببياناتك." : "تم حذف حسابك من الموقع. لمتابعة الطلب أنشئي حساباً جديداً ببياناتك."));
+            const nm = (p && p.name) || "", ph = (p && p.phone) || "";
+            const txt = `أهلاً فريق SKIN MASH 🌸\nأنا ${nm} (${ph}).\nحسابي على الموقع اتوقف ${mm ? "ومش قادر" : "ومش قادرة"} أطلب. ممكن تساعدوني أعرف السبب وأحل المشكلة؟`;
+            document.getElementById("am-btns").innerHTML = bl
+                ? `<a class="btn-acc" target="_blank" rel="noopener noreferrer" href="https://wa.me/${STORE_WHATSAPP_NUMBER}?text=${encodeURIComponent(txt)}"><svg viewBox="0 0 24 24" class="ic ic-fill" aria-hidden="true"><use href="#i-wa"/></svg><span>${t("تواصل مع فريق SKIN MASH على واتساب")}</span></a><button type="button" class="btn-ghost" style="margin-top:10px" onclick="closeAcct()">${t("إغلاق")}</button>`
+                : `<button type="button" class="btn-acc" onclick="acctFresh()"><span>${t("إنشاء حساب جديد")}</span></button><button type="button" class="btn-ghost" style="margin-top:10px" onclick="closeAcct()">${t("إغلاق")}</button>`;
+            m.classList.remove("hidden"); m.classList.add("flex");
+        }
         function isFav(id) { return getFavs().indexOf(id) !== -1; }
 
         function validEmail(x) { return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(String(x || "").trim()); }
@@ -2839,7 +2902,7 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
             if (!panel) return;
             const on = getOrders().length, fn = getFavs().length;
             panel.innerHTML =
-                menuRow("i-receipt", t("طلباتي"), on ? `${on} ${t("طلب")}` : t("تابع طلباتك السابقة"), "closeMenuPanel();openSheet('orders')") +
+                menuRow("i-receipt", t("تابع طلبك"), on ? `${on} ${t("طلب")}` : t("تابع طلباتك السابقة"), "closeMenuPanel();openSheet('orders')") +
                 menuRow("i-heart", t("المفضلة"), fn ? `${fn} ${t("منتج")}` : t("منتجاتك المحفوظة"), "closeMenuPanel();openSheet('favs')") +
                 menuRow("i-phone", t("تواصل معنا"), t("نرد عليك على واتساب"), "closeMenuPanel();openSheet('contact')") +
                 menuRow("i-wand", t("اطلب منتجك"), t("منتج غير موجود؟ اطلبه"), "closeMenuPanel();openRequestModal()");
@@ -2885,7 +2948,7 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
             const body = document.getElementById("sheet-body");
             const title = document.getElementById("sheet-title");
             const ico = document.getElementById("sheet-ico");
-            const map = { profile: ["i-user", "حسابي"], orders: ["i-receipt", "طلباتي"], favs: ["i-heart", "المفضلة"], contact: ["i-phone", "تواصل معنا"] };
+            const map = { profile: ["i-user", "حسابي"], orders: ["i-receipt", "تابع طلبك"], favs: ["i-heart", "المفضلة"], contact: ["i-phone", "تواصل معنا"] };
             ico.innerHTML = `<use href="#${map[sheetKind][0]}"/>`;
             title.textContent = t(map[sheetKind][1]);
             body.innerHTML = sheetKind === "profile" ? profileHTML() : sheetKind === "orders" ? ordersHTML() : sheetKind === "favs" ? favsHTML() : contactHTML();
@@ -2916,7 +2979,11 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
             </div>`;
             if (!editing) {
                 const on = getOrders().length;
-                return head + `<div class="space-y-2.5">
+                const last = getOrders().find(o => o.status === "sent");
+                const trk = last ? `<div class="order-card" style="margin-bottom:14px"><div class="flex items-center justify-between gap-2"><div class="text-sm font-bold">${last.id}</div><div class="text-[11px]" style="color: var(--text-muted);">${fmtDate(last.ts)}</div></div>${trackHTML(last.fs)}</div>` : "";
+                const gRow = p.gender ? profileRow("i-user", t("النوع"), genderLabel(p.gender)) : `<div class="pf-row" style="display:block"><div class="pf-k" style="margin-bottom:8px">${t("حدد نوعك (لتخاطبك الرسائل بشكل مناسب)")}</div>${genderPicker("", true)}</div>`;
+                return head + trk + `<div class="space-y-2.5">
+                    ${gRow}
                     ${profileRow("i-phone", t("رقم الهاتف"), p.phone || "—")}
                     ${profileRow("i-wa", t("رقم واتساب"), p.whatsapp || "—")}
                     ${profileRow("i-pin", t("المدينة"), p.city || "—")}
@@ -2928,7 +2995,7 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
                     <button type="button" class="btn-acc" onclick="profileEdit=true;renderSheet()">
                         <svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><use href="#i-pencil"/></svg><span>${t("تعديل بياناتي")}</span></button>
                     <button type="button" class="btn-ghost" onclick="openSheet('orders')">
-                        <svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><use href="#i-receipt"/></svg><span>${t("عرض طلباتي")}${on ? ` (${on})` : ""}</span></button>
+                        <svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><use href="#i-receipt"/></svg><span>${t("تابع طلبك")}${on ? ` (${on})` : ""}</span></button>
                 </div>`;
             }
             const v = k => escHtml((p && p[k]) || "");
@@ -2944,6 +3011,7 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
                 </div>
                 <div><label class="fld-label">${t("المدينة")} *</label><input class="fld" id="pf-city" required minlength="2" value="${v("city")}"></div>
                 <div><label class="fld-label">${t("العنوان بالتفصيل")} *</label><textarea class="fld" id="pf-address" rows="2" required minlength="8">${v("address")}</textarea></div>
+                <div><label class="fld-label">${t("النوع")} *</label>${genderPicker((p && p.gender) || "", false)}</div>
                 <button type="submit" class="btn-acc"><svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>${t("تأكيد")}</span></button>
                 <button type="button" class="btn-ghost" onclick="${complete ? "profileEdit=false;pendingPhoto=null;renderSheet()" : "closeSheet()"}">${t("إلغاء")}</button>
                 <p class="text-[11px] leading-relaxed" style="color: var(--text-muted);">${t("بياناتك محفوظة على هذا الجهاز فقط وتُملأ تلقائياً عند إتمام الطلب.")}</p>
@@ -2978,15 +3046,17 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
             const val = id => { const el = document.getElementById(id); return el ? el.value.trim() : ""; };
             const bad = (id, msg) => { showToast(t(msg)); const el = document.getElementById(id); if (el) el.focus(); };
             const name = val("pf-name"), phone = toLatinDigits(val("pf-phone")), wa = toLatinDigits(val("pf-whatsapp")),
-                  city = val("pf-city"), address = val("pf-address");
+                  city = val("pf-city"), address = val("pf-address"),
+                  gender = (document.querySelector('input[name="pf-gender"]:checked') || {}).value || "";
             if (name.length < 3) return bad("pf-name", "اكتب اسمك (3 أحرف على الأقل)");
             if (!PHONE_RE.test(phone)) return bad("pf-phone", "اكتب رقم موبايل مصري صحيح مثل 01xxxxxxxxx");
             if (!PHONE_RE.test(wa)) return bad("pf-whatsapp", "اكتب رقم واتساب مصري صحيح مثل 01xxxxxxxxx");
             if (city.length < 2) return bad("pf-city", "اكتب اسم المدينة");
             if (address.length < 8) return bad("pf-address", "اكتب عنواناً مفصلاً (8 أحرف على الأقل)");
-            const reg = await registerCustomer({ name: name, phone: phone, whatsapp: wa, city: city, address: address });
-            if (!reg.ok) return bad("pf-phone", reg.msg);
-            const p = Object.assign({}, old, { name: name, phone: phone, whatsapp: wa, city: city, address: address });
+            if (!gender) return bad("pf-gender-box", "اختر النوع (أنثى أو ذكر)");
+            const reg = await registerCustomer({ name: name, phone: phone, whatsapp: wa, city: city, address: address, gender: gender });
+            if (!reg.ok) { if (reg.msg) bad("pf-phone", reg.msg); return; }
+            const p = Object.assign({}, old, { name: name, phone: phone, whatsapp: wa, city: city, address: address, gender: gender });
             delete p.email;
             const al = getAddresses(old); al[0] = { city: city, address: address }; p.addresses = al;
             if (!p.created) p.created = Date.now();
@@ -3010,16 +3080,21 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
             renderSheet();
         }
 
+        function notifBox() {
+            if (!("Notification" in window) || Notification.permission !== "default") return "";
+            return `<div class="mb-3 p-3 rounded-2xl text-xs leading-relaxed flex items-center gap-3" style="background: var(--accent-soft); border: 1px solid var(--border-subtle);"><span class="flex-1">${t("فعّل الإشعارات لنبلغك فور تغيّر حالة طلبك وأنت داخل الموقع.")}</span><button type="button" class="btn-acc" style="width:auto;padding:7px 14px;font-size:12px;" onclick="smAskNotif()">${t("تفعيل")}</button></div>`;
+        }
         function ordersHTML() {
             const list = getOrders();
             if (!list.length) return emptyHTML("i-receipt", t("لا توجد طلبات بعد"), t("ستظهر هنا طلباتك بعد إتمام أول طلب."));
-            return `<div class="space-y-3">` + list.map(o => `
+            return notifBox() + `<div class="space-y-3">` + list.map(o => `
                 <div class="order-card">
-                    <div class="flex items-center justify-between gap-2 mb-2.5">
+                    <div class="flex items-center justify-between gap-2 mb-1">
                         <div><div class="text-sm font-bold">${o.id}</div><div class="text-[11px]" style="color: var(--text-muted);">${fmtDate(o.ts)}</div></div>
-                        <span class="chip ${o.status === "sent" ? "chip-ok" : "chip-wait"}">${t(o.status === "sent" ? "تم إرسال الطلب للمتجر" : "بانتظار التأكيد عبر واتساب")}</span>
+                        ${o.status === "sent" ? "" : `<span class="chip chip-wait">${t("بانتظار التأكيد عبر واتساب")}</span>`}
                     </div>
-                    <ul class="text-xs space-y-1 mb-3" style="color: var(--text-secondary);">${o.items.map(i => `<li>${escHtml(t(i.name))} × ${i.qty}</li>`).join("")}</ul>
+                    ${o.status === "sent" ? trackHTML(o.fs) : ""}
+                    <ul class="text-xs space-y-1 mb-3 mt-2" style="color: var(--text-secondary);">${o.items.map(i => `<li>${escHtml(t(i.name))} × ${i.qty}</li>`).join("")}</ul>
                     <div class="flex items-center justify-between gap-2">
                         <strong style="color: var(--accent-primary);">${money(o.total)}</strong>
                         <button type="button" class="btn-ghost" style="width:auto;padding:7px 14px;font-size:12px;" onclick="reorder('${o.id}')">${t("اطلب مرة أخرى")}</button>
@@ -3028,6 +3103,7 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
                         <svg viewBox="0 0 24 24" class="ic ic-fill" aria-hidden="true"><use href="#i-wa"/></svg><span>${t("تأكيد الطلب عبر واتساب")}</span></a>` : ""}
                 </div>`).join("") + `</div>`;
         }
+        
         function reorder(id) {
             const o = getOrders().find(x => x.id === id);
             if (!o) return;
@@ -3107,11 +3183,12 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
             return d;
         }
         async function registerCustomer(p) {
+            { const st0 = await acctStatus(p.phone); if (st0 === "blocked") { window.__acct = "blocked"; logAttempt(p.phone, p.name, "signup"); showAcct("blocked", p); return { ok: false, msg: "" }; } }
             const U = "https://unnexzitkirtqvhmynwh.supabase.co", K = "sb_publishable_ESabG0uyEwunnj3YGYN_og_aghmi7YU";
             try {
                 const r = await fetch(U + "/rest/v1/rpc/register_customer", { method: "POST", headers: { apikey: K, Authorization: "Bearer " + K, "Content-Type": "application/json" },
                     body: JSON.stringify({ p: { phone: p.phone, name: p.name, whatsapp: p.whatsapp, city: p.city, address: p.address, device: deviceId() } }) });
-                if (r.ok) { try { fetch(U + "/rest/v1/rpc/clear_deleted_flag", { method: "POST", headers: { apikey: K, Authorization: "Bearer " + K, "Content-Type": "application/json" }, body: JSON.stringify({ p_phone: p.phone }) }); } catch (e) {} return { ok: true }; }
+                if (r.ok) { try { pushGender(p.phone, p.gender); } catch (e) {} try { fetch(U + "/rest/v1/rpc/clear_deleted_flag", { method: "POST", headers: { apikey: K, Authorization: "Bearer " + K, "Content-Type": "application/json" }, body: JSON.stringify({ p_phone: p.phone }) }); } catch (e) {} return { ok: true }; }
                 let j = {}; try { j = await r.json(); } catch (e) {}
                 if (r.status === 404 || j.code === "PGRST202") return { ok: true };   /* ملف skinmash-setup.sql لم يُشغَّل بعد */
                 const m = j.message || "";
@@ -3120,22 +3197,20 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
         }
 
         /* ---------- حالة العميل من الإدارة: محذوف يبدأ من جديد / محظور لا يطلب ---------- */
-        async function enforceCustomer() {
+        async function enforceCustomer(action) {
             const p = getProfile();
             if (!p || !p.phone) return "ok";
-            const U = "https://unnexzitkirtqvhmynwh.supabase.co", K = "sb_publishable_ESabG0uyEwunnj3YGYN_og_aghmi7YU";
-            let st = null;
-            try {
-                const r = await fetch(U + "/rest/v1/rpc/customer_status", { method: "POST", headers: { apikey: K, Authorization: "Bearer " + K, "Content-Type": "application/json" }, body: JSON.stringify({ p_phone: p.phone }) });
-                if (r.ok) { const j = await r.json(); if (typeof j === "string") st = j; }
-            } catch (e) {}
+            const st = await acctStatus(p.phone);
             if (st === "deleted") {
-                ["sm-profile", "sm-orders", "sm-favs"].forEach(k => { try { localStorage.removeItem(k); } catch (e) {} });
-                showToast(t("تم حذف حسابك. من فضلك أنشئي حساباً جديداً لمتابعة الطلب."));
-                setTimeout(() => location.reload(), 1500);
+                const snap = { name: p.name, phone: p.phone, gender: p.gender };
+                ["sm-profile", "sm-orders", "sm-favs", "sm-notifs", "sm-unread"].forEach(k => { try { localStorage.removeItem(k); } catch (e) {} });
+                window.__acct = "deleted"; updateAvatar();
+                try { if (window.updateDot) updateDot(); } catch (e) {}
+                showAcct("deleted", snap);
                 return "deleted";
             }
-            if (st === "blocked") { showToast(t("عذراً، تم حظر حسابك ولا يمكنك إتمام الطلبات. للاستفسار تواصلي مع المتجر.")); return "blocked"; }
+            if (st === "blocked") { window.__acct = "blocked"; if (action) { logAttempt(p.phone, p.name, action); showAcct("blocked", p); } return "blocked"; }
+            window.__acct = "ok";
             return "ok";
         }
 
@@ -3187,14 +3262,14 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
             const hasShip = typeof o.shipping === "number" && o.shipping > 0;
             const lines = ["🛍️ *طلب جديد — SKIN MASH*", sep, `🔢 رقم الطلب: *${o.id}*`];
             if (when) lines.push(`📅 التاريخ: ${when}`);
-            lines.push("", "👤 *بيانات العميل*", `الاسم: ${c.name}`, `الموبايل: ${c.phone}`);
+            lines.push("", (gn() === "m" ? "👤 *بيانات العميل*" : "👤 *بيانات العميلة*"), `الاسم: ${c.name}`, `الموبايل: ${c.phone}`);
             if (c.whatsapp && c.whatsapp !== c.phone) lines.push(`واتساب: ${c.whatsapp}`);
             lines.push(`📍 العنوان: ${c.city} - ${c.address}`, sep, "🧴 *المنتجات*", items, sep,
                 `المجموع: ${Number(o.subtotal).toFixed(0)} ج.م`,
                 hasShip ? `🚚 الشحن: ${o.shipping} ج.م` : "🚚 الشحن: يُحدَّد عند التأكيد",
                 hasShip ? `💖 *الإجمالي: ${Number(o.total).toFixed(0)} ج.م*` : `💖 *الإجمالي: ${Number(o.total).toFixed(0)} ج.م* (قبل الشحن)`,
                 `💳 الدفع: ${payLine}`, sep,
-                "من فضلكم أكدوا الطلب وأبلغوني بقيمة الشحن وموعد التوصيل. شكراً 🌸");
+                "من فضلكم أكدوا الطلب وأبلغوني بقيمة الشحن وموعد التوصيل، " + (gn() === "m" ? "مستني" : "مستنية") + " ردكم. شكراً 🌸");
             return lines.join("\n");
         }
         function waOrderLink(o) { return `https://wa.me/${STORE_WHATSAPP_NUMBER}?text=${encodeURIComponent(orderText(o))}`; }
@@ -3211,8 +3286,8 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
             document.getElementById("order-no-label").textContent = t("رقم الطلب:");
             document.getElementById("generated-order-id").textContent = order.id;
             document.getElementById("order-result-text").textContent = t(ok
-                ? "وصل طلبك لفريق SKIN MASH وجهزنا لك رسالة واتساب بكل التفاصيل. اضغطي إرسال داخل واتساب وسيتواصل معك المتجر لتأكيد الطلب والشحن."
-                : "جهّزنا رسالة طلبك في واتساب برقم المتجر. اضغطي الزر أدناه وأرسليها وسيتواصل معك المتجر." + (order.saveErr ? " (تعذّر تسجيل الطلب تلقائياً: " + order.saveErr + ")" : ""));
+                ? gv("وصل طلبك لفريق SKIN MASH وجهزنا لك رسالة واتساب بكل التفاصيل. اضغطي إرسال داخل واتساب وسيتواصل معك المتجر لتأكيد الطلب والشحن.", "وصل طلبك لفريق SKIN MASH وجهزنا لك رسالة واتساب بكل التفاصيل. اضغط إرسال داخل واتساب وسيتواصل معك المتجر لتأكيد الطلب والشحن.")
+                : gv("جهّزنا رسالة طلبك في واتساب برقم المتجر. اضغطي الزر أدناه وأرسليها وسيتواصل معك المتجر.", "جهّزنا رسالة طلبك في واتساب برقم المتجر. اضغط الزر أدناه وأرسلها وسيتواصل معك المتجر.") + (order.saveErr ? " (تعذّر تسجيل الطلب تلقائياً: " + order.saveErr + ")" : ""));
             const link = document.getElementById("manual-wa-order-link");
             link.classList.remove("hidden");
             link.href = waOrderLink(order);
@@ -3253,7 +3328,7 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
             "الإكسسوارات": "accessories"
         };
         function catThumb(cat) {
-            return (window.SM_IMAGES && window.SM_IMAGES["t_" + CAT_IMG_KEY[cat]]) || "";
+            return (window.SM_IMAGES && window.SM_IMAGES["t_" + CAT_IMG_KEY[cat]]) || "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
         }
 
         /* =========================================================
@@ -4007,6 +4082,7 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
 
         function openCheckoutModal() {
             if (cart.length === 0) return;
+            if (window.__acct === "blocked") { enforceCustomer("order"); return; }
             const p = getProfile();
             setCartDrawer(false);
             // لازم حساب كامل (إيميل + بيانات) قبل أول طلب
@@ -4054,7 +4130,7 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
 
         async function confirmOrder(useNew) {
             if (checkoutBusy || cart.length === 0) return;
-            if ((await enforceCustomer()) !== "ok") return;
+            if ((await enforceCustomer("order")) !== "ok") return;
             const p = getProfile();
             if (!profileComplete(p)) { showToast(t("لإتمام طلبك، أنشئ حسابك أولاً. بياناتك تُحفظ على هذا الجهاز لتسهيل طلباتك القادمة.")); return; }
             const addrList = getAddresses(p);
@@ -4097,6 +4173,7 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
             const sentDirect = !!res.ok;
             if (res.ok && res.code) order.id = res.code;
             order.status = sentDirect ? "sent" : "pending";
+            order.fs = "new";
             order.saveErr = res.err || "";
             addOrder(order);
             if (waWin) { try { waWin.location.href = waOrderLink(order); } catch (e) {} }
@@ -4120,6 +4197,7 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
            10. 'اطلب منتجك' MODAL LOGIC
            ========================================================= */
         function openRequestModal() {
+            if (window.__acct === "blocked") { enforceCustomer("request"); return; }
             const pr = getProfile();
             if (!profileComplete(pr)) {                 // لازم يكون عامل حساب الأول
                 closeMenuPanel(); closeSearchPanel(); closeMobileSearch();
@@ -4174,6 +4252,7 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
         async function handleRequestProductSubmit(e) {
             e.preventDefault();
             if (requestBusy) return;
+            if ((await enforceCustomer("request")) === "blocked") return;
             const name = document.getElementById("req-product-name").value.trim();
             const desc = document.getElementById("req-product-desc").value.trim();
             const contact = toLatinDigits(document.getElementById("req-contact").value.trim());
@@ -4265,6 +4344,7 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
       .then(function(r){ if (!r.ok) throw 0; return r.json(); })
       .then(function(rows){
         if (!Array.isArray(rows)) return;
+        rows.forEach(function(r){ if (r.name && r.name_en) I18N[r.name] = r.name_en; if (r.description && r.description_en) I18N[r.description] = r.description_en; });
         var list = rows.map(function(r){ return { id: r.id, name: r.name, category: r.category, subCategory: r.sub_category || "", price: Number(r.price) || 0, description: r.description || "", image: r.image || "", fallback: r.fallback || r.image || "", isMen: !!r.is_men, stock: r.stock, published: r.published }; }).filter(function(p){ return p.published !== false && (p.stock == null || p.stock > 0); });
         try { localStorage.setItem("sm-products-cache", JSON.stringify(list)); } catch(e){}
         if (JSON.stringify(list) !== JSON.stringify(PRODUCTS)) apply(list);
@@ -4616,6 +4696,123 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
   document.addEventListener("DOMContentLoaded", adminApplySavedEdits);
   // also apply now if DOM already ready
   if (document.readyState !== "loading") adminApplySavedEdits();
+})();
+</script>
+<div id="acct-modal" class="fixed inset-0 z-[120] hidden items-center justify-center p-4" style="background: rgba(8,4,8,.62);" onclick="if(event.target===this)closeAcct()">
+    <div class="modal-animate w-full text-center p-6 rounded-3xl" style="max-width:380px;background-color:var(--surface-card);border:1px solid var(--border-strong);box-shadow:var(--shadow-soft);">
+        <div class="am-ico" id="am-ico"></div>
+        <h3 class="text-lg font-bold mb-2" id="am-title"></h3>
+        <p class="text-sm leading-relaxed mb-5" style="color: var(--text-secondary);" id="am-text"></p>
+        <div id="am-btns"></div>
+    </div>
+</div>
+<script>
+(function () {
+  "use strict";
+  Object.assign(I18N, {
+    "تابع طلبك": "Track your order", "تم الاستلام": "Received", "قيد التجهيز": "Preparing", "تم الشحن": "Shipped", "تم التوصيل": "Delivered", "ملغي": "Cancelled", "مرتجع": "Returned",
+    "النوع": "Gender", "أنثى": "Female", "ذكر": "Male", "اختر النوع (أنثى أو ذكر)": "Please choose your gender",
+    "حدد نوعك (لتخاطبك الرسائل بشكل مناسب)": "Select your gender (so messages address you properly)",
+    "تم إيقاف حسابك": "Your account is suspended", "تم حذف حسابك": "Your account was deleted", "إنشاء حساب جديد": "Create a new account",
+    "تواصل مع فريق SKIN MASH على واتساب": "Contact the SKIN MASH team on WhatsApp", "إغلاق": "Close", "تفعيل": "Enable",
+    "فعّل الإشعارات لنبلغك فور تغيّر حالة طلبك وأنت داخل الموقع.": "Enable notifications to be alerted when your order status changes while you're on the site.",
+    "تم إيقاف حسابك مؤقتاً ولا يمكنك الطلب حالياً. تواصل مع فريق SKIN MASH لحل المشكلة.": "Your account is temporarily suspended and you can't order right now. Please contact the SKIN MASH team to resolve this.",
+    "تم إيقاف حسابك مؤقتاً ولا يمكنك الطلب حالياً. تواصلي مع فريق SKIN MASH لحل المشكلة.": "Your account is temporarily suspended and you can't order right now. Please contact the SKIN MASH team to resolve this.",
+    "تم حذف حسابك من الموقع. لمتابعة الطلب أنشئ حساباً جديداً ببياناتك.": "Your account was deleted. Create a new account with your details to continue ordering.",
+    "تم حذف حسابك من الموقع. لمتابعة الطلب أنشئي حساباً جديداً ببياناتك.": "Your account was deleted. Create a new account with your details to continue ordering.",
+    "وصل طلبك لفريق SKIN MASH وجهزنا لك رسالة واتساب بكل التفاصيل. اضغط إرسال داخل واتساب وسيتواصل معك المتجر لتأكيد الطلب والشحن.": "Your order reached the SKIN MASH team and we prepared a WhatsApp message with all the details. Press send in WhatsApp and the store will contact you to confirm the order and shipping.",
+    "جهّزنا رسالة طلبك في واتساب برقم المتجر. اضغط الزر أدناه وأرسلها وسيتواصل معك المتجر.": "We prepared your order message on WhatsApp to the store number. Tap the button below and send it, and the store will contact you."
+  });
+  var FLOW = ["new", "processing", "shipped", "completed"];
+  var LBL = { new: "تم الاستلام", processing: "قيد التجهيز", shipped: "تم الشحن", completed: "تم التوصيل", cancelled: "ملغي", returned: "مرتجع" };
+  var ICN = { new: "i-receipt", processing: "i-bag", shipped: "i-pin", completed: "i-check" };
+  window.trackHTML = function (fs) {
+    fs = fs || "new";
+    if (fs === "cancelled" || fs === "returned") return '<div class="mt-2"><span class="chip" style="background:rgba(229,86,109,.15);color:#E5566D">' + t(LBL[fs]) + '</span></div>';
+    var cur = FLOW.indexOf(fs);
+    return '<div class="trk">' + FLOW.map(function (k, i) {
+      return '<span class="ts s-' + k + (i <= cur ? " on" : "") + (i === cur ? " cur" : "") + '"><i><svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><use href="#' + ICN[k] + '"/></svg></i><em>' + t(LBL[k]) + '</em></span>';
+    }).join("") + '</div>';
+  };
+  window.updateDot = function () {
+    var u = false; try { u = !!localStorage.getItem("sm-unread"); } catch (e) {}
+    document.querySelectorAll(".dock-avatar").forEach(function (b) { b.classList.toggle("has-dot", u); });
+  };
+  function notify(o, st) {
+    var id = o.id, en = isEN();
+    var M = en ? { processing: "Your order " + id + " is now being prepared 📦", shipped: "Your order " + id + " has been shipped 🚚", completed: "Your order " + id + " was delivered — enjoy! 🌸", cancelled: "Your order " + id + " was cancelled", returned: "A return was recorded for order " + id }
+               : { processing: "طلبك رقم " + id + " قيد التجهيز دلوقتي 📦", shipped: "طلبك رقم " + id + " اتشحن 🚚", completed: "طلبك رقم " + id + " وصل — بالهنا والشفا 🌸", cancelled: "تم إلغاء طلبك رقم " + id, returned: "تم تسجيل مرتجع لطلبك رقم " + id };
+    var msg = M[st]; if (!msg) return;
+    try { localStorage.setItem("sm-unread", "1"); } catch (e) {}
+    updateDot(); showToast(msg);
+    try { if ("Notification" in window && Notification.permission === "granted") new Notification("SKIN MASH", { body: msg }); } catch (e) {}
+  }
+  function syncOrders() {
+    var p = getProfile();
+    if (!p || !p.phone) return Promise.resolve(false);
+    var open = getOrders().filter(function (o) { return o.status === "sent" && ["completed", "cancelled", "returned"].indexOf(o.fs || "new") === -1; });
+    if (!open.length) return Promise.resolve(false);
+    return smRpc("track_orders", { p_phone: p.phone, p_codes: open.map(function (o) { return o.id; }) })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (rows) {
+        if (!Array.isArray(rows)) return false;
+        var all = getOrders(), changed = false;
+        rows.forEach(function (x) {
+          var o = all.find(function (z) { return z.id === x.code; });
+          if (!o || !x.status) return;
+          if (o.fs === undefined) { o.fs = x.status; changed = true; return; }
+          if (o.fs !== x.status) { o.fs = x.status; changed = true; notify(o, x.status); }
+        });
+        if (changed) store.set("sm-orders", all);
+        return changed;
+      }).catch(function () { return false; });
+  }
+  function ui(ch) { if (ch && typeof sheetKind !== "undefined" && (sheetKind === "orders" || (sheetKind === "profile" && !profileEdit))) { try { renderSheet(); } catch (e) {} } }
+  window.smAskNotif = function () { try { Notification.requestPermission().then(function () { renderSheet(); }); } catch (e) {} };
+  var _os = window.openSheet;
+  window.openSheet = function (k) {
+    var r = _os.apply(this, arguments);
+    if (k === "orders" || k === "profile") { if (k === "orders") { try { localStorage.removeItem("sm-unread"); } catch (e) {} updateDot(); } syncOrders().then(ui); }
+    return r;
+  };
+  function tick() { if (document.hidden) return; syncOrders().then(ui); }
+  setInterval(tick, 30000);
+  document.addEventListener("visibilitychange", function () { if (!document.hidden) { tick(); try { enforceCustomer(); } catch (e) {} } });
+  window.addEventListener("load", function () { updateDot(); tick(); });
+
+  /* أقسام جديدة من لوحة الأدمن (site_categories) تظهر في الموقع */
+  var BASE = ["العناية بالجسم", "العناية بالشعر", "العناية بالبشرة", "العطور", "الإكسسوارات"];
+  function mergeCats(rows) {
+    var ch = false;
+    rows.forEach(function (x) { if (x.kind === "main" && x.name) { if (!CATEGORY_STRUCTURE[x.name]) { CATEGORY_STRUCTURE[x.name] = []; ch = true; } if (!CAT_ICON[x.name]) CAT_ICON[x.name] = "i-gem"; } });
+    rows.forEach(function (x) { if (x.kind === "sub" && x.name && CATEGORY_STRUCTURE[x.parent] && CATEGORY_STRUCTURE[x.parent].indexOf(x.name) === -1) { CATEGORY_STRUCTURE[x.parent].push(x.name); ch = true; } });
+    return ch;
+  }
+  function homeTiles() {
+    var grid = document.querySelector("#categories .grid"); if (!grid) return;
+    Object.keys(CATEGORY_STRUCTURE).forEach(function (c) {
+      if (BASE.indexOf(c) !== -1) return;
+      var ex = false; grid.querySelectorAll("[data-cat-extra]").forEach(function (e) { if (e.getAttribute("data-cat-extra") === c) ex = true; });
+      if (ex) return;
+      var b = document.createElement("button"); b.type = "button"; b.className = "home-cat group focus:outline-none no-img"; b.setAttribute("data-cat-extra", c);
+      b.onclick = function () { openCategoryPage(c); };
+      b.innerHTML = '<span class="hc-panel"><span class="hc-ico"><svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><use href="#' + (CAT_ICON[c] || "i-gem") + '"/></svg></span><span class="hc-txt"><span class="hc-name"></span><span class="hc-count"></span></span></span>';
+      b.querySelector(".hc-name").textContent = t(c);
+      b.querySelector(".hc-count").setAttribute("data-count", c);
+      grid.appendChild(b);
+    });
+    try { updateHomeCounts(); } catch (e) {}
+  }
+  function refreshCats() { homeTiles(); try { if (typeof currentView !== "undefined" && currentView !== "home") renderCategoryNavigation(); } catch (e) {} }
+  try { var c0 = JSON.parse(localStorage.getItem("sm-cats-cache") || "[]"); if (Array.isArray(c0)) mergeCats(c0); } catch (e) {}
+  function initCats() {
+    homeTiles();
+    fetch(SM_SB + "/rest/v1/site_categories?select=*", { headers: { apikey: SM_KEY, Authorization: "Bearer " + SM_KEY } })
+      .then(function (r) { return r.ok ? r.json() : []; })
+      .then(function (rows) { if (!Array.isArray(rows)) return; try { localStorage.setItem("sm-cats-cache", JSON.stringify(rows)); } catch (e) {} if (mergeCats(rows)) refreshCats(); })
+      .catch(function () {});
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", initCats); else initCats();
 })();
 </script>
 </body>
