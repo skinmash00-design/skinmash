@@ -1756,8 +1756,8 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
                 <!-- عنوان جديد: يُحفظ تلقائياً في الحساب -->
                 <div id="new-addr-box" class="hidden space-y-3.5">
                     <div>
-                        <label class="fld-label">المدينة *</label>
-                        <input type="text" id="field-city" minlength="2" autocomplete="address-level2" placeholder="مثال: القاهرة، الجيزة، الإسكندرية..." class="fld">
+                        <label class="fld-label">المحافظة *</label>
+                        <input type="text" id="field-city" list="gov-list" minlength="2" autocomplete="off" placeholder="اختر المحافظة أو اكتبها" onfocus="fillGov()" class="fld">
                     </div>
                     <div>
                         <label class="fld-label">العنوان بالتفصيل *</label>
@@ -2700,6 +2700,11 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
         "العنوان الجديد سيُحفظ تلقائياً في حسابك ويصبح عنوان التوصيل الافتراضي.": "The new address is saved to your account automatically and becomes your default delivery address.",
         "جارٍ تسجيل الطلب...": "Placing your order...",
         "اكتب اسم المدينة": "Enter the city name",
+        "اكتب اسم المحافظة": "Enter the governorate",
+        "المحافظة": "Governorate",
+        "المحافظة *": "Governorate *",
+        "اختر المحافظة أو اكتبها": "Pick or type your governorate",
+        "تم استرجاع حسابك ببياناته ✓": "Your account has been restored ✓",
         "البريد الإلكتروني": "Email",
         "اكتب بريداً إلكترونياً صحيحاً": "Enter a valid email address",
         "لإتمام طلبك، أنشئ حسابك أولاً. بياناتك تُحفظ على هذا الجهاز لتسهيل طلباتك القادمة.": "To place your order, create your account first. Your details are saved on this device to make future orders easier.",
@@ -2822,8 +2827,28 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
         function pushGender(phone, g) { if (phone && (g === "f" || g === "m")) { try { smRpc("set_customer_gender", { p_phone: phone, p_gender: g }); } catch (e) {} } }
         function setGender(g) { const p = getProfile(); if (!p) return; p.gender = g; store.set("sm-profile", p); pushGender(p.phone, g); renderSheet(); showToast(t("تم حفظ بياناتك")); }
         async function acctStatus(phone) {
+            /* customer_check (من skinmash-v4.sql) بيعتبر العميل محذوف حتى لو علامة الحذف اتمسحت؛ لو مش موجودة نرجع للدالة القديمة */
+            try { const r = await smRpc("customer_check", { p_phone: phone }); if (r.ok) { const j = await r.json(); if (typeof j === "string" && j) return (j === "none") ? "ok" : j; } } catch (e) {}
             try { const r = await smRpc("customer_status", { p_phone: phone }); if (r.ok) { const j = await r.json(); if (typeof j === "string") return j; } } catch (e) {}
             return null;
+        }
+        /* لما الأدمن يرجّع عميل محذوف: بياناته اللي حفظناها عند الحذف ترجع له تلقائياً */
+        async function tryRestoreAccount() {
+            if (getProfile()) return false;
+            let b = null; try { b = JSON.parse(localStorage.getItem("sm-deleted-backup") || "null"); } catch (e) {}
+            if (!b || !b.phone || !b.profile) return false;
+            try { const r = await smRpc("customer_restored", { p_phone: b.phone }); if (!r.ok) return false; if ((await r.json()) !== true) return false; } catch (e) { return false; }
+            store.set("sm-profile", b.profile);
+            if (b.orders) store.set("sm-orders", b.orders);
+            if (b.favs) store.set("sm-favs", b.favs);
+            try { localStorage.removeItem("sm-deleted-backup"); } catch (e) {}
+            window.__acct = "ok";
+            try { closeAcct(); } catch (e) {}
+            try { updateAvatar(); } catch (e) {}
+            try { updateCartUI(false); } catch (e) {}
+            try { if (window.updateDot) updateDot(); } catch (e) {}
+            showToast(t("تم استرجاع حسابك ببياناته ✓"));
+            return true;
         }
         function logAttempt(phone, name, action) { try { smRpc("log_blocked_attempt", { p_phone: phone, p_name: name || "", p_action: action }); } catch (e) {} }
         function closeAcct() { const m = document.getElementById("acct-modal"); if (m) { m.classList.add("hidden"); m.classList.remove("flex"); } }
@@ -2928,6 +2953,7 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
         function openSheet(kind) {
             closeMenuPanel(); closeSearchPanel();
             sheetKind = kind; profileEdit = false; pendingPhoto = null;
+            if (kind === "profile" || kind === "orders") { try { enforceCustomer(); } catch (e) {} }
             const m = document.getElementById("sheet-modal");
             m.classList.remove("hidden"); m.classList.add("flex");
             renderSheet();
@@ -2986,7 +3012,7 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
                     ${gRow}
                     ${profileRow("i-phone", t("رقم الهاتف"), p.phone || "—")}
                     ${profileRow("i-wa", t("رقم واتساب"), p.whatsapp || "—")}
-                    ${profileRow("i-pin", t("المدينة"), p.city || "—")}
+                    ${profileRow("i-pin", t("المحافظة"), p.city || "—")}
                     ${profileRow("i-home", t("العنوان بالتفصيل"), p.address || "—")}
                     ${getAddresses(p).slice(1).map((a, i) => profileRow("i-pin", `${t("عنوان إضافي")} ${i + 2}`, `${a.city} — ${a.address}`)).join("")}
                 </div>
@@ -3009,7 +3035,7 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
                     <div><label class="fld-label">${t("رقم واتساب")} *</label>
                         <input class="fld" id="pf-whatsapp" required inputmode="tel" maxlength="11" pattern="01[0-25][0-9]{8}" title="${phoneTitle}" placeholder="01xxxxxxxxx" oninput="this.value=toLatinDigits(this.value)" value="${v("whatsapp")}"></div>
                 </div>
-                <div><label class="fld-label">${t("المدينة")} *</label><input class="fld" id="pf-city" required minlength="2" value="${v("city")}"></div>
+                <div><label class="fld-label">${t("المحافظة")} *</label><input class="fld" id="pf-city" list="gov-list" autocomplete="off" required minlength="2" placeholder="${t("اختر المحافظة أو اكتبها")}" onfocus="fillGov()" value="${v("city")}"></div>
                 <div><label class="fld-label">${t("العنوان بالتفصيل")} *</label><textarea class="fld" id="pf-address" rows="2" required minlength="8">${v("address")}</textarea></div>
                 <div><label class="fld-label">${t("النوع")} *</label>${genderPicker((p && p.gender) || "", false)}</div>
                 <button type="submit" class="btn-acc"><svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>${t("تأكيد")}</span></button>
@@ -3051,7 +3077,7 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
             if (name.length < 3) return bad("pf-name", "اكتب اسمك (3 أحرف على الأقل)");
             if (!PHONE_RE.test(phone)) return bad("pf-phone", "اكتب رقم موبايل مصري صحيح مثل 01xxxxxxxxx");
             if (!PHONE_RE.test(wa)) return bad("pf-whatsapp", "اكتب رقم واتساب مصري صحيح مثل 01xxxxxxxxx");
-            if (city.length < 2) return bad("pf-city", "اكتب اسم المدينة");
+            if (city.length < 2) return bad("pf-city", "اكتب اسم المحافظة");
             if (address.length < 8) return bad("pf-address", "اكتب عنواناً مفصلاً (8 أحرف على الأقل)");
             if (!gender) return bad("pf-gender-box", "اختر النوع (أنثى أو ذكر)");
             const reg = await registerCustomer({ name: name, phone: phone, whatsapp: wa, city: city, address: address, gender: gender });
@@ -3188,7 +3214,7 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
             try {
                 const r = await fetch(U + "/rest/v1/rpc/register_customer", { method: "POST", headers: { apikey: K, Authorization: "Bearer " + K, "Content-Type": "application/json" },
                     body: JSON.stringify({ p: { phone: p.phone, name: p.name, whatsapp: p.whatsapp, city: p.city, address: p.address, device: deviceId() } }) });
-                if (r.ok) { try { pushGender(p.phone, p.gender); } catch (e) {} try { fetch(U + "/rest/v1/rpc/clear_deleted_flag", { method: "POST", headers: { apikey: K, Authorization: "Bearer " + K, "Content-Type": "application/json" }, body: JSON.stringify({ p_phone: p.phone }) }); } catch (e) {} return { ok: true }; }
+                if (r.ok) { try { localStorage.removeItem("sm-deleted-backup"); } catch (e) {} try { pushGender(p.phone, p.gender); } catch (e) {} try { fetch(U + "/rest/v1/rpc/clear_deleted_flag", { method: "POST", headers: { apikey: K, Authorization: "Bearer " + K, "Content-Type": "application/json" }, body: JSON.stringify({ p_phone: p.phone }) }); } catch (e) {} return { ok: true }; }
                 let j = {}; try { j = await r.json(); } catch (e) {}
                 if (r.status === 404 || j.code === "PGRST202") return { ok: true };   /* ملف skinmash-setup.sql لم يُشغَّل بعد */
                 const m = j.message || "";
@@ -3199,11 +3225,16 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
         /* ---------- حالة العميل من الإدارة: محذوف يبدأ من جديد / محظور لا يطلب ---------- */
         async function enforceCustomer(action) {
             const p = getProfile();
-            if (!p || !p.phone) return "ok";
+            if (!p || !p.phone) { await tryRestoreAccount(); return "ok"; }
             const st = await acctStatus(p.phone);
             if (st === "deleted") {
                 const snap = { name: p.name, phone: p.phone, gender: p.gender };
+                /* نحتفظ بنسخة من بياناته على جهازه عشان لو الأدمن رجّعه ترجع له */
+                const bk = { phone: p.phone, ts: Date.now(), profile: p, orders: getOrders(), favs: getFavs() };
+                try { localStorage.setItem("sm-deleted-backup", JSON.stringify(bk)); }
+                catch (e) { try { const c = Object.assign({}, p); delete c.photo; bk.profile = c; localStorage.setItem("sm-deleted-backup", JSON.stringify(bk)); } catch (e2) {} }
                 ["sm-profile", "sm-orders", "sm-favs", "sm-notifs", "sm-unread"].forEach(k => { try { localStorage.removeItem(k); } catch (e) {} });
+                try { delete memStore["sm-profile"]; delete memStore["sm-orders"]; delete memStore["sm-favs"]; } catch (e) {}
                 window.__acct = "deleted"; updateAvatar();
                 try { if (window.updateDot) updateDot(); } catch (e) {}
                 showAcct("deleted", snap);
@@ -4140,7 +4171,7 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
             if (useNew) {
                 const city = document.getElementById("field-city").value.trim();
                 const address = document.getElementById("field-address").value.trim();
-                if (city.length < 2) { showToast(t("اكتب اسم المدينة")); document.getElementById("field-city").focus(); return; }
+                if (city.length < 2) { showToast(t("اكتب اسم المحافظة")); document.getElementById("field-city").focus(); return; }
                 if (address.length < 8) { showToast(t("اكتب عنواناً مفصلاً (8 أحرف على الأقل)")); document.getElementById("field-address").focus(); return; }
                 customer.city = city; customer.address = address;
                 // العنوان الجديد يُضاف تلقائياً في الحساب كعنوان إضافي (ويظهر في اختيارات الطلب القادم)
@@ -4778,6 +4809,7 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
   function tick() { if (document.hidden) return; syncOrders().then(ui); }
   setInterval(tick, 30000);
   document.addEventListener("visibilitychange", function () { if (!document.hidden) { tick(); try { enforceCustomer(); } catch (e) {} } });
+  setInterval(function () { if (!document.hidden) { try { enforceCustomer(); } catch (e) {} } }, 60000);
   window.addEventListener("load", function () { updateDot(); tick(); });
 
   /* أقسام جديدة من لوحة الأدمن (site_categories) تظهر في الموقع */
@@ -4814,6 +4846,18 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", initCats); else initCats();
 })();
+</script>
+<datalist id="gov-list"></datalist>
+<script>
+/* محافظات مصر: اختيارات تظهر للعميل ويقدر يكتب أي اسم تاني (مدينة/مركز) براحته */
+const GOVS = [["القاهرة","Cairo"],["الجيزة","Giza"],["الإسكندرية","Alexandria"],["القليوبية","Qalyubia"],["الشرقية","Sharqia"],["الدقهلية","Dakahlia"],["الغربية","Gharbia"],["المنوفية","Monufia"],["البحيرة","Beheira"],["كفر الشيخ","Kafr El Sheikh"],["دمياط","Damietta"],["بورسعيد","Port Said"],["الإسماعيلية","Ismailia"],["السويس","Suez"],["الفيوم","Fayoum"],["بني سويف","Beni Suef"],["المنيا","Minya"],["أسيوط","Asyut"],["سوهاج","Sohag"],["قنا","Qena"],["الأقصر","Luxor"],["أسوان","Aswan"],["البحر الأحمر","Red Sea"],["الوادي الجديد","New Valley"],["مطروح","Matrouh"],["شمال سيناء","North Sinai"],["جنوب سيناء","South Sinai"]];
+function fillGov() {
+    const dl = document.getElementById("gov-list"); if (!dl) return;
+    const en = (typeof isEN === "function") && isEN();
+    const key = en ? "en" : "ar"; if (dl.dataset.k === key) return; dl.dataset.k = key;
+    dl.innerHTML = GOVS.map(g => `<option value="${g[0]}"${en ? ` label="${g[1]}"` : ""}></option>`).join("");
+}
+fillGov();
 </script>
 </body>
 </html>
