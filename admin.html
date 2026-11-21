@@ -644,7 +644,7 @@ try{if(!demo){try{await rs("deleted_customers?on_conflict=phone",{method:"POST",
 S.d=S.d.filter(x=>x.phone!==ph);S.d.push(arch);S.c=S.c.filter(x=>x.phone!==ph);if(!was){S.f=S.f.filter(x=>x.phone!==ph);S.f.push({phone:ph,status:"deleted",name:c.name,updated_at:now})}render();
 if(!demo){const r=await rs(`customers?phone=eq.${encodeURIComponent(ph)}`,{method:"DELETE",headers:{Prefer:"return=representation"}});if(!r||!r.length)throw new Error("لم يُحذف — العميل غير موجود في الجدول أو الصلاحيات ناقصة (شغّل ملف SQL)")}
 if(!was)await setFlag(ph,"deleted",c.name);toast("تم حذف الحساب — بياناته محفوظة ✓");
-logA("حذف عميل",(c.name?c.name+" ":"")+ph,c.raw?{k:"multi",ops:[{k:"ins",t:"customers",rows:[c.raw],flag:ph},{k:"delq",t:"deleted_customers",col:"phone",val:ph}]}:null);if(!demo)load(true)}catch(e){S.c=pc;S.f=pf;S.d=pd;render();toast("فشل: "+e.message,1)}}
+logA("حذف عميل",(c.name?c.name+" ":"")+ph,c.raw?{k:"multi",ops:[{k:"ins",t:"customers",rows:[c.raw],flag:ph},{k:"delq",t:"deleted_customers",col:"phone",val:ph}]}:null);if(!demo)load(true)}catch(e){S.c=pc;S.f=pf;S.d=pd;render();if(!demo&&!pd.some(x=>x.phone===ph))rs(`deleted_customers?phone=eq.${encodeURIComponent(ph)}`,{method:"DELETE"}).catch(()=>{});toast("فشل: "+e.message,1)}}
 /* استرجاع عميل محذوف ببياناته القديمة */
 async function rcus(ph){const cu=cus().find(x=>x.phone===ph),d=S.d.find(x=>x.phone===ph);if(!cu)return;if(S.c.some(x=>x.phone===ph))return toast("العميل عمل حساب جديد بنفس الرقم، مفيش داعي للاسترجاع",1);
 if(!await askc(`استرجاع حساب ${cu.name||ph}؟\nهيرجع حسابه ببياناته القديمة${cu.n?` وطلباته (${cu.n})`:""}، وهيقدر يطلب تاني عادي.`))return;
