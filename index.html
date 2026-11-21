@@ -3111,12 +3111,32 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
             try {
                 const r = await fetch(U + "/rest/v1/rpc/register_customer", { method: "POST", headers: { apikey: K, Authorization: "Bearer " + K, "Content-Type": "application/json" },
                     body: JSON.stringify({ p: { phone: p.phone, name: p.name, whatsapp: p.whatsapp, city: p.city, address: p.address, device: deviceId() } }) });
-                if (r.ok) return { ok: true };
+                if (r.ok) { try { fetch(U + "/rest/v1/rpc/clear_deleted_flag", { method: "POST", headers: { apikey: K, Authorization: "Bearer " + K, "Content-Type": "application/json" }, body: JSON.stringify({ p_phone: p.phone }) }); } catch (e) {} return { ok: true }; }
                 let j = {}; try { j = await r.json(); } catch (e) {}
                 if (r.status === 404 || j.code === "PGRST202") return { ok: true };   /* ملف skinmash-setup.sql لم يُشغَّل بعد */
                 const m = j.message || "";
                 return { ok: false, msg: /[\u0600-\u06FF]/.test(m) ? m : "تعذّر تسجيل الحساب الآن، حاول مرة أخرى" };
             } catch (e) { return { ok: false, msg: "تأكد من اتصال الإنترنت ثم حاول مرة أخرى" }; }
+        }
+
+        /* ---------- حالة العميل من الإدارة: محذوف يبدأ من جديد / محظور لا يطلب ---------- */
+        async function enforceCustomer() {
+            const p = getProfile();
+            if (!p || !p.phone) return "ok";
+            const U = "https://unnexzitkirtqvhmynwh.supabase.co", K = "sb_publishable_ESabG0uyEwunnj3YGYN_og_aghmi7YU";
+            let st = null;
+            try {
+                const r = await fetch(U + "/rest/v1/rpc/customer_status", { method: "POST", headers: { apikey: K, Authorization: "Bearer " + K, "Content-Type": "application/json" }, body: JSON.stringify({ p_phone: p.phone }) });
+                if (r.ok) { const j = await r.json(); if (typeof j === "string") st = j; }
+            } catch (e) {}
+            if (st === "deleted") {
+                ["sm-profile", "sm-orders", "sm-favs"].forEach(k => { try { localStorage.removeItem(k); } catch (e) {} });
+                showToast(t("تم حذف حسابك. من فضلك أنشئي حساباً جديداً لمتابعة الطلب."));
+                setTimeout(() => location.reload(), 1500);
+                return "deleted";
+            }
+            if (st === "blocked") { showToast(t("عذراً، تم حظر حسابك ولا يمكنك إتمام الطلبات. للاستفسار تواصلي مع المتجر.")); return "blocked"; }
+            return "ok";
         }
 
         /* ---------- الإرسال من الموقع نفسه (بدون تحويل لواتساب) ---------- */
@@ -3162,24 +3182,19 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
             try { when = new Date(o.ts).toLocaleDateString("ar-EG", { day: "numeric", month: "long", year: "numeric" }); } catch (e) {}
             const items = o.items.map((i, k) => {
                 const p = PRODUCTS.find(x => x.id === i.id) || {};
-                return `${k + 1}. ${i.name} ${ITEM_EMOJI[p.subCategory] || "✨"}\nالكمية: ${i.qty} × ${i.price} ج.م = ${i.qty * i.price} ج.م`;
+                return `${k + 1}. ${i.name} ${ITEM_EMOJI[p.subCategory] || "✨"}\nالكمية: ${i.qty} × ${i.price} = ${i.qty * i.price} ج.م`;
             }).join("\n");
             const hasShip = typeof o.shipping === "number" && o.shipping > 0;
-            const lines = [
-                "🛍️ طلب جديد من متجر SKIN MASH 💕", sep,
-                "عميلتنا العزيزة 🌸", "يسعدنا تواصلك معنا، وإليكِ تفاصيل طلبكِ:", "",
-                `🔢 رقم الطلب: ${o.id}`
-            ];
+            const lines = ["🛍️ *طلب جديد — SKIN MASH*", sep, `🔢 رقم الطلب: *${o.id}*`];
             if (when) lines.push(`📅 التاريخ: ${when}`);
-            lines.push("", "🌸 بيانات العميلة", `• الاسم: ${c.name}`, `• رقم التواصل: ${c.phone}`);
-            if (c.whatsapp && c.whatsapp !== c.phone) lines.push(`• واتساب: ${c.whatsapp}`);
-            lines.push(`• العنوان: ${c.city} - ${c.address}`, sep, "✨ المنتجات المطلوبة", "", items, sep,
-                `🌷 المجموع الفرعي: ${Number(o.subtotal).toFixed(2)} ج.م`,
-                hasShip ? `🚚 مصاريف الشحن: ${o.shipping} ج.م` : "🚚 مصاريف الشحن: تُدفع مقدماً (تُحدَّد عند التأكيد)",
-                hasShip ? `💖 الإجمالي: ${Number(o.total).toFixed(2)} ج.م` : `💖 الإجمالي المبدئي: ${Number(o.total).toFixed(2)} ج.م (قبل الشحن)`,
-                `💳 طريقة الدفع: ${payLine}`, sep,
-                "برجاء تأكيد الطلب، وموافاتي بقيمة الشحن وبيانات التحويل لدفع الشحن مقدماً، وتوضيح موعد التوصيل المتوقع.",
-                "شكراً لثقتكم بنا ✨🌸");
+            lines.push("", "👤 *بيانات العميل*", `الاسم: ${c.name}`, `الموبايل: ${c.phone}`);
+            if (c.whatsapp && c.whatsapp !== c.phone) lines.push(`واتساب: ${c.whatsapp}`);
+            lines.push(`📍 العنوان: ${c.city} - ${c.address}`, sep, "🧴 *المنتجات*", items, sep,
+                `المجموع: ${Number(o.subtotal).toFixed(0)} ج.م`,
+                hasShip ? `🚚 الشحن: ${o.shipping} ج.م` : "🚚 الشحن: يُحدَّد عند التأكيد",
+                hasShip ? `💖 *الإجمالي: ${Number(o.total).toFixed(0)} ج.م*` : `💖 *الإجمالي: ${Number(o.total).toFixed(0)} ج.م* (قبل الشحن)`,
+                `💳 الدفع: ${payLine}`, sep,
+                "من فضلكم أكدوا الطلب وأبلغوني بقيمة الشحن وموعد التوصيل. شكراً 🌸");
             return lines.join("\n");
         }
         function waOrderLink(o) { return `https://wa.me/${STORE_WHATSAPP_NUMBER}?text=${encodeURIComponent(orderText(o))}`; }
@@ -4039,6 +4054,7 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
 
         async function confirmOrder(useNew) {
             if (checkoutBusy || cart.length === 0) return;
+            if ((await enforceCustomer()) !== "ok") return;
             const p = getProfile();
             if (!profileComplete(p)) { showToast(t("لإتمام طلبك، أنشئ حسابك أولاً. بياناتك تُحفظ على هذا الجهاز لتسهيل طلباتك القادمة.")); return; }
             const addrList = getAddresses(p);
@@ -4212,6 +4228,7 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
         }
 
         window.addEventListener("DOMContentLoaded", () => {
+            enforceCustomer();
             initTheme();
             updateCartUI(false);
             initLanguage();
