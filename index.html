@@ -1940,7 +1940,7 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
            ORDER_ENDPOINT : رابط خدمة الإرسال (Worker) اللي بتبعت الطلب لرقمك. اتركه فارغاً = الطلب يتحفظ ويظهر زر إرسال يدوي.
            SHIPPING_FEE   : سعر الشحن كرقم (مثلاً 50) لما يتحدد. null = "يتم تأكيده مع العميل".
            PAYMENT_CONFIG : فعّل enabled:true لما تجهز الدفع الإلكتروني وحط بيانات إنستا باي / المحفظة. */
-        const ORDER_ENDPOINT = "";
+        const ORDER_ENDPOINT = "supabase"; /* الطلبات تُحفظ في Supabase */
         const SHIPPING_FEE = null;
         const PAYMENT_CONFIG = { enabled: false, depositPercent: 50, instapay: "", wallet: "" };
         
@@ -3083,20 +3083,35 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
 
         /* ---------- الإرسال من الموقع نفسه (بدون تحويل لواتساب) ---------- */
         async function sendToStore(payload) {
-            if (!ORDER_ENDPOINT) return { ok: false, reason: "no-endpoint" };
-            const ctrl = new AbortController();
-            const to = setTimeout(() => ctrl.abort(), 15000);
+            const U = "https://unnexzitkirtqvhmynwh.supabase.co", K = "sb_publishable_ESabG0uyEwunnj3YGYN_og_aghmi7YU";
+            const H = { apikey: K, Authorization: "Bearer " + K, "Content-Type": "application/json" };
+            const ctrl = new AbortController(), to = setTimeout(() => ctrl.abort(), 25000);
             try {
-                const r = await fetch(ORDER_ENDPOINT, {
-                    method: "POST",
-                    headers: { "Content-Type": "text/plain;charset=utf-8" },
-                    body: JSON.stringify(payload),
-                    signal: ctrl.signal
-                });
+                let r;
+                if (payload.type === "order") {
+                    r = await fetch(U + "/rest/v1/rpc/create_order", { method: "POST", headers: H, signal: ctrl.signal,
+                        body: JSON.stringify({ p: { code: payload.id, customer: payload.customer, items: payload.items.map(i => ({ id: i.id, qty: i.qty })), shipping: payload.shipping, pay_method: payload.pay.method } }) });
+                } else {
+                    let image = "";
+                    const f = document.getElementById("req-product-image").files[0];
+                    if (f) {
+                        try {
+                            const bm = await createImageBitmap(f), k = Math.min(1, 800 / Math.max(bm.width, bm.height)), c = document.createElement("canvas");
+                            c.width = Math.round(bm.width * k); c.height = Math.round(bm.height * k);
+                            const x = c.getContext("2d"); x.fillStyle = "#fff"; x.fillRect(0, 0, c.width, c.height); x.drawImage(bm, 0, 0, c.width, c.height);
+                            const blob = await new Promise(res => c.toBlob(res, "image/jpeg", 0.8));
+                            const nm = Date.now() + "-" + Math.random().toString(36).slice(2, 8) + ".jpg";
+                            const up = await fetch(U + "/storage/v1/object/request-images/" + nm, { method: "POST", headers: { apikey: K, Authorization: "Bearer " + K, "Content-Type": "image/jpeg" }, body: blob, signal: ctrl.signal });
+                            if (up.ok) image = U + "/storage/v1/object/public/request-images/" + nm;
+                        } catch (e) {}
+                    }
+                    r = await fetch(U + "/rest/v1/product_requests", { method: "POST", headers: H, signal: ctrl.signal,
+                        body: JSON.stringify({ name: payload.name, description: payload.description, phone: payload.contact, image_url: image }) });
+                }
                 clearTimeout(to);
-                let j = null; try { j = await r.json(); } catch (e) {}
-                return { ok: r.ok && !(j && j.ok === false) };
-            } catch (e) { clearTimeout(to); return { ok: false, reason: "network" }; }
+                if (!r.ok) { let m = ""; try { m = (await r.json()).message || ""; } catch (e) {} if (/[\u0600-\u06FF]/.test(m)) showToast(m); return { ok: false }; }
+                return { ok: true };
+            } catch (e) { clearTimeout(to); return { ok: false }; }
         }
         function orderText(o) {
             const c = o.customer || {};
@@ -4013,7 +4028,7 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
             const method = PAYMENT_CONFIG.enabled ? payMethod : "cod";
             const payNow = method === "full" ? tot.total : method === "deposit" ? Math.ceil(tot.total * pct / 100) : 0;
             const order = {
-                id: `SM-${Math.floor(1000 + Math.random() * 9000)}`,
+                id: "SM-" + Array.from(crypto.getRandomValues(new Uint8Array(6))).map(b => "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"[b % 32]).join(""),
                 ts: Date.now(),
                 customer,
                 items: cart.map(i => ({ id: i.id, name: i.name, qty: i.qty, price: i.price })),
@@ -4199,7 +4214,7 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
       .then(function(r){ if (!r.ok) throw 0; return r.json(); })
       .then(function(rows){
         if (!Array.isArray(rows)) return;
-        var list = rows.map(function(r){ return { id: r.id, name: r.name, category: r.category, subCategory: r.sub_category || "", price: Number(r.price) || 0, description: r.description || "", image: r.image || "", fallback: r.fallback || r.image || "", isMen: !!r.is_men }; });
+        var list = rows.map(function(r){ return { id: r.id, name: r.name, category: r.category, subCategory: r.sub_category || "", price: Number(r.price) || 0, description: r.description || "", image: r.image || "", fallback: r.fallback || r.image || "", isMen: !!r.is_men, stock: r.stock, published: r.published }; }).filter(function(p){ return p.published !== false && (p.stock == null || p.stock > 0); });
         try { localStorage.setItem("sm-products-cache", JSON.stringify(list)); } catch(e){}
         if (JSON.stringify(list) !== JSON.stringify(PRODUCTS)) apply(list);
       })
