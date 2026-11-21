@@ -2972,7 +2972,7 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
             };
             img.src = url;
         }
-        function saveProfile(e) {
+        async function saveProfile(e) {
             e.preventDefault();
             const old = getProfile() || {};
             const val = id => { const el = document.getElementById(id); return el ? el.value.trim() : ""; };
@@ -2984,6 +2984,8 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
             if (!PHONE_RE.test(wa)) return bad("pf-whatsapp", "اكتب رقم واتساب مصري صحيح مثل 01xxxxxxxxx");
             if (city.length < 2) return bad("pf-city", "اكتب اسم المدينة");
             if (address.length < 8) return bad("pf-address", "اكتب عنواناً مفصلاً (8 أحرف على الأقل)");
+            const reg = await registerCustomer({ name: name, phone: phone, whatsapp: wa, city: city, address: address });
+            if (!reg.ok) return bad("pf-phone", reg.msg);
             const p = Object.assign({}, old, { name: name, phone: phone, whatsapp: wa, city: city, address: address });
             delete p.email;
             const al = getAddresses(old); al[0] = { city: city, address: address }; p.addresses = al;
@@ -3095,6 +3097,28 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
         }
         function setPayMethod(m) { payMethod = m; renderPaymentOptions(); }
 
+        /* ---------- حساب العميل: رقم الموبايل لحساب واحد فقط ---------- */
+        function deviceId() {
+            let d = "";
+            try {
+                d = localStorage.getItem("sm-device") || "";
+                if (!d) { d = (crypto.randomUUID ? crypto.randomUUID() : Date.now() + "-" + Math.random().toString(36).slice(2)); localStorage.setItem("sm-device", d); }
+            } catch (e) {}
+            return d;
+        }
+        async function registerCustomer(p) {
+            const U = "https://unnexzitkirtqvhmynwh.supabase.co", K = "sb_publishable_ESabG0uyEwunnj3YGYN_og_aghmi7YU";
+            try {
+                const r = await fetch(U + "/rest/v1/rpc/register_customer", { method: "POST", headers: { apikey: K, Authorization: "Bearer " + K, "Content-Type": "application/json" },
+                    body: JSON.stringify({ p: { phone: p.phone, name: p.name, whatsapp: p.whatsapp, city: p.city, address: p.address, device: deviceId() } }) });
+                if (r.ok) return { ok: true };
+                let j = {}; try { j = await r.json(); } catch (e) {}
+                if (r.status === 404 || j.code === "PGRST202") return { ok: true };   /* ملف skinmash-setup.sql لم يُشغَّل بعد */
+                const m = j.message || "";
+                return { ok: false, msg: /[\u0600-\u06FF]/.test(m) ? m : "تعذّر تسجيل الحساب الآن، حاول مرة أخرى" };
+            } catch (e) { return { ok: false, msg: "تأكد من اتصال الإنترنت ثم حاول مرة أخرى" }; }
+        }
+
         /* ---------- الإرسال من الموقع نفسه (بدون تحويل لواتساب) ---------- */
         async function sendToStore(payload) {
             const U = "https://unnexzitkirtqvhmynwh.supabase.co", K = "sb_publishable_ESabG0uyEwunnj3YGYN_og_aghmi7YU";
@@ -3104,7 +3128,7 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
                 let r;
                 if (payload.type === "order") {
                     r = await fetch(U + "/rest/v1/rpc/create_order", { method: "POST", headers: H, signal: ctrl.signal,
-                        body: JSON.stringify({ p: { code: payload.id, customer: payload.customer, items: payload.items.map(i => ({ id: i.id, qty: i.qty })), shipping: payload.shipping, pay_method: payload.pay.method } }) });
+                        body: JSON.stringify({ p: { code: payload.id, customer: payload.customer, items: payload.items.map(i => ({ id: i.id, name: i.name, qty: i.qty, price: i.price })), shipping: payload.shipping, pay_method: payload.pay.method, device: deviceId() } }) });
                 } else {
                     let image = "";
                     const f = document.getElementById("req-product-image").files[0];
@@ -3123,35 +3147,39 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
                         body: JSON.stringify({ name: payload.name, description: payload.description, phone: payload.contact, image_url: image }) });
                 }
                 clearTimeout(to);
-                if (!r.ok) { let m = ""; try { m = (await r.json()).message || ""; } catch (e) {} if (/[\u0600-\u06FF]/.test(m)) showToast(m); return { ok: false }; }
-                return { ok: true };
-            } catch (e) { clearTimeout(to); return { ok: false }; }
+                if (!r.ok) { let m = ""; try { m = (await r.json()).message || ""; } catch (e) {} if (/[\u0600-\u06FF]/.test(m)) showToast(m); return { ok: false, err: m }; }
+                let j = null; try { j = await r.json(); } catch (e) {}
+                return { ok: true, code: j && (j.code || j.order_code) };
+            } catch (e) { clearTimeout(to); return { ok: false, err: "تعذّر الاتصال بالخادم" }; }
         }
+        const ITEM_EMOJI = { "لوشن الجسم": "🧴", "سكراب ومقشر": "☕", "زبدة الجسم": "🧈", "شاور جل": "💜", "حمام كريم": "💆", "زيوت الشعر": "💧", "شامبو وبلسم": "🧴", "سيروم الشعر": "✨", "ماسكات الشعر": "💗", "غسول الوجه": "🫧", "سيروم البشرة": "🍊", "كريمات ترطيب": "💦", "ماسكات البشرة": "🌸", "رجالي": "🖤", "عطور حريمي": "🌹", "بادي سبلاش": "🌺", "مزيل عرق حريمي": "🌿", "إكسسوارات شعر": "🎀", "أطقم وعقود": "📿", "أساور وخواتم": "💍", "حلقان": "💎" };
         function orderText(o) {
             const c = o.customer || {};
             const pct = (PAYMENT_CONFIG && PAYMENT_CONFIG.depositPercent) || 50;
+            const sep = "━━━━━━━━━━━━━━━━";
             const payLine = o.pay.method === "deposit" ? `عربون ${pct}% عبر إنستا باي أو محفظة إلكترونية والباقي عند الاستلام` : "إنستا باي أو محفظة إلكترونية";
             let when = "";
             try { when = new Date(o.ts).toLocaleDateString("ar-EG", { day: "numeric", month: "long", year: "numeric" }); } catch (e) {}
-            const phoneLine = (c.whatsapp && c.whatsapp !== c.phone) ? `📞 الهاتف: ${c.phone}\n💬 واتساب: ${c.whatsapp}` : `📞 رقم التواصل: ${c.phone}`;
-            const items = o.items.map((i, k) => `${k + 1}) ${i.name}\n     الكمية: ${i.qty}  ×  ${i.price} ج.م  =  ${i.qty * i.price} ج.م`).join("\n");
-            const sep = "━━━━━━━━━━━━━━━━";
+            const items = o.items.map((i, k) => {
+                const p = PRODUCTS.find(x => x.id === i.id) || {};
+                return `${k + 1}. ${i.name} ${ITEM_EMOJI[p.subCategory] || "✨"}\nالكمية: ${i.qty} × ${i.price} ج.م = ${i.qty * i.price} ج.م`;
+            }).join("\n");
+            const hasShip = typeof o.shipping === "number" && o.shipping > 0;
             const lines = [
-                "🌸 *طلب جديد من متجر SKIN MASH* 🌸",
-                sep,
-                `🧾 *رقم الطلب:* ${o.id}`
+                "🛍️ طلب جديد من متجر SKIN MASH 💕", sep,
+                "عميلتنا العزيزة 🌸", "يسعدنا تواصلك معنا، وإليكِ تفاصيل طلبكِ:", "",
+                `🔢 رقم الطلب: ${o.id}`
             ];
-            if (when) lines.push(`📅 *التاريخ:* ${when}`);
-            lines.push("", "👤 *بيانات العميل*", `الاسم: ${c.name}`, phoneLine, `📍 العنوان: ${c.city} - ${c.address}`, "", sep, "🛍️ *المنتجات المطلوبة*", items, "", sep);
-            lines.push(`المجموع الفرعي: ${Number(o.subtotal).toFixed(2)} ج.م`);
-            lines.push(typeof o.shipping === "number" && o.shipping > 0 ? `مصاريف الشحن: ${o.shipping} ج.م` : "مصاريف الشحن: تُحدَّد عند التأكيد");
-            lines.push(
-                `💰 *الإجمالي:* ${Number(o.total).toFixed(2)} ج.م`,
-                `💳 *طريقة الدفع:* ${payLine}`,
-                sep,
-                "برجاء تأكيد الطلب وإرسال بيانات التحويل وموعد التوصيل المتوقع.",
-                "شكراً لثقتكم بنا 🌸"
-            );
+            if (when) lines.push(`📅 التاريخ: ${when}`);
+            lines.push("", "🌸 بيانات العميلة", `• الاسم: ${c.name}`, `• رقم التواصل: ${c.phone}`);
+            if (c.whatsapp && c.whatsapp !== c.phone) lines.push(`• واتساب: ${c.whatsapp}`);
+            lines.push(`• العنوان: ${c.city} - ${c.address}`, sep, "✨ المنتجات المطلوبة", "", items, sep,
+                `🌷 المجموع الفرعي: ${Number(o.subtotal).toFixed(2)} ج.م`,
+                hasShip ? `🚚 مصاريف الشحن: ${o.shipping} ج.م` : "🚚 مصاريف الشحن: تُدفع مقدماً (تُحدَّد عند التأكيد)",
+                hasShip ? `💖 الإجمالي: ${Number(o.total).toFixed(2)} ج.م` : `💖 الإجمالي المبدئي: ${Number(o.total).toFixed(2)} ج.م (قبل الشحن)`,
+                `💳 طريقة الدفع: ${payLine}`, sep,
+                "برجاء تأكيد الطلب، وموافاتي بقيمة الشحن وبيانات التحويل لدفع الشحن مقدماً، وتوضيح موعد التوصيل المتوقع.",
+                "شكراً لثقتكم بنا ✨🌸");
             return lines.join("\n");
         }
         function waOrderLink(o) { return `https://wa.me/${STORE_WHATSAPP_NUMBER}?text=${encodeURIComponent(orderText(o))}`; }
@@ -3168,15 +3196,12 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
             document.getElementById("order-no-label").textContent = t("رقم الطلب:");
             document.getElementById("generated-order-id").textContent = order.id;
             document.getElementById("order-result-text").textContent = t(ok
-                ? "سيتواصل معك فريق SKIN MASH قريباً لتأكيد الطلب والشحن."
-                : "جهّزنا رسالة طلبك في واتساب برقم المتجر. كل ما عليك الضغط على إرسال. إن لم يُفتح واتساب تلقائياً فاضغط الزر أدناه، وستجد طلبك أيضاً في «طلباتي».");
+                ? "وصل طلبك لفريق SKIN MASH وجهزنا لك رسالة واتساب بكل التفاصيل. اضغطي إرسال داخل واتساب وسيتواصل معك المتجر لتأكيد الطلب والشحن."
+                : "جهّزنا رسالة طلبك في واتساب برقم المتجر. اضغطي الزر أدناه وأرسليها وسيتواصل معك المتجر." + (order.saveErr ? " (تعذّر تسجيل الطلب تلقائياً: " + order.saveErr + ")" : ""));
             const link = document.getElementById("manual-wa-order-link");
-            if (ok) link.classList.add("hidden");
-            else {
-                link.classList.remove("hidden");
-                link.href = waOrderLink(order);
-                link.innerHTML = `<svg viewBox="0 0 24 24" class="ic ic-fill" aria-hidden="true"><use href="#i-wa"/></svg><span>${t("تأكيد الطلب عبر واتساب")}</span>`;
-            }
+            link.classList.remove("hidden");
+            link.href = waOrderLink(order);
+            link.innerHTML = `<svg viewBox="0 0 24 24" class="ic ic-fill" aria-hidden="true"><use href="#i-wa"/></svg><span>${t("فتح واتساب لإرسال الطلب")}</span>`;
             const box = document.getElementById("order-pay-box");
             if (order.pay.method !== "cod") {
                 const rows = [`<div>${t("المطلوب تحويله الآن")}: <strong style="color:var(--accent-primary)">${money(order.pay.payNow)}</strong></div>`];
@@ -3976,9 +4001,7 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
             const al = getAddresses(p);
             selectedAddr = Math.min(Math.max(0, +p.lastAddr || 0), al.length - 1);
             renderAddrBox();
-            document.getElementById("checkout-note").textContent = t(ORDER_ENDPOINT
-                ? "عند تأكيد الطلب يصل طلبك مباشرة للمتجر وسيتواصل معك فريق SKIN MASH لتأكيده."
-                : "بعد تأكيد الطلب سنحوّلك إلى واتساب برسالة جاهزة تحتوي على طلبك، وكل ما عليك الضغط على إرسال.");
+            document.getElementById("checkout-note").textContent = t("بعد تأكيد الطلب سنحوّلك إلى واتساب برسالة جاهزة تحتوي على طلبك، وكل ما عليك الضغط على إرسال.");
             document.getElementById("field-city").value = "";
             document.getElementById("field-address").value = "";
             hideNewAddress();
@@ -4042,7 +4065,7 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
             const method = PAYMENT_CONFIG.enabled ? payMethod : "cod";
             const payNow = method === "full" ? tot.total : method === "deposit" ? Math.ceil(tot.total * pct / 100) : 0;
             const order = {
-                id: "SM-" + Array.from(crypto.getRandomValues(new Uint8Array(6))).map(b => "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"[b % 32]).join(""),
+                id: "SM-" + (1000 + crypto.getRandomValues(new Uint32Array(1))[0] % 9000),
                 ts: Date.now(),
                 customer,
                 items: cart.map(i => ({ id: i.id, name: i.name, qty: i.qty, price: i.price })),
@@ -4051,19 +4074,16 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
                 lang: currentLang
             };
 
-            let sentDirect = false;
-            if (!ORDER_ENDPOINT) {
-                // التأكيد عبر واتساب: نسجل الطلب في الحساب ثم نفتح واتساب فوراً (داخل نفس الضغطة حتى لا يُحظر)
-                order.status = "pending";
-                addOrder(order);
-                const w = window.open(waOrderLink(order), "_blank");
-                if (w) { try { w.opener = null; } catch (e) {} }
-            } else {
-                const res = await sendToStore(Object.assign({ type: "order" }, order));
-                sentDirect = !!res.ok;
-                order.status = sentDirect ? "sent" : "pending";
-                addOrder(order);
-            }
+            /* نفتح نافذة واتساب في نفس الضغطة (حتى لا يحظرها المتصفح) ثم نحفظ الطلب في لوحة الإدارة */
+            let waWin = null;
+            try { waWin = window.open("", "_blank"); if (waWin) { waWin.opener = null; waWin.document.write('<meta charset="utf-8"><p style="font-family:sans-serif;text-align:center;margin-top:40vh">جارٍ تجهيز واتساب...</p>'); } } catch (e) {}
+            const res = await sendToStore(Object.assign({ type: "order" }, order));
+            const sentDirect = !!res.ok;
+            if (res.ok && res.code) order.id = res.code;
+            order.status = sentDirect ? "sent" : "pending";
+            order.saveErr = res.err || "";
+            addOrder(order);
+            if (waWin) { try { waWin.location.href = waOrderLink(order); } catch (e) {} }
 
             // الطلب اتسجل: نفضي السلة (فتختفي الأيقونة العائمة)
             cart = [];
