@@ -649,7 +649,7 @@ logA("حذف عميل",(c.name?c.name+" ":"")+ph,c.raw?{k:"multi",ops:[{k:"ins",
 async function rcus(ph){const cu=cus().find(x=>x.phone===ph),d=S.d.find(x=>x.phone===ph);if(!cu)return;if(S.c.some(x=>x.phone===ph))return toast("العميل عمل حساب جديد بنفس الرقم، مفيش داعي للاسترجاع",1);
 if(!await askc(`استرجاع حساب ${cu.name||ph}؟\nهيرجع حسابه ببياناته القديمة${cu.n?` وطلباته (${cu.n})`:""}، وهيقدر يطلب تاني عادي.`))return;
 let row=d&&d.raw?d.raw:null;if(!row){const lo=S.o.filter(o=>o.phone===ph).sort((a,b)=>b.ts-a.ts)[0],ci=(d&&d.city)||(lo&&lo.city)||"",ad=(d&&d.address)||(lo&&lo.address)||"";row={phone:ph,name:cu.name||(lo&&lo.name)||"",whatsapp:cu.wa||ph,city:ci,address:ad,source:"site"};if(d&&d.gender)row.gender=d.gender}
-const pc=S.c.slice(),pf=S.f.slice(),pd=S.d.slice(),cur=S.f.find(x=>x.phone===ph),keepBlock=cur&&cur.status==="blocked";
+row={...row};delete row.id;const pc=S.c.slice(),pf=S.f.slice(),pd=S.d.slice(),cur=S.f.find(x=>x.phone===ph),keepBlock=cur&&cur.status==="blocked";
 try{if(demo){S.c.push(mc({...row,id:Date.now(),created_at:(d&&d.joined_at)||new Date().toISOString()}))}else{await rs("customers?on_conflict=phone",{method:"POST",headers:{Prefer:"resolution=merge-duplicates,return=minimal"},body:JSON.stringify(row)});if(!keepBlock)await setFlag(ph,null);if(d)await rs(`deleted_customers?phone=eq.${encodeURIComponent(ph)}`,{method:"DELETE"})}
 S.d=S.d.filter(x=>x.phone!==ph);if(!keepBlock)S.f=S.f.filter(x=>x.phone!==ph);logA("استرجاع عميل",(cu.name?cu.name+" ":"")+ph);toast("تم استرجاع الحساب ببياناته ✓");if(demo)render();else await load()}
 catch(e){S.c=pc;S.f=pf;S.d=pd;render();toast("فشل الاسترجاع: "+e.message,1)}}
