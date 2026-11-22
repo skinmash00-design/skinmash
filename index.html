@@ -4945,6 +4945,69 @@ try { const gi = document.getElementById("global-search-input"); if (gi) gi.valu
             window.addEventListener("scroll", handleSmartScroll, { passive: true });
             window.addEventListener("resize", checkLogoCollision);
         });
+
+        /* ---------- يرجّعك لنفس المكان والكتابة بعد الريفرش (القسم / البحث / السلة / النوافذ + اللي كنت بتكتبه) ---------- */
+        (function () {
+            const KEY = "sm-ui", TTL = 6 * 36e5, SKIP = /^(pf-pw2?|lg-pw|fg-pw2?|pw-new2?|fg-code|pw-code|admin-)/;
+            let pending = true, touched = false, moved = false;
+            const rd = () => { try { return JSON.parse(sessionStorage.getItem(KEY) || "null"); } catch (e) { return null; } };
+            const wr = o => { try { sessionStorage.setItem(KEY, JSON.stringify(o)); } catch (e) {} };
+            const vis = id => { const e = document.getElementById(id); return !!e && !e.classList.contains("hidden"); };
+            function grab() {
+                const r = {};
+                document.querySelectorAll("#sheet-modal input, #sheet-modal textarea, #checkout-modal input, #checkout-modal textarea, #request-product-modal input, #request-product-modal textarea").forEach(e => {
+                    if (!e.id || SKIP.test(e.id) || /^(password|file|hidden|button|submit)$/.test(e.type) || !e.value) return;
+                    r[e.id] = e.value;
+                });
+                return r;
+            }
+            function save() {
+                if (pending) return;
+                const ov = sheetKind ? "sheet"
+                    : (vis("checkout-modal") && !vis("checkout-success-view")) ? "checkout"
+                    : (vis("request-product-modal") && !vis("request-success-view")) ? "request"
+                    : vis("cart-overlay") ? "cart" : null;
+                wr({
+                    t: Date.now(), view: currentView, cat: activeMainCategory, sub: activeSubCategory, q: searchQuery,
+                    ov: ov, sk: ov === "sheet" ? sheetKind : null, am: ov === "sheet" ? authMode : null, pe: ov === "sheet" ? !!profileEdit : false,
+                    na: ov === "checkout" && vis("new-addr-box"), y: Math.round(window.scrollY || 0), d: ov ? grab() : {}
+                });
+            }
+            function restore() {
+                const s = rd(); pending = false;
+                if (!s || Date.now() - s.t > TTL) return;
+                try {
+                    navPopping = true;
+                    if (s.view === "category" && s.cat) {
+                        openCategoryPage(s.cat); activeSubCategory = s.sub || null; renderCategoryNavigation(); renderProductsView();
+                    } else if (s.view === "search" && s.q) {
+                        searchQuery = s.q;
+                        const gi = document.getElementById("global-search-input"); if (gi) gi.value = s.q;
+                        const cb = document.getElementById("clear-search-btn"); if (cb) cb.classList.remove("hidden");
+                        showSearchResults();
+                    }
+                } catch (e) {} finally { navPopping = false; }
+                try { navSync(); } catch (e) {}
+                try {
+                    if (s.ov === "sheet" && s.sk) { openSheet(s.sk); if (s.am || s.pe) { authMode = s.am || null; profileEdit = !!s.pe; renderSheet(); } }
+                    else if (s.ov === "checkout") { openCheckoutModal(); if (s.na) showNewAddress(); }
+                    else if (s.ov === "request") openRequestModal();
+                    else if (s.ov === "cart") toggleCartDrawer(true);
+                } catch (e) {}
+                const put = () => {
+                    if (touched) return;
+                    Object.keys(s.d || {}).forEach(id => { const e = document.getElementById(id); if (e && !e.value) e.value = s.d[id]; });
+                };
+                put(); [200, 800].forEach(t => setTimeout(put, t));
+                if (s.y > 0) [80, 400, 1000].forEach(t => setTimeout(() => { if (!moved) window.scrollTo(0, s.y); }, t));
+            }
+            document.addEventListener("input", () => { touched = true; }, true);
+            ["wheel", "touchstart", "keydown"].forEach(ev => addEventListener(ev, () => { moved = true; }, { passive: true, once: true }));
+            window.addEventListener("DOMContentLoaded", restore);
+            setInterval(save, 2000);
+            window.addEventListener("pagehide", save);
+            document.addEventListener("visibilitychange", () => { if (document.hidden) save(); });
+        })();
     </script>
 <script>
 /* مزامنة المنتجات من قاعدة البيانات (Supabase) */
