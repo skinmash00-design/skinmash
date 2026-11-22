@@ -444,12 +444,39 @@ const run=async u=>{if(u.k==="ins"){await rs(u.t+"?on_conflict=id",{method:"POST
 try{await run(x.undo);try{await rs("admin_log?id=eq."+i,{method:"PATCH",body:JSON.stringify({undone:true})})}catch(e){}await pen(x,"تراجع من المالك");logA("تراجع عن",x.action+(x.detail?" — "+x.detail:""));await load();toast("تم التراجع ✓")}catch(e){toast("فشل التراجع: "+e.message,1)}}
 async function setFlag(ph,st,nm){if(demo){S.f=S.f.filter(x=>x.phone!==ph);if(st)S.f.push({phone:ph,status:st,name:nm});return}
 if(!st)await rs(`customer_flags?phone=eq.${encodeURIComponent(ph)}`,{method:"DELETE"});else await rs("customer_flags?on_conflict=phone",{method:"POST",headers:{Prefer:"resolution=merge-duplicates,return=minimal"},body:JSON.stringify({phone:ph,status:st,name:nm||"",updated_at:new Date().toISOString()})})}
+async function smCopy(t){try{await navigator.clipboard.writeText(t);return true}catch(e){try{const x=document.createElement("textarea");x.value=t;x.style.cssText="position:fixed;opacity:0";document.body.appendChild(x);x.select();const ok=document.execCommand("copy");x.remove();return ok}catch(_){return false}}}
+function rtpl(nm,g,code){const n=(nm||"").trim().split(/\s+/)[0];
+if(g==="m")return`أهلاً يا ${n||"فندم"} 👋
+معاك فريق SKIN MASH 🖤
+
+كود استرجاع كلمة السر بتاعك:
+🔐 *${code}*
+
+⏱️ الكود صالح 15 دقيقة ولمرة واحدة.
+✍️ اكتبه في خانة الكود في الموقع وبعدها اختار كلمة سر جديدة.
+🛡️ للأمان: متشاركش الكود مع أي حد.
+
+تشرفنا بيك 🤝
+SKIN MASH | Beauty & Self Care`;
+return`أهلاً ${n||"يا قمر"} 🌸
+معاكِ فريق SKIN MASH 💗
+
+كود استرجاع كلمة السر الخاص بكِ:
+🔐 *${code}*
+
+⏳ الكود صالح 15 دقيقة ولمرة واحدة.
+📝 اكتبيه في خانة الكود جوه الموقع وبعدها اختاري كلمة سر جديدة.
+🤍 لأمانك: متشاركيش الكود مع أي حد.
+
+نورتينا دايماً ✨
+SKIN MASH | Beauty & Self Care`}
 async function rcode(ph){const c=cus().find(x=>x.phone===ph),nm=c?c.name:"";if(demo){toast("مش متاح في وضع التجربة",1);return}
-if(!await dlg(`إنشاء كود استرجاع كلمة السر لـ ${nm||ph}؟\nالكود هيظهر لك مرة واحدة، وصالح 15 دقيقة، وبيلغي أي كود قديم.`,{ok:"إنشاء الكود"}))return;
 try{const code=await rs("rpc/admin_create_reset",{method:"POST",body:JSON.stringify({p_phone:ph})});
 logA("كود استرجاع كلمة سر",(nm?nm+" ":"")+ph);
-if(await dlg(`كود ${nm||ph}: ${code}\nصالح 15 دقيقة. ابعته لها على واتساب ومتقوليهوش لحد غيرها.`,{ok:"فتح واتساب"}))window.open(wl((c&&c.wa)||ph,`كود استرجاع كلمة السر في SKIN MASH: ${code}\nصالح 15 دقيقة، ومتقوليهوش لأي حد 🌸`),"_blank")}
-catch(e){toast("فشل: "+(/admin_create_reset|404|function/i.test(e.message)?"شغّل ملف password_reset.sql في Supabase":e.message),1)}}
+const msg=rtpl(nm,c&&c.gd,code),ok=await smCopy(msg);
+toast(ok?"تم نسخ الكود والرسالة ✓":"الكود: "+code,!ok);
+if(await dlg(`${nm||ph}\n🔐 الكود: ${code}\n${ok?"✓ تم نسخ الكود مع رسالة جاهزة":"انسخ الكود يدوياً"}\nصالح 15 دقيقة.`,{ok:"فتح واتساب"}))window.open(wl((c&&c.wa)||ph,msg),"_blank")}
+catch(e){toast("فشل: "+(/not allowed/i.test(e.message)?"مفيش صلاحية":/no customer/i.test(e.message)?"العميل ده مش مسجل":/admin_create_reset|404|function/i.test(e.message)?"شغّل ملف password_reset.sql في Supabase":e.message),1)}}
 async function bk(ph){const on=(S.f.find(x=>x.phone===ph)||{}).status==="blocked",c=cus().find(x=>x.phone===ph),nm=c?c.name:"";if(!await askc(on?`إلغاء إيقاف حساب ${nm||ph}؟`:`إيقاف حساب ${nm||ph}؟\nلن يستطيع الطلب، وهتظهر له رسالة إن حسابه موقوف وزر للتواصل معاكم على واتساب. وأي محاولة منه هتظهر عندك في العملاء.`))return;
 const prev=S.f.slice();S.f=S.f.filter(x=>x.phone!==ph);if(!on)S.f.push({phone:ph,status:"blocked",name:nm});render();toast(on?"تم إلغاء الإيقاف ✓":"تم إيقاف الحساب ✓");
 try{await setFlag(ph,on?null:"blocked",nm);logA(on?"إلغاء حظر عميل":"حظر عميل",(nm?nm+" ":"")+ph,{k:"flag",phone:ph,status:on?"blocked":null,name:nm});if(!demo)load(true)}catch(e){S.f=prev;render();toast("فشل: "+(noF?"جدول customer_flags غير موجود — شغّل ملف skinmash-v2.sql":e.message),1)}}

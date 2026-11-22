@@ -3139,11 +3139,13 @@ img,video,canvas{max-width:100%}
                 <div><label class="fld-label">${t("الاسم")} *</label>
                     <input class="fld" id="pf-name" required minlength="3" autocomplete="name" value="${v("name")}"></div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                    <div><label class="fld-label">${t("رقم الهاتف")} *</label>
-                        <input class="fld" id="pf-phone" required inputmode="tel" maxlength="11" pattern="01[0-25][0-9]{8}" title="${phoneTitle}" placeholder="01xxxxxxxxx" oninput="this.value=toLatinDigits(this.value)" value="${v("phone")}"></div>
-                    <div><label class="fld-label">${t("رقم واتساب")} *</label>
+                    <div><label class="fld-label">${_l("رقم الواتساب", "WhatsApp number")} *</label>
                         <input class="fld" id="pf-whatsapp" required inputmode="tel" maxlength="11" pattern="01[0-25][0-9]{8}" title="${phoneTitle}" placeholder="01xxxxxxxxx" oninput="this.value=toLatinDigits(this.value)" value="${v("whatsapp")}"></div>
+                    <div><label class="fld-label">${_l("رقم الهاتف", "Phone number")} *</label>
+                        <input class="fld" id="pf-phone" required inputmode="tel" maxlength="11" pattern="01[0-25][0-9]{8}" title="${phoneTitle}" placeholder="01xxxxxxxxx" oninput="this.value=toLatinDigits(this.value)" value="${v("phone")}"></div>
                 </div>
+                <div class="flex items-center justify-between gap-2" style="margin-top:-6px"><p class="text-xs leading-relaxed" style="color: var(--text-muted);">${_l("رقم الهاتف هو رقم دخولك للحساب. ممكن يكون نفس رقم الواتساب، أو رقم تاني نوصلك عليه لو مفيش نت.", "Your phone number is your login. It can be the same as your WhatsApp number, or another number we can reach you on if there is no internet.")}</p>
+                    <button type="button" class="btn-ghost" style="width:auto;white-space:nowrap;padding:0 12px;min-height:34px;font-size:12px" onclick="var w=document.getElementById('pf-whatsapp'),p=document.getElementById('pf-phone');if(w&&p)p.value=w.value">${_l("نفس رقم الواتساب", "Same as WhatsApp")}</button></div>
                 <div><label class="fld-label">${t("المحافظة")} *</label><input class="fld" id="pf-city" list="gov-list" autocomplete="off" required minlength="2" placeholder="${t("اختر المحافظة أو اكتبها")}" onfocus="fillGov()" value="${v("city")}"></div>
                 <div><label class="fld-label">${t("العنوان بالتفصيل")} *</label><textarea class="fld" id="pf-address" rows="2" required minlength="8">${v("address")}</textarea></div>
                 <div><label class="fld-label">${t("النوع")} *</label>${genderPicker((p && p.gender) || "", false)}</div>
@@ -3228,7 +3230,14 @@ img,video,canvas{max-width:100%}
                 <button type="button" class="btn-ghost" onclick="authMode=null;otpReset();renderSheet()">${_l("رجوع", "Back")}</button>
             </form>`;
         }
-        const waResetLink = (ph, nm) => `https://wa.me/${STORE_WHATSAPP_NUMBER}?text=${encodeURIComponent((nm ? "أنا " + nm + "\n" : "") + "نسيت كلمة السر لحسابي في SKIN MASH ومحتاجة كود استرجاع.\nرقم موبايلي: " + ph)}`;
+const waResetLink = (ph, nm, g) => {
+            const n = (nm || "").trim().split(/\s+/)[0];
+            let m;
+            if (g === "f") m = "أهلاً SKIN MASH 🌸\n" + (n ? "أنا " + n + "\n" : "") + "نسيت كلمة السر بتاعتي وعايزة أسترجع حسابي 🙏\n📱 رقم الهاتف: " + ph + "\nشكراً ليكم 💗";
+            else if (g === "m") m = "أهلاً SKIN MASH 👋\n" + (n ? "أنا " + n + "\n" : "") + "نسيت كلمة السر بتاعتي وعايز أسترجع حسابي.\n📱 رقم الهاتف: " + ph + "\nشكراً ليكم 🤝";
+            else m = "أهلاً SKIN MASH 🌸\nأرجو مساعدتي في استرجاع كلمة السر لحسابي.\n📱 رقم الهاتف: " + ph + "\nشكراً ليكم";
+            return `https://wa.me/${STORE_WHATSAPP_NUMBER}?text=${encodeURIComponent(m)}`;
+        };
         function forgotHTML() {
             const step2 = otpSent;
             return `<form onsubmit="${step2 ? "doForgotReset(event)" : "doForgotSend(event)"}" novalidate class="space-y-3.5" data-i18n-skip>
@@ -3275,7 +3284,7 @@ img,video,canvas{max-width:100%}
             try {
                 const r = await smRpc("customer_reset_password", { p_phone: phone, p_code: code, p_new: pw });
                 let j = null; try { j = await r.json(); } catch (x) {}
-                return { ok: r.ok, j: j, unavail: r.status === 404 };
+                return { ok: r.ok, j: j, unavail: r.status === 404, status: r.status };
             } catch (x) { return { net: true }; }
         }
         function resetMsg(r) {
@@ -3286,7 +3295,8 @@ img,video,canvas{max-width:100%}
             if (why === "locked") return _l("محاولات كتير غلط. اطلبي كود جديد من المتجر.", "Too many wrong attempts. Ask the store for a new code.");
             if (why === "bad_code") return _l("الكود غلط، راجعيه.", "Wrong code, please check it.");
             if (why === "weak") return _l("كلمة السر 6 أحرف على الأقل", "Password must be at least 6 characters");
-            return _l("مقدرناش نغيّر كلمة السر، حاول تاني.", "Couldn't change the password, please try again.");
+            if (why === "no_user") return _l("مش لاقيين حساب بالرقم ده. كلّم المتجر على واتساب.", "No account found for this number. Please contact the store on WhatsApp.");
+            return _l("مقدرناش نغيّر كلمة السر، حاول تاني.", "Couldn't change the password, please try again.") + " (" + (why || (r.j && (r.j.code || r.j.message)) || r.status || "?") + ")";
         }
         async function doForgotReset(e) {
             e.preventDefault(); if (authBusy) return;
@@ -3346,7 +3356,7 @@ img,video,canvas{max-width:100%}
             if (!pwSent) return `<div class="space-y-3.5" data-i18n-skip>
                 <p class="text-sm font-bold text-center">${_l("تغيير كلمة السر", "Change password")}</p>
                 <p class="text-xs leading-relaxed text-center" style="color: var(--text-muted);">${_l("اطلبي كود من المتجر على واتساب، وهيبعتهولك تكتبه هنا وتختاري كلمة سر جديدة.", "Request a code from the store on WhatsApp; they will send it so you can enter it here and choose a new password.")}</p>
-                <a class="btn-acc" target="_blank" rel="noopener noreferrer" href="${waResetLink(p.phone || "", p.name || "")}" onclick="pwSent=true;setTimeout(renderSheet,300)"><svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>${_l("اطلب الكود على واتساب", "Request code on WhatsApp")}</span></a>
+                <a class="btn-acc" target="_blank" rel="noopener noreferrer" href="${waResetLink(p.phone || "", p.name || "", p.gender || "")}" onclick="pwSent=true;setTimeout(renderSheet,300)"><svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>${_l("اطلب الكود على واتساب", "Request code on WhatsApp")}</span></a>
                 <button type="button" class="btn-ghost" onclick="pwSent=true;renderSheet()">${_l("معايا كود بالفعل", "I already have a code")}</button>
                 <button type="button" class="btn-ghost" onclick="pwMode=null;pwSent=false;renderSheet()">${t("إلغاء")}</button>
             </div>`;
