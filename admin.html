@@ -545,7 +545,23 @@ ${prog(o,1)}${o.payNow?`<div class="pf">${ic("wallet")}<div class="f1"><div clas
 <div class="pf">${ic("pin")}<div class="f1 nm" style="font-weight:600">${esc(o.city)} — ${esc(o.address)}</div></div>
 ${o.items.map(i=>`<div class="rw" style="padding:6px 0">${th(ip(i.id),"sm")}<div class="f1"><div class="nm">${esc(i.name)}</div><div class="mt">${i.qty} × ${n0(i.price)} ج</div></div><b>${n0(i.qty*i.price)} ج</b></div>`).join("")}
 ${+(o.raw&&o.raw.discount)>0?`<div class="rw sb nm" style="margin-top:10px;color:var(--accent-primary)"><span>خصم ${n0(o.raw.discount_pct)}%${o.raw.discount_title?" — "+esc(o.raw.discount_title):""}</span><span>−${n0(o.raw.discount)} ج</span></div>`:""}<div class="rw sb nm" style="margin:10px 0;padding-top:10px;border-top:1px solid var(--border-subtle)"><span>الإجمالي${o.shipping?` (شامل شحن ${n0(o.shipping)})`:" (قبل الشحن)"}</span><span style="color:var(--accent-primary);font-size:17px">${n0(o.total)} ج</span></div>
+<button class="btn g b" style="margin-bottom:10px" onclick="cpo(${o.id})">${ic("receipt")}نسخ رسالة الطلب</button>
 ${fin?`<div class="nt in">${ic("info")}الكمية رجعت للمخزون ولا يمكن تغيير الحالة بعد ذلك.</div>${can("orders_delete")?`<button class="btn r b" onclick="dor(${o.id})">${ic("trash")}حذف الطلب نهائياً</button>`:""}`:!can("orders")?"":`<div class="rw" style="margin-top:14px"><button class="btn r f1" onclick="rsw('cancelled')">${ic("x")}إلغاء الطلب</button><button class="btn g f1" onclick="rsw('returned')">${ic("undo")}مرتجع</button></div><div id="orr" class="hidden" style="margin-top:10px"><label class="l" id="orrt">سبب الإلغاء *</label><select id="orsn" class="fld">${RS.map(r=>`<option>${r}</option>`).join("")}</select><button class="btn p b" style="margin-top:10px" onclick="so(${o.id})">${ic("check")}تأكيد</button></div>`}`;$("md").classList.remove("hidden")}
+
+/* نسخ رسالة الطلب (لو العميل ملحقش يبعتها على واتساب) */
+function orderMsg(o){const cu=cOf(o.phone),wa=(cu&&cu.wa)||o.phone,sep="━━━━━━━━━━━━━━━━",r=o.raw||{},male=G(o.phone,0,1),
+sub=o.items.reduce((t,i)=>t+i.qty*i.price,0),dis=+r.discount||0,sh=+o.shipping||0,
+it=o.items.map((i,k)=>`${k+1}. ${i.name}\nالكمية: ${i.qty} × ${n0(i.price)} = ${n0(i.qty*i.price)} ج.م`).join("\n");
+const L=["🛍️ *طلب جديد — SKIN MASH*",sep,`🔢 رقم الطلب: *${o.code}*`,`📅 التاريخ: ${new Date(o.ts).toLocaleDateString("ar-EG",{day:"numeric",month:"long",year:"numeric"})}`,"",male?"👤 *بيانات العميل*":"👤 *بيانات العميلة*",`الاسم: ${o.name}`,`الموبايل: ${o.phone}`];
+if(wa&&wa!==o.phone)L.push(`واتساب: ${wa}`);
+L.push(`📍 العنوان: ${o.city} - ${o.address}`,sep,"🧴 *المنتجات*",it,sep,`المجموع: ${n0(sub)} ج.م`);
+if(dis>0)L.push(`🎁 خصم ${n0(r.discount_pct)}%: -${n0(dis)} ج.م`);
+L.push(sh?`🚚 الشحن: ${n0(sh)} ج.م`:"🚚 الشحن: يُحدَّد عند التأكيد",sh?`💖 *الإجمالي: ${n0(o.total)} ج.م*`:`💖 *الإجمالي: ${n0(o.total)} ج.م* (قبل الشحن)`);
+if(o.payNow)L.push(`💰 المطلوب دفعه أولاً: ${n0(o.payNow)} ج.م`,`📌 المتبقي عند الاستلام: ${n0(o.rest)} ج.م`);
+L.push(sep,"من فضلكم أكدوا الطلب وأبلغوني بقيمة الشحن وموعد التوصيل، "+(male?"مستني":"مستنية")+" ردكم. شكراً 🌸");
+return L.join("\n")}
+async function copyTxt(t,ok){try{await navigator.clipboard.writeText(t)}catch(e){const a=document.createElement("textarea");a.value=t;a.style.cssText="position:fixed;opacity:0";document.body.appendChild(a);a.select();let d=false;try{d=document.execCommand("copy")}catch(x){}a.remove();if(!d){toast("تعذّر النسخ",1);return}}toast(ok||"تم النسخ ✓")}
+function cpo(id){const o=S.o.find(x=>x.id===id);if(o)copyTxt(orderMsg(o),"تم نسخ رسالة الطلب ✓")}
 function rsw(st){const b=$("orr");b.dataset.st=st;b.classList.remove("hidden");$("orrt").textContent=st==="cancelled"?"سبب الإلغاء *":"سبب الإرجاع *"}
 function ordUI(id){render();if(OOID===id&&!$("md").classList.contains("hidden"))oo(id)}
 /* تغيير الحالة بضغطة واحدة على المرحلة — بيتحدّث على الشاشة فوراً وبعدها يتبعت للسيرفر */

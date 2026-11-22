@@ -1093,6 +1093,15 @@
         .btn-cancel:hover { background: rgba(229,86,109,.18); }
         .btn-cancel:disabled { opacity: .55; cursor: wait; }
         .btn-cancel .ic { width: 16px; height: 16px; }
+        .pol { border: 1px solid var(--border-subtle); border-radius: 16px; background: var(--surface-elevated); overflow: hidden; }
+        .pol summary { list-style: none; cursor: pointer; display: flex; align-items: center; gap: 10px; padding: 13px 14px; font-weight: 700; font-size: 13.5px; }
+        .pol summary::-webkit-details-marker { display: none; }
+        .pol summary .ic { width: 18px; height: 18px; color: var(--accent-primary); flex-shrink: 0; }
+        .pol summary::after { content: "+"; margin-inline-start: auto; font-size: 18px; color: var(--text-muted); }
+        .pol[open] summary::after { content: "−"; }
+        .pol .pol-b { padding: 0 14px 14px; font-size: 12.5px; line-height: 1.95; color: var(--text-secondary); }
+        .pol .pol-b p + p { margin-top: 6px; }
+        .pol .pol-b b { color: var(--text-primary); }
         .cx-note { margin-top: 8px; font-size: 11px; line-height: 1.8; text-align: center; color: var(--text-muted); }
         .chip { font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 999px; white-space: nowrap; }
         .chip-ok { background: rgba(46, 160, 110, 0.16); color: #2EA06E; }
@@ -1605,7 +1614,12 @@ img,video,canvas{max-width:100%}
                 <span>الرئيسية / رجوع</span>
             </button>
 
-            <span id="category-results-meta" data-i18n-skip class="text-xs sm:text-sm font-semibold" style="color: var(--text-muted);"></span>
+            <div class="flex items-center gap-3" data-i18n-skip>
+                <span id="category-results-meta" class="text-xs sm:text-sm font-semibold" style="color: var(--text-muted);"></span>
+                <select id="sort-select" onchange="setSort(this.value)" aria-label="ترتيب المنتجات"
+                        class="px-3 py-2 rounded-xl text-xs sm:text-sm font-bold cursor-pointer"
+                        style="background-color: var(--surface-card); color: var(--text-primary); border: 1px solid var(--border-subtle);"></select>
+            </div>
         </div>
 
         <!-- قائمة الأقسام: رئيسي (بصور الموديل) + فرعي (تبويبات) - بدون "الكل" -->
@@ -2883,8 +2897,17 @@ img,video,canvas{max-width:100%}
         /* ---------- الحساب (محفوظ على جهاز العميل) ---------- */
         let sheetKind = null, profileEdit = false, pendingPhoto = null;
         function getProfile() { return store.get("sm-profile", null); }
-        function getOrders() { return store.get("sm-orders", []); }
-        function addOrder(o) { const l = getOrders(); l.unshift(o); store.set("sm-orders", l.slice(0, 30)); }
+        /* قوائم صغيرة جداً (طلبات اتشالت + إشعارات اتبعتت) عشان ماترجعش وماتتكررش حتى لو تخزين المتصفح ممتلئ */
+        function smLoadList(k) { try { return JSON.parse(localStorage.getItem(k) || sessionStorage.getItem(k) || "[]"); } catch (e) { return []; } }
+        function smSaveList(k, a) { const v = JSON.stringify(a); try { localStorage.setItem(k, v); } catch (e) { try { sessionStorage.setItem(k, v); } catch (e2) {} } }
+        const __gone = smLoadList("sm-gone"), __once = smLoadList("sm-once");
+        function smMarkGone(id) { if (__gone.indexOf(id) !== -1) return false; __gone.push(id); smSaveList("sm-gone", __gone.slice(-100)); return true; }
+        function smOnce(k) { if (__once.indexOf(k) !== -1) return false; __once.push(k); smSaveList("sm-once", __once.slice(-150)); return true; }
+        function getOrders() { return store.get("sm-orders", []).filter(o => __gone.indexOf(o.id) === -1); }
+        function addOrder(o) {
+            const gi = __gone.indexOf(o.id); if (gi !== -1) { __gone.splice(gi, 1); smSaveList("sm-gone", __gone); }
+            const l = getOrders(); l.unshift(o); store.set("sm-orders", l.slice(0, 30));
+        }
         function getFavs() { return store.get("sm-favs", []); }
         const SM_SB = "https://unnexzitkirtqvhmynwh.supabase.co", SM_KEY = "sb_publishable_ESabG0uyEwunnj3YGYN_og_aghmi7YU";
         function smRpc(fn, body) { return fetch(SM_SB + "/rest/v1/rpc/" + fn, { method: "POST", headers: { apikey: SM_KEY, Authorization: "Bearer " + SM_KEY, "Content-Type": "application/json" }, body: JSON.stringify(body), keepalive: true }); }
@@ -3004,6 +3027,7 @@ img,video,canvas{max-width:100%}
                 menuRow("i-receipt", t("تابع طلبك"), on ? `${on} ${t("طلب")}` : t("تابع طلباتك السابقة"), "closeMenuPanel();openSheet('orders')") +
                 menuRow("i-heart", t("المفضلة"), fn ? `${fn} ${t("منتج")}` : t("منتجاتك المحفوظة"), "closeMenuPanel();openSheet('favs')") +
                 menuRow("i-phone", t("تواصل معنا"), t("نرد عليك على واتساب"), "closeMenuPanel();openSheet('contact')") +
+                menuRow("i-info", isEN() ? "Store policies" : "سياسات المتجر", isEN() ? "Payment, cancellation, shipping & returns" : "الدفع والإلغاء والشحن والاسترجاع", "closeMenuPanel();openSheet('policies')") +
                 menuRow("i-wand", t("اطلب منتجك"), t("منتج غير موجود؟ اطلبه"), "closeMenuPanel();openRequestModal()");
         }
         function toggleMenuPanel(e) {
@@ -3037,7 +3061,7 @@ img,video,canvas{max-width:100%}
             if (!noNav && navClose("sheet")) return;
             const m = document.getElementById("sheet-modal");
             m.classList.add("hidden"); m.classList.remove("flex");
-            sheetKind = null; pendingPhoto = null; gateCheckout = false; gateRequest = false;
+            sheetKind = null; pendingPhoto = null; gateCheckout = false; gateRequest = false; authMode = null; pwMode = null; forcePw = ""; otpReset(); otpReset();
         }
         function emptyHTML(ico, title, sub) {
             return `<div class="sheet-empty"><div class="sp-ico"><svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><use href="#${ico}"/></svg></div>
@@ -3048,10 +3072,10 @@ img,video,canvas{max-width:100%}
             const body = document.getElementById("sheet-body");
             const title = document.getElementById("sheet-title");
             const ico = document.getElementById("sheet-ico");
-            const map = { profile: ["i-user", "حسابي"], orders: ["i-receipt", "تابع طلبك"], favs: ["i-heart", "المفضلة"], messages: ["i-mail", "رسائلي"], contact: ["i-phone", "تواصل معنا"] };
+            const map = { profile: ["i-user", "حسابي"], orders: ["i-receipt", "تابع طلبك"], favs: ["i-heart", "المفضلة"], messages: ["i-mail", "رسائلي"], contact: ["i-phone", "تواصل معنا"], policies: ["i-info", isEN() ? "Store policies" : "سياسات المتجر"] };
             ico.innerHTML = `<use href="#${map[sheetKind][0]}"/>`;
             title.textContent = t(map[sheetKind][1]);
-            body.innerHTML = sheetKind === "profile" ? profileHTML() : sheetKind === "orders" ? ordersHTML() : sheetKind === "favs" ? favsHTML() : sheetKind === "messages" ? messagesHTML() : contactHTML();
+            body.innerHTML = sheetKind === "profile" ? profileHTML() : sheetKind === "orders" ? ordersHTML() : sheetKind === "favs" ? favsHTML() : sheetKind === "messages" ? messagesHTML() : sheetKind === "policies" ? policiesHTML() : contactHTML();
         }
 
         function avatarInner(photo) {
@@ -3064,6 +3088,7 @@ img,video,canvas{max-width:100%}
         function profileHTML() {
             const p = getProfile();
             const complete = profileComplete(p);
+            if (!p) { if (authMode === "login") return loginHTML(); if (authMode === "forgot") return forgotHTML(); if (authMode !== "new") return authChooserHTML(); }
             const editing = profileEdit || !complete;
             const photo = pendingPhoto || (p && p.photo) || "";
             const gateMsg = gateRequest ? "لطلب منتج غير موجود، أنشئ حسابك أولاً ثم اكتب اسم المنتج وارفع صورته." : "لإتمام طلبك، أنشئ حسابك أولاً. بياناتك تُحفظ على هذا الجهاز لتسهيل طلباتك القادمة.";
@@ -3077,6 +3102,7 @@ img,video,canvas{max-width:100%}
                     ? `<h4 class="text-lg font-bold mt-3">${escHtml(p.name)}</h4>`
                     : `<p class="text-xs mt-3" style="color: var(--text-muted);">${t(p ? "عدّل بياناتك ثم احفظها" : "أنشئ ملفك الشخصي")}</p>`}
             </div>`;
+            if (!editing && pwMode) return head + pwFormHTML();
             if (!editing) {
                 const on = getOrders().length;
                 const last = getOrders().find(o => o.status === "sent");
@@ -3084,6 +3110,7 @@ img,video,canvas{max-width:100%}
                 const gRow = p.gender ? profileRow("i-user", t("النوع"), genderLabel(p.gender)) : `<div class="pf-row" style="display:block"><div class="pf-k" style="margin-bottom:8px">${t("حدد نوعك (لتخاطبك الرسائل بشكل مناسب)")}</div>${genderPicker("", true)}</div>`;
                 return head + trk + `<div class="space-y-2.5">
                     ${gRow}
+                    ${p.email ? profileRow("i-user", _l("الجيميل", "Email"), p.email) : ""}
                     ${profileRow("i-phone", t("رقم الهاتف"), p.phone || "—")}
                     ${profileRow("i-wa", t("رقم واتساب"), p.whatsapp || "—")}
                     ${profileRow("i-pin", t("المحافظة"), p.city || "—")}
@@ -3096,6 +3123,8 @@ img,video,canvas{max-width:100%}
                         <svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><use href="#i-pencil"/></svg><span>${t("تعديل بياناتي")}</span></button>
                     <button type="button" class="btn-ghost" onclick="openSheet('orders')">
                         <svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><use href="#i-receipt"/></svg><span>${t("تابع طلبك")}${on ? ` (${on})` : ""}</span></button>
+                    ${p.email ? `<button type="button" class="btn-ghost" onclick="pwMode='change';renderSheet()"><svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><use href="#i-info"/></svg><span>${_l("تغيير كلمة السر", "Change password")}</span></button>` : ""}
+                    <button type="button" class="btn-ghost" onclick="logoutAccount()"><svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><use href="#i-x"/></svg><span>${_l("تسجيل خروج", "Log out")}</span></button>
                     <button type="button" class="btn-ghost del-acct" onclick="deleteMyAccount()">
                         <svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><use href="#i-trash"/></svg><span>${isEN() ? "Delete my account" : "حذف حسابي"}</span></button>
                 </div>`;
@@ -3114,10 +3143,219 @@ img,video,canvas{max-width:100%}
                 <div><label class="fld-label">${t("المحافظة")} *</label><input class="fld" id="pf-city" list="gov-list" autocomplete="off" required minlength="2" placeholder="${t("اختر المحافظة أو اكتبها")}" onfocus="fillGov()" value="${v("city")}"></div>
                 <div><label class="fld-label">${t("العنوان بالتفصيل")} *</label><textarea class="fld" id="pf-address" rows="2" required minlength="8">${v("address")}</textarea></div>
                 <div><label class="fld-label">${t("النوع")} *</label>${genderPicker((p && p.gender) || "", false)}</div>
+                ${!p ? `<div><label class="fld-label">${_l("الجيميل", "Email")} *</label>
+                    <div style="display:flex;gap:8px"><input class="fld" id="pf-email" type="email" inputmode="email" autocomplete="email" dir="ltr" placeholder="name@gmail.com" value="${escHtml(otpEmail)}" style="flex:1;min-width:0"><button type="button" class="btn-ghost" id="pf-sendcode" style="width:auto;white-space:nowrap;padding:0 16px" onclick="sendSignupCode()">${_l("ابعت الكود", "Send code")}</button></div></div>
+                <div><label class="fld-label">${_l("كود التأكيد", "Verification code")} *</label><input class="fld" id="pf-code" inputmode="numeric" maxlength="8" autocomplete="one-time-code" dir="ltr" placeholder="${_l("الكود اللي وصلك على الجيميل", "The code sent to your email")}" oninput="this.value=toLatinDigits(this.value).replace(/\\D/g,'')"></div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                    <div><label class="fld-label">${_l("كلمة السر", "Password")} *</label><input class="fld" id="pf-pw" type="password" minlength="6" autocomplete="new-password" placeholder="${_l("6 أحرف أو أرقام على الأقل", "At least 6 characters")}"></div>
+                    <div><label class="fld-label">${_l("تأكيد كلمة السر", "Confirm password")} *</label><input class="fld" id="pf-pw2" type="password" minlength="6" autocomplete="new-password"></div></div>` : ""}
                 <button type="submit" class="btn-acc"><svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>${t("تأكيد")}</span></button>
-                <button type="button" class="btn-ghost" onclick="${complete ? "profileEdit=false;pendingPhoto=null;renderSheet()" : "closeSheet()"}">${t("إلغاء")}</button>
+                <button type="button" class="btn-ghost" onclick="${complete ? "profileEdit=false;pendingPhoto=null;renderSheet()" : (!p ? "authMode=null;otpReset();renderSheet()" : "closeSheet()")}">${t("إلغاء")}</button>
                 <p class="text-[11px] leading-relaxed" style="color: var(--text-muted);">${t("بياناتك محفوظة على هذا الجهاز فقط وتُملأ تلقائياً عند إتمام الطلب.")}</p>
             </form>`;
+        }
+        /* ---------- الدخول بالرقم وكلمة السر ---------- */
+        let authMode = null, pwMode = null, forcePw = "", authBusy = false, otpEmail = "", otpSent = false, otpTok = "";
+        const _l = (ar, en) => isEN() ? en : ar;
+        async function authFetch(path, body) {
+            try {
+                const r = await fetch(SM_SB + "/auth/v1/" + path, { method: "POST", headers: { apikey: SM_KEY, "Content-Type": "application/json" }, body: JSON.stringify(body) });
+                let j = null; try { j = await r.json(); } catch (e) {}
+                return { ok: r.ok, status: r.status, j: j };
+            } catch (e) { return { net: true }; }
+        }
+        async function rpcTok(fn, body, tok) {
+            try {
+                const r = await fetch(SM_SB + "/rest/v1/rpc/" + fn, { method: "POST", headers: { apikey: SM_KEY, Authorization: "Bearer " + tok, "Content-Type": "application/json" }, body: JSON.stringify(body || {}) });
+                let j = null; try { j = await r.json(); } catch (e) {}
+                if (r.status === 404 || (j && j.code === "PGRST202")) return { unavail: true };
+                if (!r.ok) return { err: true, status: r.status, j: j };
+                return { ok: true, j: j };
+            } catch (e) { return { net: true }; }
+        }
+        function authMsg(r) {
+            if (r.net) return _l("تأكد من اتصال الإنترنت ثم حاول مرة أخرى", "Check your internet connection and try again");
+            if (r.unavail) return _l("الخدمة دي لسه مش مفعّلة، كلّم المتجر على واتساب", "This service isn't enabled yet, please contact the store on WhatsApp");
+            if (r.status === 401) return _l("انتهت الجلسة. ابعت الكود تاني.", "Session expired. Please request a new code.");
+            const j = r.j || {};
+            if (j.reason === "email_used") return _l("الجيميل ده مربوط بحساب تاني.", "This email is linked to another account.");
+            if (j.reason === "phone_taken") return _l("الرقم ده عليه حساب بجيميل تاني. سجّل دخول بيه، أو كلّم المتجر على واتساب.", "This phone number belongs to another account. Log in with its email or contact the store on WhatsApp.");
+            return _l("حصلت مشكلة، حاول مرة أخرى", "Something went wrong, please try again");
+        }
+        function authChooserHTML() {
+            const gateMsg = gateRequest ? "لطلب منتج غير موجود، أنشئ حسابك أولاً ثم اكتب اسم المنتج وارفع صورته." : "لإتمام طلبك، أنشئ حسابك أولاً. بياناتك تُحفظ على هذا الجهاز لتسهيل طلباتك القادمة.";
+            const gate = (gateCheckout || gateRequest) ? `<div class="mb-4 p-3 rounded-2xl text-xs leading-relaxed" style="background: var(--accent-soft); color: var(--text-primary); border: 1px solid var(--border-subtle);">${t(gateMsg)}</div>` : "";
+            return `<div data-i18n-skip>${gate}<div class="text-center mb-5"><div class="pf-avatar"><span class="pf-in"><svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><use href="#i-user"/></svg></span></div>
+                <p class="text-sm font-bold mt-3">${_l("أهلاً بيك في SKIN MASH", "Welcome to SKIN MASH")}</p>
+                <p class="text-xs mt-1" style="color: var(--text-muted);">${_l("اعمل حساب جديد، أو ادخل لو عندك حساب.", "Create a new account, or log in if you already have one.")}</p></div>
+                <div class="space-y-2.5">
+                    <button type="button" class="btn-acc" onclick="authMode='new';renderSheet()"><svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><use href="#i-user"/></svg><span>${_l("حساب جديد", "New account")}</span></button>
+                    <button type="button" class="btn-ghost" onclick="authMode='login';renderSheet()"><svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>${_l("عندي حساب", "I have an account")}</span></button>
+                </div></div>`;
+        }
+        function otpReset() { otpEmail = ""; otpSent = false; otpTok = ""; }
+        async function authUser(tok, body) {
+            try {
+                const r = await fetch(SM_SB + "/auth/v1/user", { method: "PUT", headers: { apikey: SM_KEY, Authorization: "Bearer " + tok, "Content-Type": "application/json" }, body: JSON.stringify(body) });
+                let j = null; try { j = await r.json(); } catch (e) {}
+                return { ok: r.ok, status: r.status, j: j };
+            } catch (e) { return { net: true }; }
+        }
+        function pwErr(r) {
+            if (r.net) return authMsg(r);
+            const c = (r.j && (r.j.error_code || r.j.code)) || "";
+            if (c === "same_password") return _l("اختار كلمة سر مختلفة عن القديمة.", "Choose a password different from the old one.");
+            if (c === "weak_password") return _l("كلمة السر ضعيفة، جرّب أطول أو فيها حروف وأرقام.", "Password is too weak, try a longer one with letters and numbers.");
+            return _l("مقدرناش نحفظ كلمة السر، حاول تاني.", "Couldn't save the password, please try again.");
+        }
+        const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+        const fv = id => ((document.getElementById(id) || {}).value || "").trim();
+        function loginHTML() {
+            return `<form onsubmit="doLogin(event)" novalidate class="space-y-3.5" data-i18n-skip>
+                <p class="text-sm font-bold text-center">${_l("تسجيل الدخول", "Log in")}</p>
+                <div><label class="fld-label">${_l("الجيميل", "Email")} *</label><input class="fld" id="lg-email" type="email" inputmode="email" autocomplete="email" dir="ltr" placeholder="name@gmail.com" value="${escHtml(otpEmail)}"></div>
+                <div><label class="fld-label">${_l("كلمة السر", "Password")} *</label><input class="fld" id="lg-pw" type="password" autocomplete="current-password"></div>
+                <button type="submit" class="btn-acc" id="lg-btn"><svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>${_l("دخول", "Log in")}</span></button>
+                <button type="button" class="btn-ghost" onclick="otpEmail=fv('lg-email');otpSent=false;authMode='forgot';renderSheet()">${_l("نسيت كلمة السر؟", "Forgot password?")}</button>
+                <button type="button" class="btn-ghost" onclick="authMode=null;otpReset();renderSheet()">${_l("رجوع", "Back")}</button>
+            </form>`;
+        }
+        function forgotHTML() {
+            const step2 = otpSent;
+            return `<form onsubmit="${step2 ? "doForgotReset(event)" : "doForgotSend(event)"}" novalidate class="space-y-3.5" data-i18n-skip>
+                <p class="text-sm font-bold text-center">${_l("نسيت كلمة السر", "Forgot password")}</p>
+                ${step2
+                    ? `<p class="text-xs leading-relaxed text-center" style="color: var(--text-muted);">${_l("بعتنالك كود على", "We sent a code to")} <b dir="ltr">${escHtml(otpEmail)}</b><br>${_l("اكتبه واختار كلمة سر جديدة (شوف الـ Spam لو مجاش).", "Enter it and choose a new password (check Spam if it's missing).")}</p>
+                       <div><label class="fld-label">${_l("الكود", "Code")} *</label><input class="fld" id="fg-code" inputmode="numeric" maxlength="8" autocomplete="one-time-code" dir="ltr" style="text-align:center;letter-spacing:6px;font-size:20px" oninput="this.value=toLatinDigits(this.value).replace(/\\D/g,'')"></div>
+                       <div><label class="fld-label">${_l("كلمة السر الجديدة", "New password")} *</label><input class="fld" id="fg-pw" type="password" minlength="6" autocomplete="new-password"></div>
+                       <div><label class="fld-label">${_l("تأكيد كلمة السر", "Confirm password")} *</label><input class="fld" id="fg-pw2" type="password" minlength="6" autocomplete="new-password"></div>
+                       <button type="submit" class="btn-acc" id="fg-btn"><svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>${_l("حفظ ودخول", "Save & log in")}</span></button>
+                       <button type="button" class="btn-ghost" onclick="otpSent=false;renderSheet()">${_l("إرسال كود جديد", "Send a new code")}</button>`
+                    : `<div><label class="fld-label">${_l("الجيميل المسجّل", "Registered email")} *</label><input class="fld" id="fg-email" type="email" inputmode="email" autocomplete="email" dir="ltr" placeholder="name@gmail.com" value="${escHtml(otpEmail)}"></div>
+                       <button type="submit" class="btn-acc" id="fg-btn"><svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>${_l("ابعتلي كود", "Send me a code")}</span></button>`}
+                <button type="button" class="btn-ghost" onclick="authMode='login';otpSent=false;renderSheet()">${_l("رجوع", "Back")}</button>
+            </form>`;
+        }
+        async function doLogin(e) {
+            e.preventDefault(); if (authBusy) return;
+            const em = fv("lg-email").toLowerCase(), pw = (document.getElementById("lg-pw") || {}).value || "";
+            if (!EMAIL_RE.test(em)) { showToast(_l("اكتب جيميل صحيح", "Enter a valid email")); return; }
+            if (!pw) { showToast(_l("اكتب كلمة السر", "Enter your password")); return; }
+            authBusy = true; const btn = document.getElementById("lg-btn"); if (btn) btn.disabled = true;
+            const t0 = await authFetch("token?grant_type=password", { email: em, password: pw });
+            const tok = t0.ok && t0.j && t0.j.access_token;
+            if (!tok) { authBusy = false; if (btn) btn.disabled = false; showToast(t0.net ? authMsg(t0) : t0.status === 429 ? _l("حاولت كتير، استنى شوية.", "Too many attempts, please wait.") : _l("الجيميل أو كلمة السر غلط.", "Wrong email or password.")); return; }
+            const r = await rpcTok("customer_login_email", {}, tok);
+            authBusy = false; if (btn) btn.disabled = false;
+            if (r.ok && r.j && r.j.ok) { await completeLogin(r.j, em); return; }
+            if (r.ok && r.j && r.j.reason === "none") { showToast(_l("الحساب ده مكتملش. اعمل حساب جديد.", "This account isn't complete. Create a new account.")); return; }
+            showToast(authMsg(r));
+        }
+        async function doForgotSend(e) {
+            e.preventDefault(); if (authBusy) return;
+            const em = fv("fg-email").toLowerCase();
+            if (!EMAIL_RE.test(em)) { showToast(_l("اكتب جيميل صحيح", "Enter a valid email")); return; }
+            authBusy = true; const btn = document.getElementById("fg-btn"); if (btn) btn.disabled = true;
+            const r = await authFetch("otp", { email: em, create_user: false });
+            authBusy = false; if (btn) btn.disabled = false;
+            if (r.net) { showToast(authMsg(r)); return; }
+            if (r.status === 429) { showToast(_l("استنى دقيقة وحاول تاني", "Please wait a minute and try again")); return; }
+            if (!r.ok) { showToast(_l("مفيش حساب بالجيميل ده.", "No account with this email.")); return; }
+            otpEmail = em; otpSent = true; renderSheet();
+        }
+        async function doForgotReset(e) {
+            e.preventDefault(); if (authBusy) return;
+            const code = fv("fg-code"), pw = (document.getElementById("fg-pw") || {}).value || "", pw2 = (document.getElementById("fg-pw2") || {}).value || "";
+            if (code.length < 6) { showToast(_l("اكتب الكود كامل", "Enter the full code")); return; }
+            if (pw.length < 6) { showToast(_l("كلمة السر 6 أحرف على الأقل", "Password must be at least 6 characters")); return; }
+            if (pw !== pw2) { showToast(_l("كلمتا السر غير متطابقتين", "Passwords don't match")); return; }
+            authBusy = true; const btn = document.getElementById("fg-btn"); if (btn) btn.disabled = true;
+            const done = () => { authBusy = false; if (btn) btn.disabled = false; };
+            const v = await authFetch("verify", { type: "email", email: otpEmail, token: code });
+            const tok = v.ok && v.j && v.j.access_token;
+            if (!tok) { done(); showToast(v.net ? authMsg(v) : _l("الكود غلط أو انتهى. اطلب كود جديد.", "Wrong or expired code. Request a new one.")); return; }
+            const u = await authUser(tok, { password: pw });
+            if (!u.ok) { done(); showToast(pwErr(u)); return; }
+            const r = await rpcTok("customer_login_email", {}, tok);
+            done();
+            if (r.ok && r.j && r.j.ok) { showToast(_l("تم تغيير كلمة السر ✓", "Password changed ✓")); await completeLogin(r.j, otpEmail); return; }
+            if (r.ok && r.j && r.j.reason === "none") { showToast(_l("الحساب ده مكتملش. اعمل حساب جديد.", "This account isn't complete. Create a new account.")); return; }
+            showToast(authMsg(r));
+        }
+        /* إرسال كود التأكيد من داخل فورم الحساب الجديد (من غير ما نعيد رسم الفورم عشان بيانات العميل متضيعش) */
+        async function sendSignupCode() {
+            const em = fv("pf-email").toLowerCase(), btn = document.getElementById("pf-sendcode");
+            if (!EMAIL_RE.test(em)) { showToast(_l("اكتب جيميل صحيح", "Enter a valid email")); return; }
+            if (btn) btn.disabled = true;
+            try { const tk = await smRpc("customer_email_taken", { p_email: em }); if (tk.ok && (await tk.json()) === true) { if (btn) btn.disabled = false; showToast(_l("الجيميل ده عنده حساب. سجّل دخول.", "This email already has an account. Please log in.")); return; } } catch (e) {}
+            const r = await authFetch("otp", { email: em, create_user: true });
+            if (r.net) { if (btn) btn.disabled = false; showToast(authMsg(r)); return; }
+            if (r.status === 429) { if (btn) btn.disabled = false; showToast(_l("استنى دقيقة وحاول تاني", "Please wait a minute and try again")); return; }
+            if (!r.ok) { if (btn) btn.disabled = false; showToast(_l("مقدرناش نبعت الكود. اتأكد من الجيميل.", "Couldn't send the code. Check the email.")); return; }
+            if (otpEmail !== em) otpTok = "";
+            otpEmail = em; showToast(_l("بعتنالك الكود على الجيميل ✓ (شوف الـ Spam)", "Code sent ✓ (check Spam)"));
+            let n = 60; const tick = () => { const b = document.getElementById("pf-sendcode"); if (!b) return; if (n <= 0) { b.disabled = false; b.textContent = _l("ابعت الكود", "Send code"); return; } b.textContent = n-- + "s"; setTimeout(tick, 1000); }; tick();
+            const c = document.getElementById("pf-code"); if (c) c.focus();
+        }
+        async function completeLogin(j, email) {
+            const pr = j.profile || {};
+            const p = { name: pr.name || "", phone: pr.phone || "", whatsapp: pr.whatsapp || pr.phone || "", city: pr.city || "", address: pr.address || "", gender: pr.gender || "", email: email || "", created: Date.now() };
+            p.addresses = [{ city: p.city, address: p.address }];
+            const list = (j.orders || []).filter(o => o.status !== "cancelled").map(o => ({
+                id: o.code, ts: new Date(o.created_at).getTime(), status: "sent", fs: o.status || "new",
+                items: (o.items || []).map(i => ({ id: i.id, name: i.name, qty: i.qty, price: i.price })),
+                total: Number(o.total) || 0, shipping: Number(o.shipping) || 0, pay: { method: "deposit", payNow: Number(o.pay_now) || 0 }
+            }));
+            list.forEach(o => { const gi = __gone.indexOf(o.id); if (gi !== -1) __gone.splice(gi, 1); });
+            smSaveList("sm-gone", __gone);
+            store.set("sm-profile", p); store.set("sm-orders", list);
+            window.__acct = "ok"; authMode = null; otpReset();
+            const st = await enforceCustomer("login"); if (st !== "ok") return;
+            try { updateAvatar(); } catch (x) {} try { updateCartUI(false); } catch (x) {}
+            showToast(_l("أهلاً بيك تاني ✓", "Welcome back ✓"));
+            if (gateCheckout && profileComplete(p)) { gateCheckout = false; closeSheet(true); openCheckoutModal(); return; }
+            if (gateRequest && profileComplete(p)) { gateRequest = false; closeSheet(true); openRequestModal(); return; }
+            renderSheet();
+        }
+        function pwFormHTML() {
+            return `<form onsubmit="doPwSave(event)" novalidate class="space-y-3.5" data-i18n-skip>
+                <p class="text-sm font-bold text-center">${_l("تغيير كلمة السر", "Change password")}</p>
+                <div><label class="fld-label">${_l("كلمة السر الحالية", "Current password")}</label><input class="fld" id="pw-old" type="password" autocomplete="current-password"></div>
+                <div><label class="fld-label">${_l("كلمة السر الجديدة", "New password")}</label><input class="fld" id="pw-new" type="password" minlength="6" autocomplete="new-password"></div>
+                <div><label class="fld-label">${_l("تأكيد كلمة السر", "Confirm password")}</label><input class="fld" id="pw-new2" type="password" minlength="6" autocomplete="new-password"></div>
+                <button type="submit" class="btn-acc" id="pw-btn"><svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>${_l("حفظ", "Save")}</span></button>
+                <button type="button" class="btn-ghost" onclick="pwMode=null;renderSheet()">${t("إلغاء")}</button>
+            </form>`;
+        }
+        async function doPwSave(e) {
+            e.preventDefault(); if (authBusy) return;
+            const p = getProfile(); if (!p || !p.email) return;
+            const old = (document.getElementById("pw-old") || {}).value || "", nw = (document.getElementById("pw-new") || {}).value || "", nw2 = (document.getElementById("pw-new2") || {}).value || "";
+            if (!old) { showToast(_l("اكتب كلمة السر الحالية", "Enter your current password")); return; }
+            if (nw.length < 6) { showToast(_l("كلمة السر 6 أحرف على الأقل", "Password must be at least 6 characters")); return; }
+            if (nw !== nw2) { showToast(_l("كلمتا السر غير متطابقتين", "Passwords don't match")); return; }
+            authBusy = true; const btn = document.getElementById("pw-btn"); if (btn) btn.disabled = true;
+            const done = () => { authBusy = false; if (btn) btn.disabled = false; };
+            const t0 = await authFetch("token?grant_type=password", { email: p.email, password: old });
+            const tok = t0.ok && t0.j && t0.j.access_token;
+            if (!tok) { done(); showToast(t0.net ? authMsg(t0) : _l("كلمة السر الحالية غلط.", "Current password is wrong.")); return; }
+            const u = await authUser(tok, { password: nw });
+            done();
+            if (!u.ok) { showToast(pwErr(u)); return; }
+            pwMode = null; showToast(_l("تم حفظ كلمة السر ✓", "Password saved ✓")); renderSheet();
+        }
+        async function logoutAccount() {
+            const p = getProfile(); if (!p) return;
+            
+            const en = isEN();
+            const ok = await smDelDialog(en, { title: en ? "Log out?" : "تسجيل الخروج؟", msg: en ? "Your data will be removed from this device only. You can log back in anytime with your email and password." : "بياناتك هتتمسح من الجهاز ده بس. تقدر تدخل تاني في أي وقت بجيميلك وكلمة السر.", no: en ? "Stay" : "رجوع", yes: en ? "Log out" : "تسجيل خروج" });
+            if (!ok) return;
+            ["sm-profile", "sm-orders", "sm-favs", "sm-notifs", "sm-unread", "sm-reqs", "sm-msgs", "sm-msg-seen"].forEach(k => { try { localStorage.removeItem(k); } catch (e) {} });
+            try { delete memStore["sm-profile"]; delete memStore["sm-orders"]; delete memStore["sm-favs"]; } catch (e) {}
+            window.__acct = "ok"; authMode = null; pwMode = null; otpReset();
+            try { updateAvatar(); } catch (e) {} try { updateCartUI(false); } catch (e) {} try { if (window.updateDot) updateDot(); } catch (e) {}
+            closeSheet(true);
+            showToast(en ? "Logged out" : "تم تسجيل الخروج");
         }
         function handleProfilePhoto(input) {
             const file = input.files && input.files[0];
@@ -3156,10 +3394,35 @@ img,video,canvas{max-width:100%}
             if (city.length < 2) return bad("pf-city", "اكتب اسم المحافظة");
             if (address.length < 8) return bad("pf-address", "اكتب عنواناً مفصلاً (8 أحرف على الأقل)");
             if (!gender) return bad("pf-gender-box", "اختر النوع (أنثى أو ذكر)");
+            const isNew = !getProfile();
+            let email = old.email || "", pw = "";
+            if (isNew) {
+                email = fv("pf-email").toLowerCase(); const code = fv("pf-code"); pw = (document.getElementById("pf-pw") || {}).value || ""; const pw2 = (document.getElementById("pf-pw2") || {}).value || "";
+                if (!EMAIL_RE.test(email)) return bad("pf-email", _l("اكتب جيميل صحيح", "Enter a valid email"));
+                if (!otpTok) {
+                    if (email !== otpEmail) return bad("pf-email", _l("ابعت الكود على الجيميل ده الأول", "Send the code to this email first"));
+                    if (code.length < 6) return bad("pf-code", _l("اكتب كود التأكيد اللي وصلك", "Enter the verification code you received"));
+                }
+                if (pw.length < 6) return bad("pf-pw", "كلمة السر 6 أحرف على الأقل");
+                if (pw !== pw2) return bad("pf-pw2", "كلمتا السر غير متطابقتين");
+                try { const tp = await smRpc("customer_phone_taken", { p_phone: phone }); if (tp.ok && (await tp.json()) === true) { showToast(authMsg({ j: { reason: "phone_taken" } })); return; } } catch (e) {}
+                if (!otpTok || email !== otpEmail) {
+                    const v = await authFetch("verify", { type: "email", email: email, token: code });
+                    const tok = v.ok && v.j && v.j.access_token;
+                    if (!tok) return bad("pf-code", v.net ? authMsg(v) : _l("الكود غلط أو انتهى. ابعت كود جديد.", "Wrong or expired code. Send a new one."));
+                    otpTok = tok; otpEmail = email;
+                }
+                const up = await authUser(otpTok, { password: pw });
+                if (!up.ok) { if (up.status === 401) otpTok = ""; return bad("pf-pw", pwErr(up)); }
+            }
             const reg = await registerCustomer({ name: name, phone: phone, whatsapp: wa, city: city, address: address, gender: gender });
             if (!reg.ok) { if (reg.msg) bad("pf-phone", reg.msg); return; }
-            const p = Object.assign({}, old, { name: name, phone: phone, whatsapp: wa, city: city, address: address, gender: gender });
-            delete p.email;
+            if (isNew) {
+                const lk = await rpcTok("customer_link_email", { p_phone: phone }, otpTok);
+                if (!(lk.ok && lk.j && lk.j.ok)) { showToast(authMsg(lk)); return; }
+            }
+            const p = Object.assign({}, old, { name: name, phone: phone, whatsapp: wa, city: city, address: address, gender: gender, email: email });
+            if (isNew) otpReset();
             const al = getAddresses(old); al[0] = { city: city, address: address }; p.addresses = al;
             if (!p.created) p.created = Date.now();
             if (pendingPhoto) p.photo = pendingPhoto;
@@ -3201,7 +3464,24 @@ img,video,canvas{max-width:100%}
             const en = isEN();
             return `<div class="cx-box"><button type="button" class="btn-cancel" onclick="cancelMyOrder('${o.id}')"><svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><use href="#i-x"/></svg><span>${en ? "Cancel order" : "إلغاء الطلب"}</span></button><p class="cx-note">${en ? "You can cancel only until the order is being prepared. The deposit is non-refundable." : "تقدر تلغي الطلب قبل ما يبقى «قيد التجهيز» فقط. والعربون مش بيترجع في حالة الإلغاء."}</p></div>`;
         }
-        function smRemoveOrder(id) { store.set("sm-orders", getOrders().filter(o => o.id !== id)); }
+        /* نسخ رسالة الطلب (لو العميل ما بعتهاش على واتساب) */
+        function canCopyMsg(o) { return !!o && (o.fs || "new") === "new" && !!o.customer && o.subtotal != null && !!o.pay; }
+        function copyMsgHTML(o) {
+            if (!canCopyMsg(o)) return "";
+            const en = isEN();
+            return `<div class="cx-box"><p class="cx-note" style="margin:0 0 8px">${en ? "Didn't send the order message on WhatsApp? Copy it and send it to the store." : "ما بعتّش رسالة الطلب على واتساب؟ انسخها وابعتها للمتجر."}</p>
+                <div class="flex gap-2"><button type="button" class="btn-ghost" style="padding:9px 12px;font-size:12.5px;" onclick="copyOrderMsg('${o.id}')"><svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><use href="#i-receipt"/></svg><span>${en ? "Copy message" : "نسخ الرسالة"}</span></button>
+                ${o.status === "sent" ? `<a class="btn-acc" style="padding:9px 12px;font-size:12.5px;" href="${waOrderLink(o)}" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" class="ic ic-fill" aria-hidden="true"><use href="#i-wa"/></svg><span>${en ? "Send on WhatsApp" : "إرسال على واتساب"}</span></a>` : ""}</div></div>`;
+        }
+        async function copyOrderMsg(id) {
+            const o = getOrders().find(x => x.id === id); if (!o || !canCopyMsg(o)) return;
+            const txt = orderText(o);
+            let ok = false;
+            try { await navigator.clipboard.writeText(txt); ok = true; } catch (e) {}
+            if (!ok) { try { const ta = document.createElement("textarea"); ta.value = txt; ta.style.cssText = "position:fixed;opacity:0"; document.body.appendChild(ta); ta.select(); ok = document.execCommand("copy"); ta.remove(); } catch (e) {} }
+            showToast(ok ? (isEN() ? "Message copied" : "تم نسخ الرسالة ✓") : (isEN() ? "Couldn't copy" : "تعذّر النسخ"));
+        }
+        function smRemoveOrder(id) { const fresh = smMarkGone(id); store.set("sm-orders", getOrders().filter(o => o.id !== id)); return fresh; }
         let cancelBusy = false;
         async function cancelMyOrder(id) {
             if (cancelBusy) return;
@@ -3249,6 +3529,7 @@ img,video,canvas{max-width:100%}
                         <strong style="color: var(--accent-primary);">${money(o.total)}</strong>
                         <button type="button" class="btn-ghost" style="width:auto;padding:7px 14px;font-size:12px;" onclick="reorder('${o.id}')">${t("اطلب مرة أخرى")}</button>
                     </div>
+                    ${copyMsgHTML(o)}
                     ${cancelHTML(o)}
                     ${o.status !== "sent" ? `<a class="btn-acc mt-3" style="padding:9px 14px;font-size:12.5px;" href="${waOrderLink(o)}" target="_blank" rel="noopener noreferrer">
                         <svg viewBox="0 0 24 24" class="ic ic-fill" aria-hidden="true"><use href="#i-wa"/></svg><span>${t("تأكيد الطلب عبر واتساب")}</span></a>` : ""}
@@ -3292,6 +3573,29 @@ img,video,canvas{max-width:100%}
                     <button type="button" class="dock-btn" style="color:var(--accent-primary);" aria-label="${t("أضف للسلة")}" onclick="addToCart(${p.id})"><svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><use href="#i-cart"/></svg></button>
                     <button type="button" class="dock-btn" style="color:#E5566D;" aria-label="${t("أُزيل من المفضلة")}" onclick="toggleFav(${p.id})"><svg viewBox="0 0 24 24" class="ic" style="fill:currentColor" aria-hidden="true"><use href="#i-heart"/></svg></button>
                 </div>`).join("") + `</div>`;
+        }
+        /* ---------- سياسات المتجر (عدّل النصوص هنا بسهولة) ---------- */
+        function policiesHTML() {
+            const en = isEN(), pct = (PAYMENT_CONFIG && PAYMENT_CONFIG.depositPercent) || 30;
+            const P = [
+                ["i-receipt", en ? "Payment & deposit" : "الدفع والعربون",
+                    en ? [`Payment is made in two steps: a <b>${pct}% deposit</b> of the products value + shipping, and the rest on delivery.`, "The shipping fee is confirmed with you on WhatsApp before the order is sent."]
+                       : [`الدفع على مرحلتين: <b>عربون ${pct}%</b> من قيمة المنتجات + مصاريف الشحن، والباقي عند الاستلام.`, "مصاريف الشحن بنأكدها معاك على واتساب قبل إرسال الطلب."]],
+                ["i-x", en ? "Cancelling an order" : "إلغاء الطلب",
+                    en ? ["You can cancel from “Track your order” only while the status is <b>Received</b>. Once it becomes <b>Preparing</b>, the order can no longer be cancelled.", "<b>The deposit is non-refundable</b> if the order is cancelled."]
+                       : ["تقدر تلغي طلبك من «تابع طلبك» طول ما حالته <b>تم الاستلام</b> فقط. بعد ما يبقى <b>قيد التجهيز</b> مينفعش الإلغاء.", "<b>العربون غير مسترد</b> في حالة إلغاء الطلب."]],
+                ["i-pin", en ? "Shipping & delivery" : "الشحن والتوصيل",
+                    en ? ["We deliver across Egypt. The delivery time and shipping fee are confirmed with you on WhatsApp when we contact you about the order.", "Please make sure your phone is reachable so the courier can contact you."]
+                       : ["بنوصّل لكل محافظات مصر. مدة التوصيل ومصاريف الشحن بنحددها معاك على واتساب لما نتواصل معاك بخصوص الطلب.", "من فضلك تأكد إن رقمك شغال عشان مندوب الشحن يقدر يتواصل معاك."]],
+                ["i-bag", en ? "Returns & exchange" : "الاسترجاع والاستبدال",
+                    en ? ["If the product arrives damaged or different from what you ordered, contact us within <b>48 hours</b> of receiving it and we will fix it.", "For hygiene and safety, opened or used skin-care and beauty products can't be returned."]
+                       : ["لو المنتج وصلك تالف أو مختلف عن طلبك، كلمنا خلال <b>48 ساعة</b> من الاستلام وهنحل المشكلة.", "حفاظاً على السلامة، منتجات العناية والتجميل المفتوحة أو المستخدمة مبترجعش."]],
+                ["i-user", en ? "Privacy" : "الخصوصية",
+                    en ? ["Your data is used only to fulfil your order and contact you. We share it only with the shipping company to deliver your order."]
+                       : ["بياناتك بنستخدمها بس لتنفيذ طلبك والتواصل معاك، ومبنشاركها مع أي جهة غير شركة الشحن لتوصيل طلبك."]]
+            ];
+            return `<div class="space-y-2.5" data-i18n-skip>` + P.map((x, i) => `<details class="pol"${i === 0 ? " open" : ""}><summary><svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><use href="#${x[0]}"/></svg>${x[1]}</summary><div class="pol-b">${x[2].map(l => `<p>${l}</p>`).join("")}</div></details>`).join("") + `</div>
+                <a class="btn-acc mt-4" href="https://wa.me/${STORE_WHATSAPP_NUMBER}" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" class="ic ic-fill" aria-hidden="true"><use href="#i-wa"/></svg><span>${en ? "Ask us on WhatsApp" : "عندك سؤال؟ كلمنا على واتساب"}</span></a>`;
         }
         function contactHTML() {
             const local = "0" + STORE_WHATSAPP_NUMBER.slice(2);
@@ -3944,6 +4248,22 @@ img,video,canvas{max-width:100%}
         /* =========================================================
            6. PRODUCTS GRID RENDERER
            ========================================================= */
+        /* ترتيب المنتجات: الافتراضي / الأحدث / السعر */
+        let sortMode = "default";
+        function applySort(list) {
+            if (sortMode === "price-asc") return list.slice().sort((a, b) => a.price - b.price);
+            if (sortMode === "price-desc") return list.slice().sort((a, b) => b.price - a.price);
+            if (sortMode === "newest") return list.slice().sort((a, b) => b.id - a.id);
+            return list;
+        }
+        function renderSortSelect() {
+            const el = document.getElementById("sort-select"); if (!el) return;
+            const en = isEN(), key = (en ? "en" : "ar") + sortMode;
+            if (el.dataset.k === key) return; el.dataset.k = key;
+            const O = [["default", en ? "Sort: Featured" : "ترتيب: الافتراضي"], ["newest", en ? "Newest" : "الأحدث"], ["price-asc", en ? "Price: Low to High" : "السعر: الأقل أولاً"], ["price-desc", en ? "Price: High to Low" : "السعر: الأعلى أولاً"]];
+            el.innerHTML = O.map(o => `<option value="${o[0]}"${o[0] === sortMode ? " selected" : ""}>${o[1]}</option>`).join("");
+        }
+        function setSort(v) { sortMode = v; renderProductsView(); }
         function renderProductsView() {
             const grid = document.getElementById("products-grid");
             const emptyState = document.getElementById("empty-products-state");
@@ -3972,6 +4292,8 @@ img,video,canvas{max-width:100%}
             }
 
             metaEl.textContent = `${filtered.length} ${t("منتج")}`;
+            filtered = applySort(filtered);
+            renderSortSelect();
 
             if (filtered.length === 0) {
                 grid.innerHTML = "";
@@ -5002,6 +5324,7 @@ try { const gi = document.getElementById("global-search-input"); if (gi) gi.valu
     var M = en ? { processing: "Your order " + id + " is now being prepared 📦", shipped: "Your order " + id + " has been shipped 🚚", completed: "Your order " + id + " was delivered — enjoy! 🌸", cancelled: "Your order " + id + " was cancelled and removed", returned: "A return was recorded for order " + id }
                : { processing: "طلبك رقم " + id + " قيد التجهيز دلوقتي 📦", shipped: "طلبك رقم " + id + " اتشحن 🚚", completed: "طلبك رقم " + id + " وصل — بالهنا والشفا 🌸", cancelled: "تم إلغاء طلبك رقم " + id + " واتشال من طلباتك", returned: "تم تسجيل مرتجع لطلبك رقم " + id };
     var msg = M[st]; if (!msg) return;
+    if (!smOnce("n:" + o.id + ":" + st)) return;
     try { localStorage.setItem("sm-unread", "1"); } catch (e) {}
     updateDot(); showToast(msg);
     try { if ("Notification" in window && Notification.permission === "granted") new Notification("SKIN MASH", { body: msg }); } catch (e) {}
@@ -5011,14 +5334,14 @@ try { const gi = document.getElementById("global-search-input"); if (gi) gi.valu
     var en = isEN(), msg = en ? "Your order " + id + " was cancelled and removed from your orders" : "تم إلغاء طلبك رقم " + id + " واتشال من طلباتك";
     try { localStorage.setItem("sm-unread", "1"); } catch (e) {}
     updateDot(); showToast(msg);
-    try { if ("Notification" in window && Notification.permission === "granted") new Notification("SKIN MASH", { body: msg }); } catch (e) {}
+    try { if ("Notification" in window && Notification.permission === "granted") new Notification("SKIN MASH", { body: msg, tag: "sm-rm-" + id }); } catch (e) {}
   }
   var syncBusy = false;
   function syncOrders() {
     var p = getProfile();
     if (!p || !p.phone || syncBusy) return Promise.resolve(false);
     var stale = getOrders().filter(function (o) { return o.fs === "cancelled"; });
-    if (stale.length) { stale.forEach(function (o) { smRemoveOrder(o.id); }); }
+    if (stale.length) { stale.forEach(function (o) { smRemoveOrder(o.id); }); }   /* بدون إشعار جديد: اتبلّغ بيه قبل كده */
     var open = getOrders().filter(function (o) { return o.status === "sent" && ["completed", "returned"].indexOf(o.fs || "new") === -1; });
     if (!open.length) return Promise.resolve(stale.length > 0);
     syncBusy = true;
@@ -5038,9 +5361,13 @@ try { const gi = document.getElementById("global-search-input"); if (gi) gi.valu
         });
         /* الأدمن مسح الطلب نهائياً: مش راجع في النتيجة → يتشال (بعد دقيقة من إنشائه) */
         open.forEach(function (o) { if (!seen[o.id] && Date.now() - (o.ts || 0) > 60000) removed.push(o.id); });
-        if (removed.length) { all = all.filter(function (o) { return removed.indexOf(o.id) === -1; }); changed = true; }
+        var fresh = [];
+        if (removed.length) {
+          removed.forEach(function (id) { if (smRemoveOrder(id)) fresh.push(id); });
+          all = all.filter(function (o) { return removed.indexOf(o.id) === -1; }); changed = true;
+        }
         if (changed) store.set("sm-orders", all);
-        removed.forEach(notifyRemoved);
+        fresh.forEach(notifyRemoved);
         return changed;
       }).catch(function () { syncBusy = false; return stale.length > 0; });
   }
@@ -5049,6 +5376,7 @@ try { const gi = document.getElementById("global-search-input"); if (gi) gi.valu
   window.getMyReqs = function () { try { return JSON.parse(localStorage.getItem("sm-reqs") || "[]"); } catch (e) { return []; } };
   function notifyReq(x) {
     if (window.__msgsLive) return;
+    if (!smOnce("r:" + x.id + ":" + x.status)) return;
     var en = isEN(), msg = en ? "Good news! “" + x.name + "” is now available 🌸" : "أخبار حلوة! المنتج «" + x.name + "» اتوفر 🌸";
     try { localStorage.setItem("sm-unread", "1"); } catch (e) {}
     updateDot(); showToast(msg);
