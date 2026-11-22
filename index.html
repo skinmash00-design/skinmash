@@ -1088,6 +1088,12 @@
         .btn-ghost { background: transparent; color: var(--text-primary); border: 1px solid var(--border-strong); }
         .btn-acc[disabled] { opacity: 0.65; cursor: progress; }
         .order-card { padding: 14px; border-radius: 18px; background: var(--surface-elevated); border: 1px solid var(--border-subtle); }
+        .cx-box { margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--border-subtle); }
+        .btn-cancel { width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 14px; border-radius: 999px; font-size: 12.5px; font-weight: 700; cursor: pointer; background: rgba(229,86,109,.10); color: #E5566D; border: 1px solid rgba(229,86,109,.35); transition: background .2s; }
+        .btn-cancel:hover { background: rgba(229,86,109,.18); }
+        .btn-cancel:disabled { opacity: .55; cursor: wait; }
+        .btn-cancel .ic { width: 16px; height: 16px; }
+        .cx-note { margin-top: 8px; font-size: 11px; line-height: 1.8; text-align: center; color: var(--text-muted); }
         .chip { font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 999px; white-space: nowrap; }
         .chip-ok { background: rgba(46, 160, 110, 0.16); color: #2EA06E; }
         .chip-wait { background: var(--accent-soft); color: var(--accent-primary); }
@@ -3074,7 +3080,7 @@ img,video,canvas{max-width:100%}
             if (!editing) {
                 const on = getOrders().length;
                 const last = getOrders().find(o => o.status === "sent");
-                const trk = last ? `<div class="order-card" style="margin-bottom:14px"><div class="flex items-center justify-between gap-2"><div class="text-sm font-bold">${last.id}</div><div class="text-[11px]" style="color: var(--text-muted);">${fmtDate(last.ts)}</div></div>${trackHTML(last.fs)}</div>` : "";
+                const trk = last ? `<div class="order-card" style="margin-bottom:14px"><div class="flex items-center justify-between gap-2"><div class="text-sm font-bold">${last.id}</div><div class="text-[11px]" style="color: var(--text-muted);">${fmtDate(last.ts)}</div></div>${trackHTML(last.fs)}${cancelHTML(last)}</div>` : "";
                 const gRow = p.gender ? profileRow("i-user", t("النوع"), genderLabel(p.gender)) : `<div class="pf-row" style="display:block"><div class="pf-k" style="margin-bottom:8px">${t("حدد نوعك (لتخاطبك الرسائل بشكل مناسب)")}</div>${genderPicker("", true)}</div>`;
                 return head + trk + `<div class="space-y-2.5">
                     ${gRow}
@@ -3188,6 +3194,45 @@ img,video,canvas{max-width:100%}
                 : d.toLocaleDateString(en ? "en-GB" : "ar-EG", { weekday: "long", day: "numeric", month: "long" });
             return `<div class="text-xs font-bold ${ix ? "pt-3" : ""}" style="color: var(--accent-primary);">${lbl}</div>`;
         }
+        /* ---------- إلغاء الطلب بواسطة العميل (قبل قيد التجهيز فقط، والعربون لا يُسترد) ---------- */
+        function canCancel(o) { return !!o && o.status === "sent" && (o.fs || "new") === "new"; }
+        function cancelHTML(o) {
+            if (!canCancel(o)) return "";
+            const en = isEN();
+            return `<div class="cx-box"><button type="button" class="btn-cancel" onclick="cancelMyOrder('${o.id}')"><svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><use href="#i-x"/></svg><span>${en ? "Cancel order" : "إلغاء الطلب"}</span></button><p class="cx-note">${en ? "You can cancel only until the order is being prepared. The deposit is non-refundable." : "تقدر تلغي الطلب قبل ما يبقى «قيد التجهيز» فقط. والعربون مش بيترجع في حالة الإلغاء."}</p></div>`;
+        }
+        function smRemoveOrder(id) { store.set("sm-orders", getOrders().filter(o => o.id !== id)); }
+        let cancelBusy = false;
+        async function cancelMyOrder(id) {
+            if (cancelBusy) return;
+            const p = getProfile(), o = getOrders().find(x => x.id === id), en = isEN();
+            if (!p || !o) return;
+            if (!canCancel(o)) { showToast(en ? "This order can no longer be cancelled" : "مينفعش إلغاء الطلب بعد ما بقى قيد التجهيز"); renderSheet(); return; }
+            const ok = await smDelDialog(en, {
+                title: en ? "Cancel this order?" : "إلغاء الطلب؟",
+                msg: en ? `Order ${o.id} will be cancelled. Please note the deposit you paid is NON-refundable. You can't cancel once the order is being prepared.` : `هيتم إلغاء الطلب ${o.id}. ولازم تعرف إن العربون اللي دفعته مش بيترجع في حالة الإلغاء.`,
+                no: en ? "Keep order" : "رجوع", yes: en ? "Yes, cancel" : "نعم، إلغاء الطلب"
+            });
+            if (!ok) return;
+            cancelBusy = true;
+            try {
+                const r = await smRpc("cancel_my_order", { p_phone: p.phone, p_code: id });
+                let j = null; try { j = await r.json(); } catch (e) {}
+                if (r.ok && (j === "ok" || j === true)) {
+                    smRemoveOrder(id);
+                    showToast(en ? "Your order was cancelled" : "تم إلغاء طلبك");
+                } else if (j === "locked") {
+                    if (window.smSyncNow) await window.smSyncNow();
+                    showToast(en ? "Too late — the order is already being prepared" : "فات الأوان — الطلب بقى قيد التجهيز ومينفعش يتلغي");
+                } else if (j === "notfound") {
+                    smRemoveOrder(id);
+                } else {
+                    showToast(en ? "Couldn't cancel now, please try again" : "تعذّر إلغاء الطلب الآن، حاول مرة أخرى");
+                }
+            } catch (e) { showToast(en ? "Check your internet connection" : "تأكد من اتصال الإنترنت ثم حاول مرة أخرى"); }
+            cancelBusy = false;
+            try { renderSheet(); } catch (e) {}
+        }
         function ordersHTML() {
             const list = getOrders().slice().sort((a, b) => (b.ts || 0) - (a.ts || 0)), reqs = (window.getMyReqs ? getMyReqs() : []).filter(r => r.status !== "archived");
             if (!list.length && !reqs.length) return emptyHTML("i-receipt", t("لا توجد طلبات بعد"), t("ستظهر هنا طلباتك بعد إتمام أول طلب."));
@@ -3204,6 +3249,7 @@ img,video,canvas{max-width:100%}
                         <strong style="color: var(--accent-primary);">${money(o.total)}</strong>
                         <button type="button" class="btn-ghost" style="width:auto;padding:7px 14px;font-size:12px;" onclick="reorder('${o.id}')">${t("اطلب مرة أخرى")}</button>
                     </div>
+                    ${cancelHTML(o)}
                     ${o.status !== "sent" ? `<a class="btn-acc mt-3" style="padding:9px 14px;font-size:12.5px;" href="${waOrderLink(o)}" target="_blank" rel="noopener noreferrer">
                         <svg viewBox="0 0 24 24" class="ic ic-fill" aria-hidden="true"><use href="#i-wa"/></svg><span>${t("تأكيد الطلب عبر واتساب")}</span></a>` : ""}
                 </div>`).join("") + `</div>`;
@@ -3281,7 +3327,7 @@ img,video,canvas{max-width:100%}
             const dl = tot.discount > 0 ? `<div class="flex justify-between text-sm font-bold" style="color: var(--accent-primary);"><span>${en ? "Discount" : "خصم"} ${tot.discountPct}%</span><span>−${money(tot.discount)}</span></div>` : "";
             const html = tot.subtotal <= 0 ? "" : `${dl}
                 <div class="pay-note" role="note"><svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><use href="#i-info"/></svg>
-                    <span>${en ? `Pay in two steps: first ${pct}% of the products + shipping, the rest on delivery.` : `الدفع على مرحلتين: تدفع أولاً ${pct}% من قيمة المنتجات + مصاريف الشحن، والباقي عند الاستلام.`}</span></div>
+                    <span>${en ? `Pay in two steps: first ${pct}% of the products + shipping, the rest on delivery.` : `الدفع على مرحلتين: تدفع أولاً ${pct}% من قيمة المنتجات + مصاريف الشحن، والباقي عند الاستلام.`}<br><b>${en ? "The deposit is non-refundable if you cancel the order." : "العربون غير مسترد في حالة إلغاء الطلب."}</b></span></div>
                 <div class="flex justify-between text-sm font-bold"><span>${en ? "Pay first" : "المطلوب دفعه أولاً"}</span><span style="color: var(--accent-primary);">${money(payNow)}</span></div>
                 ${typeof SHIPPING_FEE === "number" ? "" : `<div class="text-[11px]" style="color: var(--text-muted);">${en ? "+ shipping fee (confirmed with you before sending)" : "+ مصاريف الشحن (تُحدَّد وتتأكد معاك قبل الدفع)"}</div>`}
                 <div class="flex justify-between text-sm" style="color: var(--text-secondary);"><span>${en ? "Remaining on delivery" : "يتبقى عند الاستلام"}</span><span>${money(rest)}</span></div>`;
@@ -3332,7 +3378,8 @@ img,video,canvas{max-width:100%}
         }
 
         /* نافذة تأكيد حذف الحساب بشكل الموقع */
-        function smDelDialog(en) {
+        function smDelDialog(en, cfg) {
+                cfg = cfg || {};
             return new Promise(res => {
                 if (!document.getElementById("sm-del-css")) {
                     const st = document.createElement("style"); st.id = "sm-del-css";
@@ -3340,7 +3387,7 @@ img,video,canvas{max-width:100%}
                     document.head.appendChild(st);
                 }
                 const o = document.createElement("div"); o.className = "smd-o"; o.setAttribute("role", "dialog"); o.setAttribute("aria-modal", "true");
-                o.innerHTML = '<div class="smd-b" dir="' + (en ? "ltr" : "rtl") + '"><div class="smd-i"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-trash"/></svg></div><div class="smd-t">' + (en ? "Delete your account?" : "حذف حسابك؟") + '</div><div class="smd-m">' + (en ? "Your profile, addresses and favourites will be removed from this device and the store. You can create a new account any time. Your previous orders stay with the store." : "هيتمسح ملفك الشخصي وعناوينك والمفضلة من الجهاز ومن المتجر، وتقدر تعمل حساب جديد في أي وقت. طلباتك السابقة بتفضل محفوظة عند المتجر.") + '</div><div class="smd-r"><button type="button" class="smd-c">' + (en ? "Cancel" : "إلغاء") + '</button><button type="button" class="smd-d">' + (en ? "Delete" : "حذف الحساب") + '</button></div></div>';
+                o.innerHTML = '<div class="smd-b" dir="' + (en ? "ltr" : "rtl") + '"><div class="smd-i"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-trash"/></svg></div><div class="smd-t">' + (cfg.title || (en ? "Delete your account?" : "حذف حسابك؟")) + '</div><div class="smd-m">' + (cfg.msg || (en ? "Your profile, addresses and favourites will be removed from this device and the store. You can create a new account any time. Your previous orders stay with the store." : "هيتمسح ملفك الشخصي وعناوينك والمفضلة من الجهاز ومن المتجر، وتقدر تعمل حساب جديد في أي وقت. طلباتك السابقة بتفضل محفوظة عند المتجر.")) + '</div><div class="smd-r"><button type="button" class="smd-c">' + (cfg.no || (en ? "Cancel" : "إلغاء")) + '</button><button type="button" class="smd-d">' + (cfg.yes || (en ? "Delete" : "حذف الحساب")) + '</button></div></div>';
                 const done = v => { document.removeEventListener("keydown", kd); o.remove(); res(v); };
                 const kd = e => { if (e.key === "Escape") done(false); };
                 o.querySelector(".smd-c").onclick = () => done(false); o.querySelector(".smd-d").onclick = () => done(true);
@@ -3426,7 +3473,7 @@ img,video,canvas{max-width:100%}
             const c = o.customer || {};
             const pct = (PAYMENT_CONFIG && PAYMENT_CONFIG.depositPercent) || 30;
             const sep = "━━━━━━━━━━━━━━━━";
-            const payLine = o.pay.method === "deposit" ? `عربون ${pct}% عبر إنستا باي أو محفظة إلكترونية والباقي عند الاستلام` : "إنستا باي أو محفظة إلكترونية";
+            const payLine = o.pay.method === "deposit" ? `عربون ${pct}% عبر إنستا باي أو محفظة إلكترونية والباقي عند الاستلام (العربون غير مسترد في حالة الإلغاء)` : "إنستا باي أو محفظة إلكترونية";
             let when = "";
             try { when = new Date(o.ts).toLocaleDateString("ar-EG", { day: "numeric", month: "long", year: "numeric" }); } catch (e) {}
             const items = o.items.map((i, k) => {
@@ -3477,6 +3524,7 @@ img,video,canvas{max-width:100%}
                 if (typeof SHIPPING_FEE !== "number") rows.push(`<div class="text-[11px]" style="color:var(--text-muted)">${isEN() ? "+ shipping fee will be confirmed on WhatsApp" : "+ مصاريف الشحن هتتحدد وتتبلغ بيها على واتساب"}</div>`);
                 if (order.pay.method === "deposit") rows.push(`<div>${t("المتبقي عند الاستلام")}: <strong>${money(order.total - order.pay.payNow)}</strong></div>`);
                 rows.push(`<div class="mt-1" style="color:var(--text-muted)">${t("بعد التحويل أرسل صورة الإيصال على واتساب.")}</div>`);
+                rows.push(`<div class="mt-1 text-[11px]" style="color:#E5566D">${isEN() ? "You can cancel only before the order is being prepared, and the deposit is non-refundable." : "تقدر تلغي الطلب قبل ما يبقى «قيد التجهيز» فقط، والعربون غير مسترد في حالة الإلغاء."}</div>`);
                 rows.push(`<a class="btn-ghost mt-2.5" style="padding:9px 14px;font-size:12.5px;" target="_blank" rel="noopener noreferrer" href="https://wa.me/${STORE_WHATSAPP_NUMBER}?text=${encodeURIComponent("إيصال تحويل للطلب " + order.id)}">${t("إرسال إيصال التحويل")}</a>`);
                 box.innerHTML = rows.join("");
                 box.classList.remove("hidden");
@@ -4951,33 +4999,52 @@ try { const gi = document.getElementById("global-search-input"); if (gi) gi.valu
   function notify(o, st) {
     if (window.__msgsLive) return;
     var id = o.id, en = isEN();
-    var M = en ? { processing: "Your order " + id + " is now being prepared 📦", shipped: "Your order " + id + " has been shipped 🚚", completed: "Your order " + id + " was delivered — enjoy! 🌸", cancelled: "Your order " + id + " was cancelled", returned: "A return was recorded for order " + id }
-               : { processing: "طلبك رقم " + id + " قيد التجهيز دلوقتي 📦", shipped: "طلبك رقم " + id + " اتشحن 🚚", completed: "طلبك رقم " + id + " وصل — بالهنا والشفا 🌸", cancelled: "تم إلغاء طلبك رقم " + id, returned: "تم تسجيل مرتجع لطلبك رقم " + id };
+    var M = en ? { processing: "Your order " + id + " is now being prepared 📦", shipped: "Your order " + id + " has been shipped 🚚", completed: "Your order " + id + " was delivered — enjoy! 🌸", cancelled: "Your order " + id + " was cancelled and removed", returned: "A return was recorded for order " + id }
+               : { processing: "طلبك رقم " + id + " قيد التجهيز دلوقتي 📦", shipped: "طلبك رقم " + id + " اتشحن 🚚", completed: "طلبك رقم " + id + " وصل — بالهنا والشفا 🌸", cancelled: "تم إلغاء طلبك رقم " + id + " واتشال من طلباتك", returned: "تم تسجيل مرتجع لطلبك رقم " + id };
     var msg = M[st]; if (!msg) return;
     try { localStorage.setItem("sm-unread", "1"); } catch (e) {}
     updateDot(); showToast(msg);
     try { if ("Notification" in window && Notification.permission === "granted") new Notification("SKIN MASH", { body: msg }); } catch (e) {}
   }
+  /* إشعار فوري: الطلب اتلغى/اتشال من الأدمن (بيتبعت دايماً حتى لو الرسائل اللحظية شغالة) */
+  function notifyRemoved(id) {
+    var en = isEN(), msg = en ? "Your order " + id + " was cancelled and removed from your orders" : "تم إلغاء طلبك رقم " + id + " واتشال من طلباتك";
+    try { localStorage.setItem("sm-unread", "1"); } catch (e) {}
+    updateDot(); showToast(msg);
+    try { if ("Notification" in window && Notification.permission === "granted") new Notification("SKIN MASH", { body: msg }); } catch (e) {}
+  }
+  var syncBusy = false;
   function syncOrders() {
     var p = getProfile();
-    if (!p || !p.phone) return Promise.resolve(false);
-    var open = getOrders().filter(function (o) { return o.status === "sent" && ["completed", "cancelled", "returned"].indexOf(o.fs || "new") === -1; });
-    if (!open.length) return Promise.resolve(false);
+    if (!p || !p.phone || syncBusy) return Promise.resolve(false);
+    var stale = getOrders().filter(function (o) { return o.fs === "cancelled"; });
+    if (stale.length) { stale.forEach(function (o) { smRemoveOrder(o.id); }); }
+    var open = getOrders().filter(function (o) { return o.status === "sent" && ["completed", "returned"].indexOf(o.fs || "new") === -1; });
+    if (!open.length) return Promise.resolve(stale.length > 0);
+    syncBusy = true;
     return smRpc("track_orders", { p_phone: p.phone, p_codes: open.map(function (o) { return o.id; }) })
       .then(function (r) { return r.ok ? r.json() : null; })
       .then(function (rows) {
-        if (!Array.isArray(rows)) return false;
-        var all = getOrders(), changed = false;
+        syncBusy = false;
+        if (!Array.isArray(rows)) return stale.length > 0;
+        var all = getOrders(), changed = stale.length > 0, removed = [], seen = {};
         rows.forEach(function (x) {
+          seen[x.code] = 1;
           var o = all.find(function (z) { return z.id === x.code; });
           if (!o || !x.status) return;
+          if (x.status === "cancelled") { removed.push(o.id); return; }
           if (o.fs === undefined) { o.fs = x.status; changed = true; return; }
           if (o.fs !== x.status) { o.fs = x.status; changed = true; notify(o, x.status); }
         });
+        /* الأدمن مسح الطلب نهائياً: مش راجع في النتيجة → يتشال (بعد دقيقة من إنشائه) */
+        open.forEach(function (o) { if (!seen[o.id] && Date.now() - (o.ts || 0) > 60000) removed.push(o.id); });
+        if (removed.length) { all = all.filter(function (o) { return removed.indexOf(o.id) === -1; }); changed = true; }
         if (changed) store.set("sm-orders", all);
+        removed.forEach(notifyRemoved);
         return changed;
-      }).catch(function () { return false; });
+      }).catch(function () { syncBusy = false; return stale.length > 0; });
   }
+  window.smSyncNow = function () { return syncOrders().then(ui); };
   /* ---- طلبات المنتجات: مزامنة الحالة + إشعار "تم توفيره" ---- */
   window.getMyReqs = function () { try { return JSON.parse(localStorage.getItem("sm-reqs") || "[]"); } catch (e) { return []; } };
   function notifyReq(x) {
@@ -5015,6 +5082,7 @@ try { const gi = document.getElementById("global-search-input"); if (gi) gi.valu
   };
   function tick() { if (document.hidden) return; syncOrders().then(ui); syncRequests().then(ui); }
   setInterval(tick, 30000);
+  setInterval(function () { if (!document.hidden) syncOrders().then(ui); }, 8000);   /* الطلبات بس: تحديث سريع عشان الإلغاء يوصل فوراً */
   document.addEventListener("visibilitychange", function () { if (!document.hidden) { tick(); try { enforceCustomer(); } catch (e) {} } });
   setInterval(function () { if (!document.hidden) { try { enforceCustomer(); } catch (e) {} } }, 60000);
   window.addEventListener("load", function () { updateDot(); tick(); });
