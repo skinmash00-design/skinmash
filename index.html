@@ -1152,6 +1152,8 @@
 .hs-clear:not(.hidden) { display:flex; }
 .hdr-search .search-panel { top:calc(100% - 2px); left:0; right:0; transform:none; width:auto; max-width:none; margin:0 14px; animation:spIn2 .2s ease; }
 .hdr-menu-wrap .search-panel { top:calc(100% + 10px); left:0; right:auto; transform:none; width:min(92vw,340px); max-width:none; animation:spIn2 .2s ease; }
+/* الإنجليزي (LTR): زر القائمة على اليمين، فالقائمة تتفتح ناحية الشمال بدل ما تطلع برا الشاشة */
+html[dir="ltr"] .hdr-menu-wrap .search-panel { left:auto; right:0; }
 @keyframes spIn2 { from{opacity:0; transform:translateY(-6px)} to{opacity:1; transform:none} }
 
 /* ديسكتوب: شريط بحث احترافي في منتصف الهيدر */
@@ -1311,6 +1313,32 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
   [data-theme="light"]{--bg-primary:#EADCD9;--bg-secondary:#E2D1CD;--surface-card:#F3E8E5;--surface-elevated:#E7D6D2;--surface-dock:rgba(243,232,229,.94)}
   [data-theme="light"] body{background-color:var(--bg-primary)}
   [data-theme="light"] #hero{background:linear-gradient(180deg,rgba(226,209,205,.7) 0%,rgba(234,220,217,0) 100%)}
+}
+</style>
+
+<style id="mobile-fit-fix">
+/* ===== الهاتف: الموقع على قد الشاشة + القائمة ما تطلعش بره ===== */
+html{max-width:100%;overflow-x:hidden}
+body{max-width:100%;overflow-x:hidden}
+img,video,canvas{max-width:100%}
+#hero .grid>*{min-width:0}
+#hero h1{overflow-wrap:anywhere}
+@media (max-width:639px){
+  .site-header .hdr-menu-wrap{position:static}
+  html[dir] .site-header .hdr-menu-wrap .search-panel{
+    position:absolute;top:calc(100% + 6px);left:8px;right:8px;inset-inline:8px;
+    width:auto;max-width:none;transform:none;margin:0;
+    max-height:calc(100vh - 90px);max-height:calc(100dvh - 90px)}
+  html[dir] .site-header .hdr-search .search-panel{left:8px;right:8px;margin:0;width:auto;max-width:none}
+  #hero{padding-inline:16px}
+  #hero h1{font-size:clamp(26px,8.2vw,34px);line-height:1.3}
+  html[lang="en"] #hero h1{line-height:1.3;padding-top:6px;padding-bottom:6px}
+  .hdr-actions{min-width:0}
+}
+@media (max-width:360px){
+  .hdr-inner{padding:0 6px;gap:2px}
+  .brand-logo{width:88px}
+  .site-header .dock-btn{width:31px;height:31px}
 }
 </style>
 </head>
