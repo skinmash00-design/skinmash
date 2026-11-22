@@ -1087,6 +1087,10 @@
         .btn-acc { background: var(--accent-primary); color: var(--btn-primary-text); border: 0; }
         .btn-ghost { background: transparent; color: var(--text-primary); border: 1px solid var(--border-strong); }
         .btn-acc[disabled] { opacity: 0.65; cursor: progress; }
+        .sm-info { position: relative; display: inline-block; vertical-align: middle; margin-inline-start: 6px; }
+        .sm-info-btn { width: 20px; height: 20px; border-radius: 50%; border: 1px solid var(--border-strong); background: var(--accent-soft); color: var(--accent-primary); font: 700 12px/1 serif; font-style: italic; cursor: pointer; padding: 0; }
+        .sm-info-tip { display: none; margin-top: 8px; padding: 10px 12px; border-radius: 12px; background: var(--surface-elevated); border: 1px solid var(--border-subtle); color: var(--text-primary); font-size: 12px; line-height: 1.8; font-weight: 400; text-align: start; white-space: normal; }
+        .sm-info-tip.open { display: block; margin: 0 0 10px; }
         .order-card { padding: 14px; border-radius: 18px; background: var(--surface-elevated); border: 1px solid var(--border-subtle); }
         .cx-box { margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--border-subtle); }
         .btn-cancel { width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 14px; border-radius: 999px; font-size: 12.5px; font-weight: 700; cursor: pointer; background: rgba(229,86,109,.10); color: #E5566D; border: 1px solid rgba(229,86,109,.35); transition: background .2s; }
@@ -3061,7 +3065,7 @@ img,video,canvas{max-width:100%}
             if (!noNav && navClose("sheet")) return;
             const m = document.getElementById("sheet-modal");
             m.classList.add("hidden"); m.classList.remove("flex");
-            sheetKind = null; pendingPhoto = null; gateCheckout = false; gateRequest = false; authMode = null; pwMode = null; forcePw = ""; otpReset(); otpReset();
+            sheetKind = null; pendingPhoto = null; gateCheckout = false; gateRequest = false; authMode = null; pwMode = null; pwSent = false; forcePw = ""; otpReset(); otpReset();
         }
         function emptyHTML(ico, title, sub) {
             return `<div class="sheet-empty"><div class="sp-ico"><svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><use href="#${ico}"/></svg></div>
@@ -3110,7 +3114,7 @@ img,video,canvas{max-width:100%}
                 const gRow = p.gender ? profileRow("i-user", t("النوع"), genderLabel(p.gender)) : `<div class="pf-row" style="display:block"><div class="pf-k" style="margin-bottom:8px">${t("حدد نوعك (لتخاطبك الرسائل بشكل مناسب)")}</div>${genderPicker("", true)}</div>`;
                 return head + trk + `<div class="space-y-2.5">
                     ${gRow}
-                    ${p.email ? profileRow("i-user", _l("الجيميل", "Email"), p.email) : ""}
+                    ${p.email && !/@skinmash\.app$/.test(p.email) ? profileRow("i-user", _l("الجيميل", "Email"), p.email) : ""}
                     ${profileRow("i-phone", t("رقم الهاتف"), p.phone || "—")}
                     ${profileRow("i-wa", t("رقم واتساب"), p.whatsapp || "—")}
                     ${profileRow("i-pin", t("المحافظة"), p.city || "—")}
@@ -3123,7 +3127,7 @@ img,video,canvas{max-width:100%}
                         <svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><use href="#i-pencil"/></svg><span>${t("تعديل بياناتي")}</span></button>
                     <button type="button" class="btn-ghost" onclick="openSheet('orders')">
                         <svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><use href="#i-receipt"/></svg><span>${t("تابع طلبك")}${on ? ` (${on})` : ""}</span></button>
-                    ${p.email ? `<button type="button" class="btn-ghost" onclick="pwMode='change';renderSheet()"><svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><use href="#i-info"/></svg><span>${_l("تغيير كلمة السر", "Change password")}</span></button>` : ""}
+                    ${p.phone ? `<button type="button" class="btn-ghost" onclick="pwMode='change';pwSent=false;renderSheet()"><svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><use href="#i-info"/></svg><span>${_l("تغيير كلمة السر", "Change password")}</span></button>` : ""}
                     <button type="button" class="btn-ghost" onclick="logoutAccount()"><svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><use href="#i-x"/></svg><span>${_l("تسجيل خروج", "Log out")}</span></button>
                     <button type="button" class="btn-ghost del-acct" onclick="deleteMyAccount()">
                         <svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><use href="#i-trash"/></svg><span>${isEN() ? "Delete my account" : "حذف حسابي"}</span></button>
@@ -3143,10 +3147,7 @@ img,video,canvas{max-width:100%}
                 <div><label class="fld-label">${t("المحافظة")} *</label><input class="fld" id="pf-city" list="gov-list" autocomplete="off" required minlength="2" placeholder="${t("اختر المحافظة أو اكتبها")}" onfocus="fillGov()" value="${v("city")}"></div>
                 <div><label class="fld-label">${t("العنوان بالتفصيل")} *</label><textarea class="fld" id="pf-address" rows="2" required minlength="8">${v("address")}</textarea></div>
                 <div><label class="fld-label">${t("النوع")} *</label>${genderPicker((p && p.gender) || "", false)}</div>
-                ${!p ? `<div><label class="fld-label">${_l("الجيميل", "Email")} *</label>
-                    <div style="display:flex;gap:8px"><input class="fld" id="pf-email" type="email" inputmode="email" autocomplete="email" dir="ltr" placeholder="name@gmail.com" value="${escHtml(otpEmail)}" style="flex:1;min-width:0"><button type="button" class="btn-ghost" id="pf-sendcode" style="width:auto;white-space:nowrap;padding:0 16px" onclick="sendSignupCode()">${_l("ابعت الكود", "Send code")}</button></div></div>
-                <div><label class="fld-label">${_l("كود التأكيد", "Verification code")} *</label><input class="fld" id="pf-code" inputmode="numeric" maxlength="8" autocomplete="one-time-code" dir="ltr" placeholder="${_l("الكود اللي وصلك على الجيميل", "The code sent to your email")}" oninput="this.value=toLatinDigits(this.value).replace(/\\D/g,'')"></div>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                ${!p ? `<div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                     <div><label class="fld-label">${_l("كلمة السر", "Password")} *</label><input class="fld" id="pf-pw" type="password" minlength="6" autocomplete="new-password" placeholder="${_l("6 أحرف أو أرقام على الأقل", "At least 6 characters")}"></div>
                     <div><label class="fld-label">${_l("تأكيد كلمة السر", "Confirm password")} *</label><input class="fld" id="pf-pw2" type="password" minlength="6" autocomplete="new-password"></div></div>` : ""}
                 <button type="submit" class="btn-acc"><svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>${t("تأكيد")}</span></button>
@@ -3155,7 +3156,13 @@ img,video,canvas{max-width:100%}
             </form>`;
         }
         /* ---------- الدخول بالرقم وكلمة السر ---------- */
-        let authMode = null, pwMode = null, forcePw = "", authBusy = false, otpEmail = "", otpSent = false, otpTok = "";
+        let authMode = null, pwMode = null, pwSent = false, forcePw = "", authBusy = false, otpEmail = "", otpSent = false, otpTok = "";
+        function spamInfoHTML() {
+            return `<span class="sm-info"><button type="button" class="sm-info-btn" aria-label="${_l("فين الكود؟", "Where is the code?")}" onclick="var f=this.closest('form')||document;var t=f.querySelector('.sm-info-tip');if(t)t.classList.toggle('open')">i</button></span>`;
+        }
+        function spamTipHTML() {
+            return `<div class="sm-info-tip">${_l("لو الكود مجاش في الرسائل الأساسية، افتح فولدر <b>Spam</b> (الرسائل غير المرغوب فيها) في الجيميل. في الموبايل: القائمة ☰ ثم <b>Spam</b>. افتح رسالة SKIN MASH واضغط <b>Not spam / ليست غير مرغوب فيها</b> عشان الرسائل الجاية توصلك عادي.", "If the code isn't in your inbox, open the <b>Spam</b> folder in Gmail (on mobile: menu ☰ then Spam). Open the SKIN MASH message and tap <b>Not spam</b> so future emails arrive normally.")}</div>`;
+        }
         const _l = (ar, en) => isEN() ? en : ar;
         async function authFetch(path, body) {
             try {
@@ -3208,60 +3215,78 @@ img,video,canvas{max-width:100%}
             if (c === "weak_password") return _l("كلمة السر ضعيفة، جرّب أطول أو فيها حروف وأرقام.", "Password is too weak, try a longer one with letters and numbers.");
             return _l("مقدرناش نحفظ كلمة السر، حاول تاني.", "Couldn't save the password, please try again.");
         }
+        const phoneEmail = ph => String(ph).replace(/\D/g, "") + "@skinmash.app";
         const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
         const fv = id => ((document.getElementById(id) || {}).value || "").trim();
         function loginHTML() {
             return `<form onsubmit="doLogin(event)" novalidate class="space-y-3.5" data-i18n-skip>
                 <p class="text-sm font-bold text-center">${_l("تسجيل الدخول", "Log in")}</p>
-                <div><label class="fld-label">${_l("الجيميل", "Email")} *</label><input class="fld" id="lg-email" type="email" inputmode="email" autocomplete="email" dir="ltr" placeholder="name@gmail.com" value="${escHtml(otpEmail)}"></div>
+                <div><label class="fld-label">${_l("رقم الموبايل", "Mobile number")} *</label><input class="fld" id="lg-phone" type="tel" inputmode="numeric" autocomplete="tel" dir="ltr" placeholder="01xxxxxxxxx" value="${escHtml(otpEmail)}"></div>
                 <div><label class="fld-label">${_l("كلمة السر", "Password")} *</label><input class="fld" id="lg-pw" type="password" autocomplete="current-password"></div>
                 <button type="submit" class="btn-acc" id="lg-btn"><svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>${_l("دخول", "Log in")}</span></button>
-                <button type="button" class="btn-ghost" onclick="otpEmail=fv('lg-email');otpSent=false;authMode='forgot';renderSheet()">${_l("نسيت كلمة السر؟", "Forgot password?")}</button>
+                <button type="button" class="btn-ghost" onclick="otpEmail=fv('lg-phone');otpSent=false;authMode='forgot';renderSheet()">${_l("نسيت كلمة السر؟", "Forgot password?")}</button>
                 <button type="button" class="btn-ghost" onclick="authMode=null;otpReset();renderSheet()">${_l("رجوع", "Back")}</button>
             </form>`;
         }
+        const waResetLink = (ph, nm) => `https://wa.me/${STORE_WHATSAPP_NUMBER}?text=${encodeURIComponent((nm ? "أنا " + nm + "\n" : "") + "نسيت كلمة السر لحسابي في SKIN MASH ومحتاجة كود استرجاع.\nرقم موبايلي: " + ph)}`;
         function forgotHTML() {
             const step2 = otpSent;
             return `<form onsubmit="${step2 ? "doForgotReset(event)" : "doForgotSend(event)"}" novalidate class="space-y-3.5" data-i18n-skip>
                 <p class="text-sm font-bold text-center">${_l("نسيت كلمة السر", "Forgot password")}</p>
                 ${step2
-                    ? `<p class="text-xs leading-relaxed text-center" style="color: var(--text-muted);">${_l("بعتنالك كود على", "We sent a code to")} <b dir="ltr">${escHtml(otpEmail)}</b><br>${_l("اكتبه واختار كلمة سر جديدة (شوف الـ Spam لو مجاش).", "Enter it and choose a new password (check Spam if it's missing).")}</p>
+                    ? `<p class="text-xs leading-relaxed text-center" style="color: var(--text-muted);">${_l("المتجر هيبعتلك كود على واتساب للرقم", "The store will send a code on WhatsApp to")} <b dir="ltr">${escHtml(otpEmail)}</b><br>${_l("اكتبه هنا واختار كلمة سر جديدة. الكود صالح 15 دقيقة.", "Enter it here and choose a new password. The code is valid for 15 minutes.")}</p>
                        <div><label class="fld-label">${_l("الكود", "Code")} *</label><input class="fld" id="fg-code" inputmode="numeric" maxlength="8" autocomplete="one-time-code" dir="ltr" style="text-align:center;letter-spacing:6px;font-size:20px" oninput="this.value=toLatinDigits(this.value).replace(/\\D/g,'')"></div>
                        <div><label class="fld-label">${_l("كلمة السر الجديدة", "New password")} *</label><input class="fld" id="fg-pw" type="password" minlength="6" autocomplete="new-password"></div>
                        <div><label class="fld-label">${_l("تأكيد كلمة السر", "Confirm password")} *</label><input class="fld" id="fg-pw2" type="password" minlength="6" autocomplete="new-password"></div>
                        <button type="submit" class="btn-acc" id="fg-btn"><svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>${_l("حفظ ودخول", "Save & log in")}</span></button>
-                       <button type="button" class="btn-ghost" onclick="otpSent=false;renderSheet()">${_l("إرسال كود جديد", "Send a new code")}</button>`
-                    : `<div><label class="fld-label">${_l("الجيميل المسجّل", "Registered email")} *</label><input class="fld" id="fg-email" type="email" inputmode="email" autocomplete="email" dir="ltr" placeholder="name@gmail.com" value="${escHtml(otpEmail)}"></div>
-                       <button type="submit" class="btn-acc" id="fg-btn"><svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>${_l("ابعتلي كود", "Send me a code")}</span></button>`}
+                       <a class="btn-ghost" target="_blank" rel="noopener noreferrer" href="${waResetLink(otpEmail, "")}">${_l("فتح واتساب تاني", "Open WhatsApp again")}</a>`
+                    : `<p class="text-xs leading-relaxed text-center" style="color: var(--text-muted);">${_l("اكتب رقم موبايلك وهنفتحلك واتساب برسالة جاهزة للمتجر، وهيبعتولك كود تدخل بيه.", "Enter your mobile number and we'll open WhatsApp with a ready message to the store; they will send you a code.")}</p>
+                       <div><label class="fld-label">${_l("رقم الموبايل المسجّل", "Registered mobile number")} *</label><input class="fld" id="fg-phone" type="tel" inputmode="numeric" autocomplete="tel" dir="ltr" placeholder="01xxxxxxxxx" value="${escHtml(otpEmail)}"></div>
+                       <button type="submit" class="btn-acc" id="fg-btn"><svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>${_l("اطلب الكود على واتساب", "Request code on WhatsApp")}</span></button>
+                       <button type="button" class="btn-ghost" onclick="otpSent=true;otpEmail=fv('fg-phone');renderSheet()">${_l("معايا كود بالفعل", "I already have a code")}</button>`}
                 <button type="button" class="btn-ghost" onclick="authMode='login';otpSent=false;renderSheet()">${_l("رجوع", "Back")}</button>
             </form>`;
         }
         async function doLogin(e) {
             e.preventDefault(); if (authBusy) return;
-            const em = fv("lg-email").toLowerCase(), pw = (document.getElementById("lg-pw") || {}).value || "";
-            if (!EMAIL_RE.test(em)) { showToast(_l("اكتب جيميل صحيح", "Enter a valid email")); return; }
+            const ph = toLatinDigits(fv("lg-phone")), pw = (document.getElementById("lg-pw") || {}).value || "";
+            if (!PHONE_RE.test(ph)) { showToast(_l("اكتب رقم موبايل مصري صحيح", "Enter a valid Egyptian mobile number")); return; }
+            const em = phoneEmail(ph);
             if (!pw) { showToast(_l("اكتب كلمة السر", "Enter your password")); return; }
             authBusy = true; const btn = document.getElementById("lg-btn"); if (btn) btn.disabled = true;
             const t0 = await authFetch("token?grant_type=password", { email: em, password: pw });
             const tok = t0.ok && t0.j && t0.j.access_token;
-            if (!tok) { authBusy = false; if (btn) btn.disabled = false; showToast(t0.net ? authMsg(t0) : t0.status === 429 ? _l("حاولت كتير، استنى شوية.", "Too many attempts, please wait.") : _l("الجيميل أو كلمة السر غلط.", "Wrong email or password.")); return; }
+            if (!tok) { authBusy = false; if (btn) btn.disabled = false; showToast(t0.net ? authMsg(t0) : t0.status === 429 ? _l("حاولت كتير، استنى شوية.", "Too many attempts, please wait.") : _l("الرقم أو كلمة السر غلط.", "Wrong number or password.")); return; }
             const r = await rpcTok("customer_login_email", {}, tok);
             authBusy = false; if (btn) btn.disabled = false;
             if (r.ok && r.j && r.j.ok) { await completeLogin(r.j, em); return; }
             if (r.ok && r.j && r.j.reason === "none") { showToast(_l("الحساب ده مكتملش. اعمل حساب جديد.", "This account isn't complete. Create a new account.")); return; }
             showToast(authMsg(r));
         }
-        async function doForgotSend(e) {
-            e.preventDefault(); if (authBusy) return;
-            const em = fv("fg-email").toLowerCase();
-            if (!EMAIL_RE.test(em)) { showToast(_l("اكتب جيميل صحيح", "Enter a valid email")); return; }
-            authBusy = true; const btn = document.getElementById("fg-btn"); if (btn) btn.disabled = true;
-            const r = await authFetch("otp", { email: em, create_user: false });
-            authBusy = false; if (btn) btn.disabled = false;
-            if (r.net) { showToast(authMsg(r)); return; }
-            if (r.status === 429) { showToast(_l("استنى دقيقة وحاول تاني", "Please wait a minute and try again")); return; }
-            if (!r.ok) { showToast(_l("مفيش حساب بالجيميل ده.", "No account with this email.")); return; }
-            otpEmail = em; otpSent = true; renderSheet();
+        function doForgotSend(e) {
+            e.preventDefault();
+            const ph = toLatinDigits(fv("fg-phone"));
+            if (!PHONE_RE.test(ph)) { showToast(_l("اكتب رقم موبايل مصري صحيح", "Enter a valid Egyptian mobile number")); return; }
+            window.open(waResetLink(ph, ""), "_blank");
+            otpEmail = ph; otpSent = true; renderSheet();
+        }
+        /* تعيين كلمة سر جديدة بالكود اللي الأدمن بعته على واتساب */
+        async function resetWithCode(phone, code, pw) {
+            try {
+                const r = await smRpc("customer_reset_password", { p_phone: phone, p_code: code, p_new: pw });
+                let j = null; try { j = await r.json(); } catch (x) {}
+                return { ok: r.ok, j: j, unavail: r.status === 404 };
+            } catch (x) { return { net: true }; }
+        }
+        function resetMsg(r) {
+            if (r.net) return authMsg(r);
+            if (r.unavail) return _l("الخدمة دي لسه مش مفعّلة، كلّم المتجر على واتساب", "This service isn't enabled yet, please contact the store on WhatsApp");
+            const why = r.j && r.j.reason;
+            if (why === "expired") return _l("الكود انتهى. اطلبي كود جديد من المتجر.", "The code has expired. Ask the store for a new one.");
+            if (why === "locked") return _l("محاولات كتير غلط. اطلبي كود جديد من المتجر.", "Too many wrong attempts. Ask the store for a new code.");
+            if (why === "bad_code") return _l("الكود غلط، راجعيه.", "Wrong code, please check it.");
+            if (why === "weak") return _l("كلمة السر 6 أحرف على الأقل", "Password must be at least 6 characters");
+            return _l("مقدرناش نغيّر كلمة السر، حاول تاني.", "Couldn't change the password, please try again.");
         }
         async function doForgotReset(e) {
             e.preventDefault(); if (authBusy) return;
@@ -3271,15 +3296,14 @@ img,video,canvas{max-width:100%}
             if (pw !== pw2) { showToast(_l("كلمتا السر غير متطابقتين", "Passwords don't match")); return; }
             authBusy = true; const btn = document.getElementById("fg-btn"); if (btn) btn.disabled = true;
             const done = () => { authBusy = false; if (btn) btn.disabled = false; };
-            const v = await authFetch("verify", { type: "email", email: otpEmail, token: code });
-            const tok = v.ok && v.j && v.j.access_token;
-            if (!tok) { done(); showToast(v.net ? authMsg(v) : _l("الكود غلط أو انتهى. اطلب كود جديد.", "Wrong or expired code. Request a new one.")); return; }
-            const u = await authUser(tok, { password: pw });
-            if (!u.ok) { done(); showToast(pwErr(u)); return; }
+            const rr = await resetWithCode(otpEmail, code, pw);
+            if (!(rr.ok && rr.j && rr.j.ok)) { done(); showToast(resetMsg(rr)); return; }
+            const t0 = await authFetch("token?grant_type=password", { email: phoneEmail(otpEmail), password: pw });
+            const tok = t0.ok && t0.j && t0.j.access_token;
+            if (!tok) { done(); showToast(_l("تم تغيير كلمة السر ✓ سجّلي دخول بيها.", "Password changed ✓ Please log in with it.")); authMode = "login"; renderSheet(); return; }
             const r = await rpcTok("customer_login_email", {}, tok);
             done();
-            if (r.ok && r.j && r.j.ok) { showToast(_l("تم تغيير كلمة السر ✓", "Password changed ✓")); await completeLogin(r.j, otpEmail); return; }
-            if (r.ok && r.j && r.j.reason === "none") { showToast(_l("الحساب ده مكتملش. اعمل حساب جديد.", "This account isn't complete. Create a new account.")); return; }
+            if (r.ok && r.j && r.j.ok) { showToast(_l("تم تغيير كلمة السر ✓", "Password changed ✓")); await completeLogin(r.j, phoneEmail(otpEmail)); return; }
             showToast(authMsg(r));
         }
         /* إرسال كود التأكيد من داخل فورم الحساب الجديد (من غير ما نعيد رسم الفورم عشان بيانات العميل متضيعش) */
@@ -3318,37 +3342,42 @@ img,video,canvas{max-width:100%}
             renderSheet();
         }
         function pwFormHTML() {
+            const p = getProfile() || {};
+            if (!pwSent) return `<div class="space-y-3.5" data-i18n-skip>
+                <p class="text-sm font-bold text-center">${_l("تغيير كلمة السر", "Change password")}</p>
+                <p class="text-xs leading-relaxed text-center" style="color: var(--text-muted);">${_l("اطلبي كود من المتجر على واتساب، وهيبعتهولك تكتبه هنا وتختاري كلمة سر جديدة.", "Request a code from the store on WhatsApp; they will send it so you can enter it here and choose a new password.")}</p>
+                <a class="btn-acc" target="_blank" rel="noopener noreferrer" href="${waResetLink(p.phone || "", p.name || "")}" onclick="pwSent=true;setTimeout(renderSheet,300)"><svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>${_l("اطلب الكود على واتساب", "Request code on WhatsApp")}</span></a>
+                <button type="button" class="btn-ghost" onclick="pwSent=true;renderSheet()">${_l("معايا كود بالفعل", "I already have a code")}</button>
+                <button type="button" class="btn-ghost" onclick="pwMode=null;pwSent=false;renderSheet()">${t("إلغاء")}</button>
+            </div>`;
             return `<form onsubmit="doPwSave(event)" novalidate class="space-y-3.5" data-i18n-skip>
                 <p class="text-sm font-bold text-center">${_l("تغيير كلمة السر", "Change password")}</p>
-                <div><label class="fld-label">${_l("كلمة السر الحالية", "Current password")}</label><input class="fld" id="pw-old" type="password" autocomplete="current-password"></div>
+                <p class="text-xs leading-relaxed text-center" style="color: var(--text-muted);">${_l("اكتبي الكود اللي المتجر بعتهولك على واتساب. صالح 15 دقيقة.", "Enter the code the store sent you on WhatsApp. Valid for 15 minutes.")}</p>
+                <div><label class="fld-label">${_l("الكود", "Code")} *</label><input class="fld" id="pw-code" inputmode="numeric" maxlength="8" autocomplete="one-time-code" dir="ltr" style="text-align:center;letter-spacing:6px;font-size:20px" oninput="this.value=toLatinDigits(this.value).replace(/\\D/g,'')"></div>
                 <div><label class="fld-label">${_l("كلمة السر الجديدة", "New password")}</label><input class="fld" id="pw-new" type="password" minlength="6" autocomplete="new-password"></div>
                 <div><label class="fld-label">${_l("تأكيد كلمة السر", "Confirm password")}</label><input class="fld" id="pw-new2" type="password" minlength="6" autocomplete="new-password"></div>
                 <button type="submit" class="btn-acc" id="pw-btn"><svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>${_l("حفظ", "Save")}</span></button>
-                <button type="button" class="btn-ghost" onclick="pwMode=null;renderSheet()">${t("إلغاء")}</button>
+                <button type="button" class="btn-ghost" onclick="pwMode=null;pwSent=false;renderSheet()">${t("إلغاء")}</button>
             </form>`;
         }
         async function doPwSave(e) {
             e.preventDefault(); if (authBusy) return;
-            const p = getProfile(); if (!p || !p.email) return;
-            const old = (document.getElementById("pw-old") || {}).value || "", nw = (document.getElementById("pw-new") || {}).value || "", nw2 = (document.getElementById("pw-new2") || {}).value || "";
-            if (!old) { showToast(_l("اكتب كلمة السر الحالية", "Enter your current password")); return; }
+            const p = getProfile(); if (!p || !p.phone) return;
+            const code = fv("pw-code"), nw = (document.getElementById("pw-new") || {}).value || "", nw2 = (document.getElementById("pw-new2") || {}).value || "";
+            if (code.length < 6) { showToast(_l("اكتب الكود كامل", "Enter the full code")); return; }
             if (nw.length < 6) { showToast(_l("كلمة السر 6 أحرف على الأقل", "Password must be at least 6 characters")); return; }
             if (nw !== nw2) { showToast(_l("كلمتا السر غير متطابقتين", "Passwords don't match")); return; }
             authBusy = true; const btn = document.getElementById("pw-btn"); if (btn) btn.disabled = true;
-            const done = () => { authBusy = false; if (btn) btn.disabled = false; };
-            const t0 = await authFetch("token?grant_type=password", { email: p.email, password: old });
-            const tok = t0.ok && t0.j && t0.j.access_token;
-            if (!tok) { done(); showToast(t0.net ? authMsg(t0) : _l("كلمة السر الحالية غلط.", "Current password is wrong.")); return; }
-            const u = await authUser(tok, { password: nw });
-            done();
-            if (!u.ok) { showToast(pwErr(u)); return; }
-            pwMode = null; showToast(_l("تم حفظ كلمة السر ✓", "Password saved ✓")); renderSheet();
+            const rr = await resetWithCode(p.phone, code, nw);
+            authBusy = false; if (btn) btn.disabled = false;
+            if (!(rr.ok && rr.j && rr.j.ok)) { showToast(resetMsg(rr)); return; }
+            pwMode = null; pwSent = false; showToast(_l("تم حفظ كلمة السر ✓", "Password saved ✓")); renderSheet();
         }
         async function logoutAccount() {
             const p = getProfile(); if (!p) return;
             
             const en = isEN();
-            const ok = await smDelDialog(en, { title: en ? "Log out?" : "تسجيل الخروج؟", msg: en ? "Your data will be removed from this device only. You can log back in anytime with your email and password." : "بياناتك هتتمسح من الجهاز ده بس. تقدر تدخل تاني في أي وقت بجيميلك وكلمة السر.", no: en ? "Stay" : "رجوع", yes: en ? "Log out" : "تسجيل خروج" });
+            const ok = await smDelDialog(en, { title: en ? "Log out?" : "تسجيل الخروج؟", msg: en ? "Your data will be removed from this device only. You can log back in anytime with your mobile number and password." : "بياناتك هتتمسح من الجهاز ده بس. تقدر تدخل تاني في أي وقت برقم موبايلك وكلمة السر.", no: en ? "Stay" : "رجوع", yes: en ? "Log out" : "تسجيل خروج" });
             if (!ok) return;
             ["sm-profile", "sm-orders", "sm-favs", "sm-notifs", "sm-unread", "sm-reqs", "sm-msgs", "sm-msg-seen"].forEach(k => { try { localStorage.removeItem(k); } catch (e) {} });
             try { delete memStore["sm-profile"]; delete memStore["sm-orders"]; delete memStore["sm-favs"]; } catch (e) {}
@@ -3397,23 +3426,23 @@ img,video,canvas{max-width:100%}
             const isNew = !getProfile();
             let email = old.email || "", pw = "";
             if (isNew) {
-                email = fv("pf-email").toLowerCase(); const code = fv("pf-code"); pw = (document.getElementById("pf-pw") || {}).value || ""; const pw2 = (document.getElementById("pf-pw2") || {}).value || "";
-                if (!EMAIL_RE.test(email)) return bad("pf-email", _l("اكتب جيميل صحيح", "Enter a valid email"));
-                if (!otpTok) {
-                    if (email !== otpEmail) return bad("pf-email", _l("ابعت الكود على الجيميل ده الأول", "Send the code to this email first"));
-                    if (code.length < 6) return bad("pf-code", _l("اكتب كود التأكيد اللي وصلك", "Enter the verification code you received"));
-                }
+                email = phoneEmail(phone); pw = (document.getElementById("pf-pw") || {}).value || ""; const pw2 = (document.getElementById("pf-pw2") || {}).value || "";
                 if (pw.length < 6) return bad("pf-pw", "كلمة السر 6 أحرف على الأقل");
                 if (pw !== pw2) return bad("pf-pw2", "كلمتا السر غير متطابقتين");
                 try { const tp = await smRpc("customer_phone_taken", { p_phone: phone }); if (tp.ok && (await tp.json()) === true) { showToast(authMsg({ j: { reason: "phone_taken" } })); return; } } catch (e) {}
                 if (!otpTok || email !== otpEmail) {
-                    const v = await authFetch("verify", { type: "email", email: email, token: code });
-                    const tok = v.ok && v.j && v.j.access_token;
-                    if (!tok) return bad("pf-code", v.net ? authMsg(v) : _l("الكود غلط أو انتهى. ابعت كود جديد.", "Wrong or expired code. Send a new one."));
+                    let su = await authFetch("signup", { email: email, password: pw });
+                    if (su.net) { showToast(authMsg(su)); return; }
+                    if (su.status === 429) { showToast(_l("حاولت كتير، استنى شوية.", "Too many attempts, please wait.")); return; }
+                    let tok = su.ok && su.j && su.j.access_token;
+                    if (!tok && !su.ok) {          // الجيميل مسجّل في الدخول من محاولة سابقة ناقصة: نجرّب ندخل بنفس كلمة السر
+                        const si = await authFetch("token?grant_type=password", { email: email, password: pw });
+                        tok = si.ok && si.j && si.j.access_token;
+                        if (!tok) { showToast(_l("الرقم ده عليه حساب. سجّل دخول.", "This number already has an account. Please log in.")); return; }
+                    }
+                    if (!tok) { showToast(_l("التسجيل محتاج تفعيل من الإعدادات (Confirm email لازم يكون مقفول).", "Signup needs a settings change (Confirm email must be off).")); return; }
                     otpTok = tok; otpEmail = email;
                 }
-                const up = await authUser(otpTok, { password: pw });
-                if (!up.ok) { if (up.status === 401) otpTok = ""; return bad("pf-pw", pwErr(up)); }
             }
             const reg = await registerCustomer({ name: name, phone: phone, whatsapp: wa, city: city, address: address, gender: gender });
             if (!reg.ok) { if (reg.msg) bad("pf-phone", reg.msg); return; }
