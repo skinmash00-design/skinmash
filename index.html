@@ -1386,6 +1386,28 @@ img,video,canvas{max-width:100%}
 </style>
     <!-- Tailwind CSS (مبني مسبقًا — شوف README-tailwind.txt) -->
     <link rel="stylesheet" href="tailwind.css">
+<style>
+/* ===== العروض: أيقونة + شريط تنبيه ===== */
+.offer-dot{position:absolute;top:6px;inset-inline-end:6px;width:10px;height:10px;border-radius:50%;background:#E5566D;border:2px solid var(--surface-card);display:none}
+#dock-offer-btn.has-new .offer-dot{display:block}
+#dock-offer-btn.has-new{color:var(--accent-primary);animation:offPulse 2.4s ease-in-out infinite}
+#dock-offer-btn.has-new .ic{animation:offWig 2.4s ease-in-out infinite}
+@keyframes offPulse{0%,100%{box-shadow:0 0 0 0 transparent}50%{box-shadow:0 0 0 6px var(--accent-soft)}}
+@keyframes offWig{0%,86%,100%{transform:rotate(0)}90%{transform:rotate(-14deg)}95%{transform:rotate(14deg)}}
+#offer-banner{display:flex;align-items:center;gap:6px;width:calc(100% - 20px);max-width:78rem;margin:8px auto 0;padding:6px 6px 6px 8px;border-radius:18px;background:linear-gradient(135deg,var(--accent-secondary),var(--accent-primary));color:var(--btn-primary-text);box-shadow:var(--shadow-soft);animation:offIn .4s cubic-bezier(.34,1.3,.64,1)}
+@keyframes offIn{from{transform:translateY(-14px);opacity:0}}
+#offer-banner .ob-main{flex:1;min-width:0;display:flex;align-items:center;gap:10px;text-align:start;color:inherit;cursor:pointer;background:transparent;border:0;padding:0}
+#offer-banner .ob-img{flex:none;width:42px;height:42px;border-radius:12px;background:rgba(255,255,255,.28);display:grid;place-items:center;overflow:hidden}
+#offer-banner .ob-img img{width:100%;height:100%;object-fit:cover}
+#offer-banner .ob-tx{min-width:0;display:flex;flex-direction:column;line-height:1.35}
+#offer-banner .ob-tx b{font-size:13.5px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#offer-banner .ob-tx small{font-size:11px;opacity:.88;font-weight:700}
+#offer-banner .ob-cta{flex:none;padding:6px 12px;border-radius:999px;background:rgba(255,255,255,.9);color:#2b1a20;font-size:11.5px;font-weight:800}
+#offer-banner .ob-x{flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:rgba(0,0,0,.14);color:inherit;border:0;cursor:pointer}
+#offer-banner .ob-x .ic{font-size:14px}
+@media(max-width:420px){#offer-banner .ob-cta{display:none}}
+@media(prefers-reduced-motion:reduce){#dock-offer-btn.has-new,#dock-offer-btn.has-new .ic,#offer-banner{animation:none}}
+</style>
 </head>
 <body class="min-h-screen flex flex-col">
 
@@ -1440,6 +1462,12 @@ img,video,canvas{max-width:100%}
                         class="dock-btn dock-lang dock-lg lang-ui">
                     <svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><use href="#i-globe"/></svg>
                     <span id="lang-label">EN</span>
+                </button>
+
+                <button id="dock-offer-btn" type="button" onclick="openSheet('offers')" style="display:none"
+                        aria-label="العروض" title="العروض" class="dock-btn">
+                    <svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><use href="#i-gem"/></svg>
+                    <span class="offer-dot" aria-hidden="true"></span>
                 </button>
 
                 <button id="dock-msg-btn" type="button" onclick="openSheet('messages')"
@@ -2712,6 +2740,8 @@ img,video,canvas{max-width:100%}
         "دفع كامل الآن (إنستا باي / محفظة)": "Pay in full now (InstaPay / wallet)",
         "الدفع عند الاستلام": "Cash on delivery",
         "الشحن": "Shipping",
+        "العروض": "Offers",
+        "الشحن: مجاني 🎁": "Shipping: Free 🎁",
         "الشحن: يتم تأكيد التكلفة معك قبل الإرسال": "Shipping: cost confirmed with you before dispatch",
         "جارٍ إرسال الطلب...": "Sending your order...",
         "جارٍ الإرسال...": "Sending...",
@@ -3076,10 +3106,10 @@ img,video,canvas{max-width:100%}
             const body = document.getElementById("sheet-body");
             const title = document.getElementById("sheet-title");
             const ico = document.getElementById("sheet-ico");
-            const map = { profile: ["i-user", "حسابي"], orders: ["i-receipt", "تابع طلبك"], favs: ["i-heart", "المفضلة"], messages: ["i-mail", "رسائلي"], contact: ["i-phone", "تواصل معنا"], policies: ["i-info", isEN() ? "Store policies" : "سياسات المتجر"] };
+            const map = { profile: ["i-user", "حسابي"], orders: ["i-receipt", "تابع طلبك"], favs: ["i-heart", "المفضلة"], messages: ["i-mail", "رسائلي"], offers: ["i-gem", "العروض"], contact: ["i-phone", "تواصل معنا"], policies: ["i-info", isEN() ? "Store policies" : "سياسات المتجر"] };
             ico.innerHTML = `<use href="#${map[sheetKind][0]}"/>`;
             title.textContent = t(map[sheetKind][1]);
-            body.innerHTML = sheetKind === "profile" ? profileHTML() : sheetKind === "orders" ? ordersHTML() : sheetKind === "favs" ? favsHTML() : sheetKind === "messages" ? messagesHTML() : sheetKind === "policies" ? policiesHTML() : contactHTML();
+            body.innerHTML = sheetKind === "profile" ? profileHTML() : sheetKind === "orders" ? ordersHTML() : sheetKind === "favs" ? favsHTML() : sheetKind === "messages" ? messagesHTML() : sheetKind === "offers" ? offersHTML() : sheetKind === "policies" ? policiesHTML() : contactHTML();
         }
 
         function avatarInner(photo) {
@@ -3672,14 +3702,14 @@ const waResetLink = (ph, nm, g) => {
                 <div class="pay-note" role="note"><svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><use href="#i-info"/></svg>
                     <span>${en ? `Pay in two steps: first ${pct}% of the products + shipping, the rest on delivery.` : `الدفع على مرحلتين: تدفع أولاً ${pct}% من قيمة المنتجات + مصاريف الشحن، والباقي عند الاستلام.`}<br><b>${en ? "The deposit is non-refundable if you cancel the order." : "العربون غير مسترد في حالة إلغاء الطلب."}</b></span></div>
                 <div class="flex justify-between text-sm font-bold"><span>${en ? "Pay first" : "المطلوب دفعه أولاً"}</span><span style="color: var(--accent-primary);">${money(payNow)}</span></div>
-                ${typeof SHIPPING_FEE === "number" ? "" : `<div class="text-[11px]" style="color: var(--text-muted);">${en ? "+ shipping fee (confirmed with you before sending)" : "+ مصاريف الشحن (تُحدَّد وتتأكد معاك قبل الدفع)"}</div>`}
+                ${(window.SM_PERKS && window.SM_PERKS.free_ship) ? `<div class="text-[11px] font-bold" style="color: var(--accent-primary);">🎁 ${en ? "Free shipping on your order" : "شحن مجاني على طلبك"}</div>` : typeof SHIPPING_FEE === "number" ? "" : `<div class="text-[11px]" style="color: var(--text-muted);">${en ? "+ shipping fee (confirmed with you before sending)" : "+ مصاريف الشحن (تُحدَّد وتتأكد معاك قبل الدفع)"}</div>`}
                 <div class="flex justify-between text-sm" style="color: var(--text-secondary);"><span>${en ? "Remaining on delivery" : "يتبقى عند الاستلام"}</span><span>${money(rest)}</span></div>`;
             ["cart-pay-box", "checkout-pay-box"].forEach(id => { const e = document.getElementById(id); if (e) e.innerHTML = html; });
         }
         function refreshCheckoutTotals() {
             renderPayInfo();
             document.getElementById("checkout-total-display").textContent = money(orderTotals().total);
-            document.getElementById("checkout-ship-line").textContent = (typeof SHIPPING_FEE === "number")
+            document.getElementById("checkout-ship-line").textContent = (window.SM_PERKS && window.SM_PERKS.free_ship) ? t("الشحن: مجاني 🎁") : (typeof SHIPPING_FEE === "number")
                 ? `${t("الشحن")}: ${priceLabel(SHIPPING_FEE)}` : t("الشحن: يتم تأكيد التكلفة معك قبل الإرسال");
         }
         function renderPaymentOptions() {
@@ -3831,7 +3861,7 @@ const waResetLink = (ph, nm, g) => {
             lines.push(`📍 العنوان: ${c.city} - ${c.address}`, sep, "🧴 *المنتجات*", items, sep,
                 `المجموع: ${Number(o.subtotal).toFixed(0)} ج.م`,
                 ...(o.discount > 0 ? [`🎁 خصم ${o.discountPct}%: -${o.discount} ج.م`] : []),
-                hasShip ? `🚚 الشحن: ${o.shipping} ج.م` : "🚚 الشحن: يُحدَّد عند التأكيد",
+                hasShip ? `🚚 الشحن: ${o.shipping} ج.م` : ((window.SM_PERKS && window.SM_PERKS.free_ship) ? "🚚 الشحن: مجاني 🎁" : "🚚 الشحن: يُحدَّد عند التأكيد"),
                 hasShip ? `💖 *الإجمالي: ${Number(o.total).toFixed(0)} ج.م*` : `💖 *الإجمالي: ${Number(o.total).toFixed(0)} ج.م* (قبل الشحن)`,
                 `💰 المطلوب دفعه أولاً: ${o.pay && typeof o.pay.payNow === "number" ? o.pay.payNow : Math.ceil((o.subtotal - (o.discount || 0)) * pct / 100)} ج.م (${pct}% من المنتجات${hasShip ? " + الشحن" : " + الشحن يُحدَّد عند التأكيد"})`,
                 `📌 المتبقي عند الاستلام: ${Math.max(0, o.total - (o.pay && typeof o.pay.payNow === "number" ? o.pay.payNow : Math.ceil((o.subtotal - (o.discount || 0)) * pct / 100)))} ج.م`,
@@ -3864,7 +3894,7 @@ const waResetLink = (ph, nm, g) => {
                 const rows = [`<div>${t("المطلوب تحويله الآن")}: <strong style="color:var(--accent-primary)">${money(order.pay.payNow)}</strong></div>`];
                 if (PAYMENT_CONFIG.instapay) rows.push(`<div>${t("إنستا باي")}: <strong dir="ltr">${escHtml(PAYMENT_CONFIG.instapay)}</strong></div>`);
                 if (PAYMENT_CONFIG.wallet) rows.push(`<div>${t("محفظة إلكترونية")}: <strong dir="ltr">${escHtml(PAYMENT_CONFIG.wallet)}</strong></div>`);
-                if (typeof SHIPPING_FEE !== "number") rows.push(`<div class="text-[11px]" style="color:var(--text-muted)">${isEN() ? "+ shipping fee will be confirmed on WhatsApp" : "+ مصاريف الشحن هتتحدد وتتبلغ بيها على واتساب"}</div>`);
+                if (typeof SHIPPING_FEE !== "number" && !(window.SM_PERKS && window.SM_PERKS.free_ship)) rows.push(`<div class="text-[11px]" style="color:var(--text-muted)">${isEN() ? "+ shipping fee will be confirmed on WhatsApp" : "+ مصاريف الشحن هتتحدد وتتبلغ بيها على واتساب"}</div>`);
                 if (order.pay.method === "deposit") rows.push(`<div>${t("المتبقي عند الاستلام")}: <strong>${money(order.total - order.pay.payNow)}</strong></div>`);
                 rows.push(`<div class="mt-1" style="color:var(--text-muted)">${t("بعد التحويل أرسل صورة الإيصال على واتساب.")}</div>`);
                 rows.push(`<div class="mt-1 text-[11px]" style="color:#E5566D">${isEN() ? "You can cancel only before the order is being prepared, and the deposit is non-refundable." : "تقدر تلغي الطلب قبل ما يبقى «قيد التجهيز» فقط، والعربون غير مسترد في حالة الإلغاء."}</div>`);
@@ -5660,10 +5690,110 @@ fillGov();
   }
   try { navigator.serviceWorker && navigator.serviceWorker.addEventListener("message", function (ev) { if (ev.data && ev.data.type === "open-messages") openSheet("messages"); }); } catch (x) {}
   if (/[?&]m=1\b/.test(location.search)) setTimeout(function () { try { openSheet("messages"); history.replaceState(null, "", location.pathname + location.hash); } catch (x) {} }, 1500);
-  function tick() { if (!document.hidden) { syncDiscounts(); syncMessages(); initPush(); } }
+  function tick() { if (!document.hidden) { syncDiscounts(); syncMessages(); initPush(); if (window.syncOffers) syncOffers(); if (window.syncPerks) syncPerks(); } }
   setTimeout(function () { badge(); tick(); }, 1200);
   document.addEventListener("visibilitychange", tick);
   setInterval(tick, 90000);
+})();
+</script>
+<script>
+/* العروض: شريط تنبيه + أيقونة "جديد" + صفحة العروض + مزايا العميل (شحن مجاني) */
+(function () {
+  var LS = localStorage;
+  function jget(k, d) { try { return JSON.parse(LS.getItem(k)) || d; } catch (e) { return d; } }
+  function jset(k, v) { try { LS.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  function en() { try { return isEN(); } catch (e) { return false; } }
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+  function url(u) { return /^https?:\/\//i.test(u || "") ? u : ""; }
+  window.SM_OFFERS = window.SM_OFFERS || [];
+  window.SM_PERKS = window.SM_PERKS || {};
+  function seen() { return jget("sm-offers-seen", []); }
+  function unseen() { var s = seen(); return window.SM_OFFERS.filter(function (o) { return s.indexOf(o.id) === -1; }); }
+  function dayWord(d) { return d === 1 ? "يوم" : d === 2 ? "يومين" : d <= 10 ? d + " أيام" : d + " يوم"; }
+  function left(o) {
+    if (!o.ends_at) return "";
+    var ms = new Date(o.ends_at) - Date.now(); if (ms <= 0) return "";
+    var h = Math.ceil(ms / 36e5), d = Math.ceil(ms / 864e5);
+    if (h <= 24) return en() ? "Ends today" : "ينتهي اليوم";
+    return en() ? "Ends in " + d + " days" : "باقي " + dayWord(d);
+  }
+  function until(o) {
+    if (!o.ends_at) return "";
+    try { return new Date(o.ends_at).toLocaleDateString(en() ? "en-GB" : "ar-EG", { day: "numeric", month: "long" }); } catch (e) { return ""; }
+  }
+  function title(o) { return esc(o.title); }
+  function paint() {
+    var b = document.getElementById("dock-offer-btn");
+    if (b) { b.style.display = window.SM_OFFERS.length ? "" : "none"; b.classList.toggle("has-new", unseen().length > 0); }
+    banner();
+  }
+  var bannerId = null;
+  function banner() {
+    var ex = document.getElementById("offer-banner"), x = jget("sm-offer-bx", []);
+    var o = window.SM_OFFERS.filter(function (z) { return x.indexOf(z.id) === -1; })[0];
+    if (!o) { if (ex) ex.remove(); bannerId = null; return; }
+    var sub = en() ? ("Save " + (+o.percent) + "%") : ("خصم " + (+o.percent) + "%");
+    var lf = left(o); if (lf) sub += " · " + lf;
+    var html = '<button type="button" class="ob-main" onclick="openSheet(\'offers\')">' +
+      '<span class="ob-img">' + (url(o.image) ? '<img src="' + esc(url(o.image)) + '" alt="" onerror="this.remove()">' : '<svg viewBox="0 0 24 24" class="ic" style="font-size:22px" aria-hidden="true"><use href="#i-gem"/></svg>') + '</span>' +
+      '<span class="ob-tx"><b>' + title(o) + '</b><small>' + esc(sub) + '</small></span>' +
+      '<span class="ob-cta">' + (en() ? "View offer" : "شاهد العرض") + '</span></button>' +
+      '<button type="button" class="ob-x" onclick="closeOfferBanner()" aria-label="' + (en() ? "Close" : "إغلاق") + '"><svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><use href="#i-x"/></svg></button>';
+    if (!ex) {
+      ex = document.createElement("div"); ex.id = "offer-banner"; ex.setAttribute("role", "region"); ex.setAttribute("data-i18n-skip", "");
+      var h = document.getElementById("site-header"); if (!h || !h.parentNode) return;
+      h.parentNode.insertBefore(ex, h.nextSibling);
+    }
+    if (ex.getAttribute("data-k") !== o.id + "|" + (en() ? "e" : "a") + "|" + sub) { ex.innerHTML = html; ex.setAttribute("data-k", o.id + "|" + (en() ? "e" : "a") + "|" + sub); }
+    bannerId = o.id;
+  }
+  window.closeOfferBanner = function () {
+    if (bannerId == null) return;
+    var x = jget("sm-offer-bx", []); if (x.indexOf(bannerId) === -1) x.push(bannerId); jset("sm-offer-bx", x.slice(-50));
+    var ex = document.getElementById("offer-banner"); if (ex) ex.remove();
+    bannerId = null; banner();
+  };
+  window.offersHTML = function () {
+    var e = en(), list = window.SM_OFFERS;
+    jset("sm-offers-seen", list.map(function (o) { return o.id; }));
+    setTimeout(paint, 0);
+    if (!list.length) return emptyHTML("i-gem", t("مفيش عروض دلوقتي"), t("أول ما يتضاف عرض جديد هتلاقيه هنا."));
+    return '<div class="space-y-3" data-i18n-skip>' + list.map(function (o) {
+      var lf = left(o), un = until(o), img = url(o.image);
+      return '<div class="rounded-2xl overflow-hidden" style="background:var(--surface-elevated);border:1px solid var(--border-subtle)">' +
+        (img ? '<div style="position:relative;aspect-ratio:16/9;background:var(--accent-soft)"><img src="' + esc(img) + '" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover" onerror="this.parentNode.remove()">' +
+          '<span style="position:absolute;top:10px;inset-inline-start:10px;padding:3px 12px;border-radius:999px;background:var(--accent-primary);color:var(--btn-primary-text);font-weight:800;font-size:13px">' + (e ? "-" : "خصم ") + (+o.percent) + "%" + '</span></div>' : '') +
+        '<div class="p-3.5"><div class="flex items-center gap-2"><div class="font-bold text-sm flex-1">' + title(o) + '</div>' +
+        (img ? '' : '<span class="px-2.5 py-1 rounded-full text-xs font-bold" style="background:var(--accent-primary);color:var(--btn-primary-text)">' + (e ? "-" : "خصم ") + (+o.percent) + '%</span>') + '</div>' +
+        (o.details ? '<div class="text-xs leading-relaxed mt-1.5" style="color:var(--text-secondary);white-space:pre-line">' + esc(o.details) + '</div>' : '') +
+        '<div class="text-[11px] mt-2 flex flex-wrap gap-x-3 gap-y-1" style="color:var(--text-muted)">' +
+        (lf ? '<span>⏳ ' + esc(lf) + (un ? " (" + esc(un) + ")" : "") + '</span>' : '') +
+        (+o.min_subtotal > 0 ? '<span>' + (e ? "Min. order " : "من ") + (+o.min_subtotal) + (e ? " EGP" : " ج.م") + '</span>' : '') +
+        '<span>' + (e ? "Applied automatically in your cart" : "بيتطبق تلقائي في سلتك") + '</span></div>' +
+        '<button type="button" onclick="closeSheet()" class="mt-3 w-full py-2.5 rounded-full text-sm font-bold" style="background:var(--accent-primary);color:var(--btn-primary-text)">' + (e ? "Shop now" : "تسوّق الآن") + '</button></div></div>';
+    }).join("") + '</div>';
+  };
+  window.syncOffers = function () {
+    return smRpc("my_offers", {}).then(function (r) { return r.ok ? r.json() : null; }).then(function (rows) {
+      if (!Array.isArray(rows)) return;
+      window.SM_OFFERS = rows;
+      var s = seen().filter(function (id) { return rows.some(function (o) { return o.id === id; }); }); jset("sm-offers-seen", s);
+      paint();
+      if (typeof sheetKind !== "undefined" && sheetKind === "offers") renderSheet();
+    }).catch(function () {});
+  };
+  window.syncPerks = function () {
+    var p = null; try { p = getProfile(); } catch (e) {}
+    var ph = p && p.phone ? p.phone : "";
+    if (!ph) { if (window.SM_PERKS.free_ship) { window.SM_PERKS = {}; try { refreshCheckoutTotals(); } catch (e) {} } return Promise.resolve(); }
+    return smRpc("my_perks", { p_phone: ph }).then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {
+      if (!j) return;
+      var f = !!j.free_ship;
+      if (f !== !!window.SM_PERKS.free_ship) { window.SM_PERKS = { free_ship: f }; try { refreshCheckoutTotals(); } catch (e) {} }
+    }).catch(function () {});
+  };
+  window.addEventListener("storage", paint);
+  syncOffers(); setTimeout(syncPerks, 1500);
 })();
 </script>
 </body>
