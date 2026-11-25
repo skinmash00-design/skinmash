@@ -831,7 +831,7 @@ window.cairoNow=function(o){return new Date().toLocaleString("ar-EG",Object.assi
         .dock-btn .ic { font-size: 20px; }
         .dock-search input { padding-inline: 40px 38px; }
         .dock-search .s-ico { right: auto; inset-inline-start: 14px; }
-        #clear-search-btn { left: auto !important; right: auto !important; inset-inline-end: 10px; }
+        #clear-search-btn { left: auto !important; right: auto !important; inset-inline-end: 14px; }
 
         /* ---- واتساب: زر أخضر لامع بدل الزر البدائي ---- */
         .wa-btn {
@@ -1225,7 +1225,7 @@ window.cairoNow=function(o){return new Date().toLocaleString("ar-EG",Object.assi
 .hs-field input::placeholder { color:var(--text-muted); }
 .hs-field input:focus { outline:none; border-color:var(--accent-primary); background:var(--surface-card); box-shadow:0 0 0 3px var(--accent-soft); }
 .hs-ico { position:absolute; inset-inline-start:14px; font-size:18px; color:var(--accent-primary); pointer-events:none; }
-.hs-clear { position:absolute; inset-inline-end:10px; width:22px; height:22px; border-radius:50%; display:none; align-items:center; justify-content:center; font-size:12px; cursor:pointer; }
+.hs-clear { position:absolute; inset-inline-end:14px; width:22px; height:22px; border-radius:50%; display:none; align-items:center; justify-content:center; font-size:12px; cursor:pointer; }
 .hs-clear:not(.hidden) { display:flex; }
 .hdr-search .search-panel { top:calc(100% - 2px); left:0; right:0; transform:none; width:auto; max-width:none; margin:0 14px; animation:spIn2 .2s ease; }
 .hdr-menu-wrap .search-panel { top:calc(100% + 10px); left:0; right:auto; transform:none; width:min(92vw,340px); max-width:none; animation:spIn2 .2s ease; }
@@ -1462,7 +1462,7 @@ img,video,canvas{max-width:100%}
 }
 
 /* ===== مرحلة 1: السيرش + أزرار الهيدر ===== */
-.hs-field #clear-search-btn.hs-clear{left:auto!important;right:auto!important;inset-inline-start:auto!important;inset-inline-end:10px!important}
+.hs-field #clear-search-btn.hs-clear{left:auto!important;right:auto!important;inset-inline-start:auto!important;inset-inline-end:14px!important}
 .hs-field input#global-search-input{padding-inline-start:46px!important;padding-inline-end:44px!important}
 @media (max-width:639px){
   .site-header .dock-btn{width:40px;height:40px}
@@ -1513,7 +1513,7 @@ html.cart-lock,html.cart-lock body{overflow:hidden!important}
 #floating-cart-btn{will-change:left,top}
 /* sticky header needs body not to be a scroll container */
 body{overflow-x:clip!important;overflow-y:visible!important}
-.site-header{background:transparent!important;border-bottom:0!important;box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+.site-header{background:var(--surface-dock)!important;-webkit-backdrop-filter:blur(16px) saturate(160%)!important;backdrop-filter:blur(16px) saturate(160%)!important;border-bottom:1px solid var(--border-subtle)!important}
 /* لوجو الهيدر: أكبر على الموبايل عشان يبان كامل وحاد (الملف الأصلي 1100px) */
 .site-header .brand-logo{width:190px}
 @media (max-width:1023px){.site-header .brand-logo{width:150px}}
@@ -2151,7 +2151,6 @@ html,body{margin:0;padding:0;width:100%;min-width:0;max-width:100%}
 
             <div class="px-6 py-4 flex items-center justify-between border-b" style="border-color: var(--border-subtle);">
                 <div class="flex items-center gap-2.5">
-                    <svg viewBox="0 0 24 24" class="ic text-lg" style="color: var(--accent-primary);" aria-hidden="true"><use href="#i-wand"/></svg>
                     <h3 class="text-lg font-bold">اطلب منتجك</h3>
                 </div>
                 <button onclick="closeRequestModal()" aria-label="إغلاق"
@@ -2206,7 +2205,7 @@ html,body{margin:0;padding:0;width:100%;min-width:0;max-width:100%}
             </form>
 
             <div id="request-success-view" class="hidden p-7 text-center space-y-4" data-i18n-skip>
-                <div class="w-16 h-16 rounded-full mx-auto flex items-center justify-center text-3xl"
+                <div id="request-result-icon" class="w-16 h-16 rounded-full mx-auto flex items-center justify-center text-3xl"
                      style="background-color: var(--accent-soft); color: var(--accent-primary);">
                     <svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><use href="#i-check"/></svg>
                 </div>
@@ -3077,7 +3076,10 @@ html,body{margin:0;padding:0;width:100%;min-width:0;max-width:100%}
         "عنوان إضافي": "Extra address",
         "بعد تأكيد الطلب سنحوّلك إلى واتساب برسالة جاهزة تحتوي على طلبك، وكل ما عليك الضغط على إرسال.": "After you confirm, we'll take you to WhatsApp with a ready message containing your order. Just press send.",
         "جهّزنا رسالة طلبك في واتساب برقم المتجر. كل ما عليك الضغط على إرسال. إن لم يُفتح واتساب تلقائياً فاضغط الزر أدناه، وستجد طلبك أيضاً في «طلباتي».": "We prepared your order message in WhatsApp to the store number. Just press send. If WhatsApp doesn't open, tap the button below. You'll also find your order in \"My orders\".",
-        "بعض المنتجات لم تعد متاحة": "Some products are no longer available"
+        "بعض المنتجات لم تعد متاحة": "Some products are no longer available",
+        "تفاصيل المنتج": "Product details",
+        "وصل طلبك لفريق SKIN MASH وهيتواصل معاك على واتساب أو في محادثة الموقع. فعّل الإشعارات عشان يوصلك تنبيه أول ما المنتج يتوفر، ولو مش عايز إشعارات طلبك واصل برضه وهنتواصل معاك.": "Your request reached the SKIN MASH team and we'll contact you on WhatsApp or in the site chat. Turn on notifications to get alerted as soon as the product is available. Either way, your request is in and we'll reach out.",
+        "تعذّر إرسال الطلب تلقائياً. اضغط الزر لإرساله على واتساب.": "Couldn't send the request automatically. Tap the button to send it on WhatsApp."
         });
 
         /* ---------- زر الرجوع (هاتف / متصفح): يرجع خطوة داخل الموقع بدل الخروج منه ---------- */
@@ -3116,8 +3118,29 @@ html,body{margin:0;padding:0;width:100%;min-width:0;max-width:100%}
             if (navTopOverlay() === ov) { try { history.back(); return true; } catch (e) {} }
             return false;
         }
+        function smDomOverlay() {
+            try {
+                if (!document.getElementById("request-product-modal").classList.contains("hidden")) return "request";
+                if (!document.getElementById("checkout-modal").classList.contains("hidden")) return "checkout";
+                if (sheetKind) return "sheet";
+                if (!document.getElementById("cart-overlay").classList.contains("hidden")) return "cart";
+            } catch (e) {}
+            return null;
+        }
+        function smCloseLooseLayer() {           // طبقات مش متسجلة كخطوة رجوع: زر الرجوع يقفلها الأول قبل ما يتنقل
+            try { var pi = document.getElementById("pinfo-ov"); if (pi && !pi.classList.contains("hidden")) { closeProductInfo(); return true; } } catch (e) {}
+            try { if (document.getElementById("cc-pdim")) { ccPopClose(); return true; } } catch (e) {}
+            var mp = document.getElementById("menu-panel"); if (mp && !mp.classList.contains("hidden")) { closeMenuPanel(); return true; }
+            var ce = document.getElementById("cc-emo"); if (ce && !ce.classList.contains("hidden")) { ce.classList.add("hidden"); return true; }
+            var ca = document.getElementById("cc-attach"); if (ca && !ca.classList.contains("hidden")) { ca.classList.add("hidden"); return true; }
+            return false;
+        }
         function onNavPop(e) {
             if (navIgnorePop) { navIgnorePop = false; return; }
+            if (smCloseLooseLayer()) {
+                try { history.pushState(navSnap(smDomOverlay()), ""); } catch (er) {}
+                return;
+            }
             const st = (e.state && e.state.sm) ? e.state : { sm: 1, view: "home", overlay: null };
             navPopping = true;
             try {
@@ -3298,9 +3321,21 @@ html,body{margin:0;padding:0;width:100%;min-width:0;max-width:100%}
             if (e) e.stopPropagation();
             const panel = document.getElementById("menu-panel");
             if (!panel.classList.contains("hidden")) { closeMenuPanel(); return; }
-            closeSearchPanel();
+            closeSearchPanel(); closeMobileSearch();
             renderMenuPanel();
             panel.classList.remove("hidden");
+            try {
+                const btn = document.getElementById("dock-menu-btn"), r = btn.getBoundingClientRect();
+                panel.style.setProperty("position", "fixed", "important");
+                panel.style.setProperty("top", (r.bottom + 8) + "px", "important");
+                const pw = panel.offsetWidth || Math.min(300, innerWidth * 0.88);
+                const rtl = (document.documentElement.dir || "rtl") === "rtl";
+                let left = rtl ? r.left : (r.right - pw);
+                left = Math.max(8, Math.min(left, innerWidth - pw - 8));
+                panel.style.setProperty("left", left + "px", "important");
+                panel.style.setProperty("right", "auto", "important");
+                panel.style.setProperty("transform", "none", "important");
+            } catch (e) {}
             document.getElementById("dock-menu-btn").setAttribute("aria-expanded", "true");
         }
         function closeMenuPanel() {
@@ -3348,7 +3383,7 @@ html,body{margin:0;padding:0;width:100%;min-width:0;max-width:100%}
             return photo ? `<img src="${photo}" alt="">` : `<svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><use href="#i-user"/></svg>`;
         }
         function profileRow(ico, k, v) {
-            return `<div class="pf-row"><svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><use href="#${ico}"/></svg>
+            return `<div class="pf-row"><span class="pf-ic"><svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><use href="#${ico}"/></svg></span>
                 <div class="min-w-0"><div class="pf-k">${k}</div><div class="pf-v">${escHtml(v)}</div></div></div>`;
         }
         function profileHTML() {
@@ -4166,7 +4201,7 @@ const waResetLink = (ph, nm, g) => {
             return new Promise(res => {
                 if (!document.getElementById("sm-del-css")) {
                     const st = document.createElement("style"); st.id = "sm-del-css";
-                    st.textContent = ".smd-o{position:fixed;inset:0;z-index:100000;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(3px);animation:smdf .18s}.smd-b{width:100%;max-width:380px;background:var(--glass-bg,rgba(255,255,255,.7));color:var(--text-primary,#111);border:1px solid var(--glass-bd,#ddd);border-radius:24px;padding:24px 20px 18px;box-shadow:var(--glass-sh,0 20px 50px rgba(0,0,0,.18)),0 20px 50px rgba(0,0,0,.2);-webkit-backdrop-filter:blur(22px) saturate(1.6);backdrop-filter:blur(22px) saturate(1.6);text-align:center;animation:smdu .22s}.smd-i{width:56px;height:56px;margin:0 auto 12px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(229,86,109,.14);color:#E5566D}.smd-i svg{width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:1.8}.smd-t{font-weight:800;font-size:17px;margin-bottom:8px}.smd-m{font-size:13px;line-height:1.8;color:var(--text-secondary,#555);margin-bottom:18px}.smd-r{display:flex;gap:10px}.smd-r button{flex:1;padding:13px;border-radius:999px;font-weight:700;font-size:14px;cursor:pointer;border:1px solid var(--border-subtle,#ddd);background:transparent;color:var(--text-primary,#111)}.smd-r .smd-d{background:#E5566D;border-color:#E5566D;color:#fff}@keyframes smdf{from{opacity:0}}@keyframes smdu{from{transform:translateY(14px);opacity:0}}";
+                    st.textContent = ".smd-o{position:fixed;inset:0;z-index:100000;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(3px);animation:smdf .18s}.smd-b{width:100%;max-width:380px;background:color-mix(in srgb,var(--surface-card,#fff) 84%,transparent);color:var(--text-primary,#111);border:1px solid var(--border-subtle,#ddd);border-radius:24px;padding:24px 20px 18px;box-shadow:0 20px 50px rgba(0,0,0,.28);-webkit-backdrop-filter:blur(22px) saturate(1.6);backdrop-filter:blur(22px) saturate(1.6);text-align:center;animation:smdu .22s}.smd-i{width:56px;height:56px;margin:0 auto 12px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(229,86,109,.14);color:#E5566D}.smd-i svg{width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:1.8}.smd-t{font-weight:800;font-size:17px;margin-bottom:8px}.smd-m{font-size:13px;line-height:1.8;color:var(--text-secondary,#555);margin-bottom:18px}.smd-r{display:flex;gap:10px}.smd-r button{flex:1;padding:13px;border-radius:999px;font-weight:700;font-size:14px;cursor:pointer;border:1px solid var(--border-subtle,#ddd);background:transparent;color:var(--text-primary,#111)}.smd-r .smd-d{background:#E5566D;border-color:#E5566D;color:#fff}@keyframes smdf{from{opacity:0}}@keyframes smdu{from{transform:translateY(14px);opacity:0}}";
                     document.head.appendChild(st);
                 }
                 const o = document.createElement("div"); o.className = "smd-o"; o.setAttribute("role", "dialog"); o.setAttribute("aria-modal", "true");
@@ -4826,9 +4861,9 @@ const waResetLink = (ph, nm, g) => {
                         <img src="${p.image}" onerror="this.onerror=null;this.src='${p.fallback||''}';"
                              alt="${t(p.name)}" loading="lazy" decoding="async"
                              class="w-full h-full object-cover transition-transform duration-500 hover:scale-105">
-                        <button type="button" class="fav-btn ${isFav(p.id) ? "is-fav" : ""}" onclick="toggleFav(${p.id}, this)"
-                                aria-pressed="${isFav(p.id)}" aria-label="${t("أضف للمفضلة")}">
-                            <svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><use href="#i-heart"/></svg>
+                        <button type="button" class="info-btn" onclick="openProductInfo(${p.id})"
+                                aria-label="${t("تفاصيل المنتج")}">
+                            <svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><use href="#i-info"/></svg>
                         </button>
                     </div>
                     <div class="p-2.5 sm:p-3 flex-1 flex flex-col justify-between gap-2 text-right">
@@ -4837,7 +4872,13 @@ const waResetLink = (ph, nm, g) => {
                             <p class="hidden sm:block text-[11px] leading-relaxed line-clamp-2" style="color: var(--text-secondary);">${t(p.description)}</p>
                         </div>
                         <div class="space-y-2 pt-2 border-t" style="border-color: var(--border-subtle);">
-                            <span class="block text-sm sm:text-base font-extrabold" style="color: var(--accent-primary);">${priceLabel(p.price)}</span>
+                            <div class="pc-price-row">
+                                <span class="block text-sm sm:text-base font-extrabold" style="color: var(--accent-primary);">${priceLabel(p.price)}</span>
+                                <button type="button" class="pc-fav ${isFav(p.id) ? "is-fav" : ""}" onclick="toggleFav(${p.id}, this)"
+                                        aria-pressed="${isFav(p.id)}" aria-label="${t("أضف للمفضلة")}">
+                                    <svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><use href="#i-heart"/></svg>
+                                </button>
+                            </div>
                             <div class="pc-qty" role="group" aria-label="${isEN() ? "Quantity" : "الكمية"}">
                                 <button type="button" onclick="cardQty(${p.id}, -1)" aria-label="-"><svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><use href="#i-minus"/></svg></button>
                                 <span id="cq-${p.id}">1</span>
@@ -4864,6 +4905,27 @@ const waResetLink = (ph, nm, g) => {
 
             requestAnimationFrame(checkLogoCollision);
         }
+
+        /* تفاصيل المنتج: زر INFO على الكارت يفتح مربع زجاجي شفاف بالتفاصيل */
+        window.openProductInfo = function (id) {
+            const p = PRODUCTS.find(x => x.id === id); if (!p) return;
+            let ov = document.getElementById("pinfo-ov");
+            if (!ov) {
+                ov = document.createElement("div"); ov.id = "pinfo-ov"; ov.className = "pinfo-ov hidden";
+                ov.addEventListener("click", function (e) { if (e.target === ov) closeProductInfo(); });
+                document.body.appendChild(ov);
+            }
+            ov.innerHTML = `<div class="pinfo-box" role="dialog" aria-modal="true" aria-label="${t("تفاصيل المنتج")}">
+                <button type="button" class="pinfo-x" onclick="closeProductInfo()" aria-label="${t("إغلاق")}"><svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><use href="#i-x"/></svg></button>
+                <img src="${p.image}" onerror="this.onerror=null;this.src='${p.fallback || ""}';" alt="${t(p.name)}" loading="lazy" decoding="async">
+                <h4>${t(p.name)}</h4>
+                <div class="pinfo-cat">${catLabel(p.category)}${p.subCategory ? " · " + t(p.subCategory) : ""}</div>
+                ${p.description ? `<p class="pinfo-d">${t(p.description)}</p>` : ""}
+                <div class="pinfo-p">${priceLabel(p.price)}</div>
+            </div>`;
+            ov.classList.remove("hidden");
+        };
+        window.closeProductInfo = function () { const ov = document.getElementById("pinfo-ov"); if (ov) ov.classList.add("hidden"); };
 
         /* =========================================================
            7. FREELY DRAGGABLE FLOATING CART ICON (MOUSE + TOUCH)
@@ -5223,7 +5285,7 @@ const waResetLink = (ph, nm, g) => {
             if ((await enforceCustomer("order")) !== "ok") return;
             const p = getProfile();
             if (!profileComplete(p)) { showToast(t("لإتمام طلبك، أنشئ حسابك أولاً. بياناتك تُحفظ على هذا الجهاز لتسهيل طلباتك القادمة.")); return; }
-            if (window.smNotifGate && !(await window.smNotifGate())) return;
+            if (window.smNotifGate) { try { await window.smNotifGate(); } catch (e) {} }   /* رفض الإشعارات مايلغيش الطلب */
             const addrList = getAddresses(p);
             const cur = addrList[Math.min(selectedAddr, addrList.length - 1)] || { city: p.city, address: p.address };
             const customer = { name: p.name, phone: p.phone, whatsapp: p.whatsapp, city: cur.city, address: cur.address };
@@ -5366,21 +5428,23 @@ const waResetLink = (ph, nm, g) => {
                 try { sent = await window.chatRequest(name, desc, res.image || ""); } catch (e) {}
                 if (sent) { try { document.getElementById("request-product-form").reset(); clearRequestImage(); } catch (e) {} closeRequestModal(); openStoreChat(); return; }
             }
+            const ric = document.getElementById("request-result-icon");
+            ric.innerHTML = `<svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><use href="#${res.ok ? "i-check" : "i-alert"}"/></svg>`;
+            ric.style.backgroundColor = res.ok ? "var(--accent-soft)" : "rgba(229,86,109,.14)";
+            ric.style.color = res.ok ? "var(--accent-primary)" : "#E5566D";
             document.getElementById("request-result-title").textContent = t(res.ok ? "تم إرسال طلب منتجك!" : "تعذّر إرسال الطلب تلقائياً");
-            const note = uploadedRequestFileName
-                ? (isEN() ? ` Please attach the image (${uploadedRequestFileName}) in the WhatsApp chat.` : ` يرجى إرفاق الصورة (${uploadedRequestFileName}) في محادثة واتساب.`)
-                : "";
-            document.getElementById("request-attach-reminder").textContent =
-                t(res.ok ? "سنتواصل معك على واتساب عند توفر المنتج." : "تم حفظ طلبك. اضغط الزر لإرساله عبر واتساب.") + (res.ok && !uploadedRequestFileName ? "" : note);
+            document.getElementById("request-attach-reminder").textContent = res.ok
+                ? t("وصل طلبك لفريق SKIN MASH وهيتواصل معاك على واتساب أو في محادثة الموقع. فعّل الإشعارات عشان يوصلك تنبيه أول ما المنتج يتوفر، ولو مش عايز إشعارات طلبك واصل برضه وهنتواصل معاك.")
+                : t("تعذّر إرسال الطلب تلقائياً. اضغط الزر لإرساله على واتساب.") + (uploadedRequestFileName ? (isEN() ? ` Please attach the image (${uploadedRequestFileName}) in the WhatsApp chat.` : ` يرجى إرفاق الصورة (${uploadedRequestFileName}) في محادثة واتساب.`) : "");
             const link = document.getElementById("manual-wa-request-link");
             const text = ["🌸 *طلب توفير منتج خاص - SKIN MASH* 🌸", `• اسم المنتج: ${name}`, desc ? `• المواصفات: ${desc}` : "", `• رقم التواصل: ${contact}`,
                 uploadedRequestFileName ? `• صورة المنتج: (سأرفق الصورة "${uploadedRequestFileName}")` : ""].filter(Boolean).join("\n");
-            if (res.ok && !uploadedRequestFileName) link.classList.add("hidden");
+            if (res.ok) { link.classList.add("hidden"); link.onclick = null; }
             else {
                 link.classList.remove("hidden");
-                link.removeAttribute("target"); link.href = "#";
-                link.onclick = function (e) { e.preventDefault(); closeRequestModal && closeRequestModal(); openStoreChat(text); };
-                link.innerHTML = `<svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><use href="#i-chat"/></svg><span>${isEN() ? "Send the request in the chat" : "إرسال الطلب في المحادثة"}</span>`;
+                link.target = "_blank"; link.href = `https://wa.me/${STORE_WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`;
+                link.onclick = null;
+                link.innerHTML = `<svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><use href="#i-wa"/></svg><span>${isEN() ? "Send the request on WhatsApp" : "إرسال الطلب على واتساب"}</span>`;
             }
             document.getElementById("request-close-btn").textContent = t("إغلاق");
             document.getElementById("request-product-form").classList.add("hidden");
@@ -6242,7 +6306,7 @@ fillGov();
         if (canAsk) { msg = state === "dismissed" ? (e ? "Please tap Allow in the browser prompt so we can tell you when your order moves." : "اضغط «سماح» في رسالة المتصفح علشان نبلّغك أول بأول بتحديثات طلبك.") : (e ? "This is your first order. Turn on notifications so you can follow it: preparing, shipped and delivered, with a sound." : "ده أول طلب ليك. فعّل الإشعارات علشان تتابع طلبك: قيد التجهيز، اتشحن، وصل، وبصوت تنبيه."); btn = e ? "Turn on notifications" : "تفعيل الإشعارات"; }
         else if (sup && Notification.permission === "denied") { msg = e ? "Notifications are blocked in your browser settings. You can still order, but turn them on there to follow your order." : "الإشعارات متقفلة من إعدادات المتصفح. تقدر تكمّل الطلب، بس فعّلها من هناك علشان تتابع طلبك."; btn = e ? "Continue" : "كمّل الطلب"; }
         else { msg = isIOS() && !standalone() ? (e ? "On iPhone: open the site in Safari, tap Share, then Add to Home Screen, and enable notifications from your account later. You can place the order now." : "على الآيفون: افتح الموقع من Safari ← مشاركة ← «إضافة للشاشة الرئيسية» وفعّل الإشعارات من حسابك بعد كده. تقدر تكمّل الطلب دلوقتي.") : (e ? "This browser does not support notifications. You can still place the order." : "المتصفح ده مش بيدعم الإشعارات. تقدر تكمّل الطلب عادي."); btn = e ? "Continue" : "كمّل الطلب"; }
-        ov.innerHTML = '<div style="max-width:380px;width:100%;background:var(--surface-card,#fff);color:var(--text-primary,#222);border:1px solid var(--border-subtle,#ddd);border-radius:24px;padding:24px;text-align:center"><div style="margin:0 auto 8px;color:var(--accent-primary,#0b8a7f);display:flex;justify-content:center;width:100%"><svg style="display:block;margin:0;flex:none" viewBox="0 0 24 24" width="44" height="44" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0112 0c0 7 3 8 3 8H3s3-1 3-8"/><path d="M10.3 20a2 2 0 003.4 0"/></svg></div><div style="font-weight:800;font-size:17px;margin-bottom:8px">' + (e ? "Follow your order" : "تابع طلبك") + '</div><div style="font-size:13.5px;line-height:1.8;color:var(--text-secondary,#555);margin-bottom:16px">' + msg + '</div><button type="button" id="smng-go" style="width:100%;padding:13px;border-radius:999px;background:var(--accent-primary,#0b8a7f);color:#fff;font-weight:800;font-size:14px;border:0">' + btn + '</button><button type="button" id="smng-no" style="width:100%;padding:10px;margin-top:8px;background:none;border:0;color:var(--text-muted,#888);font-size:12.5px">' + (e ? "Cancel" : "إلغاء") + '</button></div>';
+        ov.innerHTML = '<div style="max-width:380px;width:100%;background:var(--surface-card,#fff);color:var(--text-primary,#222);border:1px solid var(--border-subtle,#ddd);border-radius:24px;padding:24px;text-align:center"><div style="margin:0 auto 8px;color:var(--accent-primary,#0b8a7f);display:flex;justify-content:center;width:100%"><svg style="display:block;margin:0;flex:none" viewBox="0 0 24 24" width="44" height="44" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0112 0c0 7 3 8 3 8H3s3-1 3-8"/><path d="M10.3 20a2 2 0 003.4 0"/></svg></div><div style="font-weight:800;font-size:17px;margin-bottom:8px">' + (e ? "Follow your order" : "تابع طلبك") + '</div><div style="font-size:13.5px;line-height:1.8;color:var(--text-secondary,#555);margin-bottom:16px">' + msg + '</div><button type="button" id="smng-go" style="width:100%;padding:13px;border-radius:999px;background:var(--accent-primary,#0b8a7f);color:#fff;font-weight:800;font-size:14px;border:0">' + btn + '</button><button type="button" id="smng-no" style="width:100%;padding:10px;margin-top:8px;background:none;border:0;color:var(--text-muted,#888);font-size:12.5px">' + (e ? "Continue without notifications" : "كمّل من غير إشعارات") + '</button></div>';
         ov.querySelector("#smng-no").onclick = function () { close(false); };
         ov.querySelector("#smng-go").onclick = function () {
           if (!canAsk) { close(true); return; }
@@ -6402,7 +6466,7 @@ fillGov();
 .cc-list{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding:2px 2px 10px;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
 .cc-d{align-self:center;font-size:11px;color:var(--text-muted);padding:2px 12px;border-radius:999px;background:var(--surface-elevated)}
 .cc-r{display:flex}.cc-r.me{justify-content:flex-end}.cc-r.st{justify-content:flex-start}
-.cc-b{max-width:82%;padding:8px 12px 5px;border-radius:18px;font-size:13.5px;line-height:1.7;word-break:break-word;background:var(--surface-elevated);border:1px solid var(--border-subtle);color:var(--text-primary);border-end-start-radius:6px}
+.cc-b{max-width:82%;padding:8px 12px 5px;border-radius:18px;font-size:12.5px;font-weight:400;line-height:1.65;word-break:break-word;background:var(--surface-elevated);border:1px solid var(--border-subtle);color:var(--text-primary);border-end-start-radius:6px}
 .cc-b.me{background:var(--accent-primary);color:#fff;border-color:transparent;border-end-start-radius:18px;border-end-end-radius:6px}
 .cc-b.ord{max-width:94%;font-size:12.5px;line-height:1.75}
 .cc-b.ord.me{background:var(--accent-soft);color:var(--text-primary);border:1px solid var(--accent-primary)}
@@ -6618,18 +6682,28 @@ html[data-cbg="dots"] .cc-glass{background:radial-gradient(rgba(0,0,0,.09) 1.3px
   function ccHold() {
     var b = document.getElementById("cc-list"); if (!b || b.dataset.hold) return; b.dataset.hold = 1;
     var t = 0, x0 = 0, y0 = 0, clr = function () { clearTimeout(t); };
-    b.addEventListener("pointerdown", function (e) { var el = e.target.closest(".cc-r[data-mid]"); if (!el) return; x0 = e.clientX; y0 = e.clientY; clr(); t = setTimeout(function () { ccMenu(+el.dataset.mid); }, 550); });
+    b.addEventListener("pointerdown", function (e) { var el = e.target.closest(".cc-r[data-mid]"); if (!el) return; x0 = e.clientX; y0 = e.clientY; clr(); t = setTimeout(function () { ccMenu(+el.dataset.mid); }, 350); });
     b.addEventListener("pointermove", function (e) { if (Math.abs(e.clientX - x0) + Math.abs(e.clientY - y0) > 10) clr(); }, { passive: true });
     ["pointerup", "pointercancel", "scroll"].forEach(function (v) { b.addEventListener(v, clr, { passive: true }); });
     b.addEventListener("contextmenu", function (e) { var el = e.target.closest(".cc-r[data-mid]"); if (el) { e.preventDefault(); clr(); ccMenu(+el.dataset.mid); } });
   }
   function ccFind(mid) { var L = (CC.msgs || []).concat(CC.old || []); for (var i = 0; i < L.length; i++) if (L[i].id === mid) return L[i]; return null; }
   window.ccPopClose = function () { var p = document.getElementById("cc-pdim"); if (p) p.remove(); };
+  window.smFallbackCopy = function (txt) {
+    try { var ta = document.createElement("textarea"); ta.value = txt; ta.style.cssText = "position:fixed;opacity:0"; document.body.appendChild(ta); ta.select(); document.execCommand("copy"); ta.remove(); } catch (e) {}
+  };
+  window.ccCopy = function (mid) {
+    var m = ccFind(mid); if (!m || !m.body) return;
+    var done = function () { try { showToast(en() ? "Copied" : "تم النسخ"); } catch (e) {} };
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(m.body).then(done, function () { smFallbackCopy(m.body); done(); }); }
+    else { smFallbackCopy(m.body); done(); }
+  };
   window.ccMenu = function (mid) {
     var m = ccFind(mid); if (!m) return; ccPopClose();
     var can = m.mine && !m.deleted && m.kind !== "order" && m.kind !== "sticker" && m.kind !== "auto";
+    var canCopy = !m.deleted && m.body && m.kind !== "order" && m.kind !== "sticker" && m.kind !== "auto";
     var d = document.createElement("div"); d.id = "cc-pdim"; d.className = "cc-pdim"; d.onclick = function (e) { if (e.target === d) ccPopClose(); };
-    d.innerHTML = '<div class="cc-pop"><button type="button" onclick="ccPopClose();ccHide(' + mid + ')">' + (en() ? "Delete for me" : "حذف عندي") + "</button>" + (can ? '<button type="button" class="dg" onclick="ccPopClose();ccDel(' + mid + ')">' + (en() ? "Delete for everyone" : "حذف للجميع") + "</button>" : "") + "</div>";
+    d.innerHTML = '<div class="cc-pop">' + (canCopy ? '<button type="button" onclick="ccPopClose();ccCopy(' + mid + ')">' + (en() ? "Copy" : "نسخ") + "</button>" : "") + '<button type="button" onclick="ccPopClose();ccHide(' + mid + ')">' + (en() ? "Delete for me" : "حذف عندي") + "</button>" + (can ? '<button type="button" class="dg" onclick="ccPopClose();ccDel(' + mid + ')">' + (en() ? "Delete for everyone" : "حذف للجميع") + "</button>" : "") + "</div>";
     document.body.appendChild(d);
   };
   window.ccHide = function (mid) {
@@ -6647,7 +6721,7 @@ html[data-cbg="dots"] .cc-glass{background:radial-gradient(rgba(0,0,0,.09) 1.3px
       paint(true);
     }).catch(function () { showToast(en() ? "Could not delete" : "تعذّر المسح"); });
   };
-  window.ccEmo = function () { var p = document.getElementById("cc-emo"); if (!p) return; var h = p.classList.toggle("hidden"); if (!h && !p.dataset.r) { p.dataset.r = 1; p.innerHTML = '<div class="cet">' + EC.map(function (c, i) { return '<button type="button" onpointerdown="event.preventDefault()" onclick="ccEc(' + i + ')">' + emj(c[0]) + "</button>"; }).join("") + '</div><div class="ceg" id="cc-ceg"></div>'; ccEc(0); } };
+  window.ccEmo = function () { var p = document.getElementById("cc-emo"); if (!p) return; var h = p.classList.toggle("hidden"); if (!h) { try { ccAttach(0); } catch (e) {} } if (!h && !p.dataset.r) { p.dataset.r = 1; p.innerHTML = '<div class="cet">' + EC.map(function (c, i) { return '<button type="button" onpointerdown="event.preventDefault()" onclick="ccEc(' + i + ')">' + emj(c[0]) + "</button>"; }).join("") + '</div><div class="ceg" id="cc-ceg"></div>'; ccEc(0); } };
   window.ccEc = function (i) { var g = document.getElementById("cc-ceg"); if (!g) return; g.innerHTML = (EC[i][1].match(EMR) || []).map(function (e) { return '<button type="button" onpointerdown="event.preventDefault()" onclick="ccIns(this.dataset.e)" data-e="' + e + '">' + emj(e) + "</button>"; }).join(""); };
   window.ccIns = function (e) { var t = document.getElementById("cc-in"); if (!t) return; var s = t.selectionStart == null ? t.value.length : t.selectionStart, n = t.selectionEnd == null ? s : t.selectionEnd; t.value = t.value.slice(0, s) + e + t.value.slice(n); var c = s + e.length; try { t.setSelectionRange(c, c); } catch (x) {} try { chatGrow(t); ccMorph(); } catch (x) {} };
   function fmt(s) { return emj(escHtml(s).replace(/\*([^*\n]+)\*/g, "<b>$1</b>").replace(/\n/g, "<br>")); }
@@ -6950,7 +7024,7 @@ window.SMSND_FILE=function(){return((window.SM_SET||{}).ringtones||{}).customer|
         '<label class="cc-ib cc-cam" aria-label="' + (en() ? "Camera" : "كاميرا") + '">' + CAMSVG + '<input type="file" accept="image/*" capture="environment" hidden onchange="chatPick(this)"></label>' +
         '<button type="button" class="cc-ib cc-emb" onclick="ccEmo()" aria-label="' + (en() ? "Emoji" : "إيموجي") + '"><svg viewBox="0 0 24 24" class="ic"><circle cx="12" cy="12" r="8.5"/><path d="M8.6 14.2c.9 1.3 2 1.9 3.4 1.9s2.5-.6 3.4-1.9"/><circle cx="9.3" cy="10" r=".7"/><circle cx="14.7" cy="10" r=".7"/></svg></button>' +
         '<textarea id="cc-in" rows="1" placeholder="' + (en() ? "Message" : "رسالة") + '" enterkeyhint="send" oninput="chatGrow(this);ccMorph()" onkeydown="chatKey(event)"></textarea>' +
-        '<div id="cc-rec" class="cc-rec hidden"><span class="cc-dot"></span><span id="cc-rt">0:00</span><span class="cc-sw">' + (en() ? "Slide to cancel" : "اسحب للإلغاء") + "</span></div>" +
+        '<div id="cc-rec" class="cc-rec hidden"><span class="cc-dot"></span><span id="cc-rt">0:00</span><span class="cc-sw">' + (en() ? "Tap again to send" : "اضغط تاني للإرسال") + '</span><button type="button" class="cc-rdel" onclick="ccRecCancel()" aria-label="' + (en() ? "Delete recording" : "حذف التسجيل") + '"><svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><use href="#i-trash"/></svg></button></div>' +
         '<button type="button" class="cc-send cc-mic" id="cc-act" aria-label="' + (en() ? "Send" : "إرسال") + '"><span class="cc-i-mic"><svg viewBox="0 0 24 24" class="ic"><rect x="8.6" y="2.8" width="6.8" height="12" rx="3.4"/><path d="M5 11.5a7 7 0 0 0 14 0M12 18.5v3"/></svg></span><span class="cc-i-snd"><svg viewBox="0 0 24 24" class="ic"><path d="M12 19.5v-15M5.5 11 12 4.5 18.5 11" stroke-width="2.4"/></svg></span></button></div></div>';
   };
   var CAMSVG = '<svg viewBox="0 0 24 24" class="ic"><path d="M4 8.5A2.5 2.5 0 0 1 6.5 6h1.2l1.2-1.8h6.2L16.3 6h1.2A2.5 2.5 0 0 1 20 8.5v8a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 16.5z"/><circle cx="12" cy="12.5" r="3.4"/></svg>';
@@ -6978,7 +7052,7 @@ window.SMSND_FILE=function(){return((window.SM_SET||{}).ringtones||{}).customer|
     var t = document.getElementById("cc-in"); if (!t) return;
     t.value = "📇 " + n.trim() + "\n" + p.trim(); try { chatSend(); } catch (e) {}
   };
-  window.ccAttach = function (on) { var p = document.getElementById("cc-attach"); if (!p) return; var show = on === undefined ? p.classList.contains("hidden") : !!on; p.classList.toggle("hidden", !show); };
+  window.ccAttach = function (on) { var p = document.getElementById("cc-attach"); if (!p) return; var show = on === undefined ? p.classList.contains("hidden") : !!on; if (show) { var em = document.getElementById("cc-emo"); if (em) em.classList.add("hidden"); } p.classList.toggle("hidden", !show); };
   window.ccMorph = function () { var ta = document.getElementById("cc-in"), b = document.getElementById("cc-act"); if (!b) return; var has = !!(ta && ta.value.trim()); b.classList.toggle("has-text", has); b.classList.toggle("cc-mic", !has); };
   function upBlob(blob, ext, type) {
     var nm = Date.now() + "-" + Math.random().toString(36).slice(2, 8) + "." + ext;
@@ -6998,6 +7072,7 @@ window.SMSND_FILE=function(){return((window.SM_SET||{}).ringtones||{}).customer|
   function recStop(send) {
     var r = REC; if (!r) return; REC = null; clearInterval(r.iv);
     var bar = document.getElementById("cc-bar"); if (bar) bar.classList.remove("recording");
+    var ab = document.getElementById("cc-act"); if (ab) ab.classList.remove("rec-on");
     var rc = document.getElementById("cc-rec"); if (rc) rc.classList.add("hidden");
     r.mr.onstop = function () {
       r.stream.getTracks().forEach(function (x) { x.stop(); });
@@ -7009,34 +7084,37 @@ window.SMSND_FILE=function(){return((window.SM_SET||{}).ringtones||{}).customer|
     };
     try { r.mr.stop(); } catch (e) {}
   }
+  window.ccRecCancel = function () { recStop(false); };
   function recStart(e) {
     var ta = document.getElementById("cc-in"); if (ta && ta.value.trim()) return;
+    if (REC) return;
     if (!navigator.mediaDevices || !window.MediaRecorder) { showToast(en() ? "Voice notes aren't supported on this browser" : "التسجيل الصوتي مش مدعوم في المتصفح ده"); return; }
-    var x0 = e.clientX, id = e.pointerId, btn = e.currentTarget;
-    try { btn.setPointerCapture(id); } catch (z) {}
-    var started = { cancel: false, done: false };
+    var btn = e.currentTarget;
     navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true, sampleRate: 48000, channelCount: 1 } }).then(function (stream) {
-      if (started.done) { stream.getTracks().forEach(function (q) { q.stop(); }); return; }
+      if (REC) { stream.getTracks().forEach(function (q) { q.stop(); }); return; }
       var mime = ["audio/webm;codecs=opus", "audio/mp4", "audio/webm"].filter(function (m) { return MediaRecorder.isTypeSupported(m); })[0] || "";
       var mr = new MediaRecorder(stream, mime ? { mimeType: mime, audioBitsPerSecond: 80000 } : { audioBitsPerSecond: 80000 }), chunks = [];
       mr.ondataavailable = function (d) { if (d.data && d.data.size) chunks.push(d.data); };
       mr.start();
       var t0 = Date.now(), tt = document.getElementById("cc-rt"), iv = setInterval(function () { var s = Math.floor((Date.now() - t0) / 1000); if (tt) tt.textContent = Math.floor(s / 60) + ":" + ("0" + (s % 60)).slice(-2); if (s >= 180) recStop(true); }, 250);
-      REC = { mr: mr, stream: stream, chunks: chunks, t0: t0, iv: iv, mime: mr.mimeType || mime || "audio/webm", cancel: false, x0: x0 };
+      REC = { mr: mr, stream: stream, chunks: chunks, t0: t0, iv: iv, mime: mr.mimeType || mime || "audio/webm" };
       var bar = document.getElementById("cc-bar"); if (bar) bar.classList.add("recording");
+      if (btn) btn.classList.add("rec-on");
       var rc = document.getElementById("cc-rec"); if (rc) rc.classList.remove("hidden");
     }).catch(function () { showToast(en() ? "Allow microphone access to record" : "اسمح بالوصول للميكروفون عشان تسجل"); });
-    var move = function (m) { if (REC && Math.abs(m.clientX - x0) > 90) { REC.cancel = true; var rc = document.getElementById("cc-rec"); if (rc) rc.classList.add("cancel"); } else if (REC) { var rc2 = document.getElementById("cc-rec"); if (rc2) rc2.classList.remove("cancel"); } };
-    var up = function () { started.done = true; btn.removeEventListener("pointermove", move); btn.removeEventListener("pointerup", up); btn.removeEventListener("pointercancel", up); if (REC) recStop(!REC.cancel); };
-    btn.addEventListener("pointermove", move); btn.addEventListener("pointerup", up); btn.addEventListener("pointercancel", up);
   }
   document.addEventListener("pointerdown", function (e) {
     var b = e.target.closest && e.target.closest("#cc-act"); if (!b) return;
     if (b.classList.contains("has-text")) return;
+    if (REC) return;
     if (CC.noMedia) { e.preventDefault(); showToast(en() ? "Voice and images are turned off for your account" : "الصوت والصور مقفولين على حسابك"); return; }
     e.preventDefault(); recStart({ clientX: e.clientX, pointerId: e.pointerId, currentTarget: b });
   });
-  document.addEventListener("click", function (e) { var b = e.target.closest && e.target.closest("#cc-act"); if (b && b.classList.contains("has-text")) chatSend(); });
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest && e.target.closest("#cc-act"); if (!b) return;
+    if (REC) { if (Date.now() - REC.t0 > 600) recStop(true); return; }   // ضغطة تانية = إرسال الريكورد (الأولى بتبدأه)
+    if (b.classList.contains("has-text")) chatSend();
+  });
   window.chatRequest = function (name, desc, img) {
     var id = ident(); if (!id) return Promise.resolve(false);
     return call("cust_request_chat", { p_phone: id.p_phone, p_name: id.p_name, p_key: id.p_key, p_prod: name, p_desc: desc, p_img: img || "" }).then(function (j) { return !!(j && j.ok); }, function () { return false; });
@@ -7128,9 +7206,22 @@ window.SMSND_FILE=function(){return((window.SM_SET||{}).ringtones||{}).customer|
     var below=q.t+oh+G,above=q.t-h-G,t=(below+h<=H-8)?below:(above>=8?above:Math.max(8,Math.min(H-h-8,below)));
     b.style.bottom="auto";b.style.right="auto";b.style.top=t+"px";};
   window.smSnap=function(b){var r=b.getBoundingClientRect(),w=window.innerWidth,left=(r.left+r.width/2<w/2)?M:w-r.width-M;b.style.left=left+"px";b.style.right="auto";};
-  function idle(b){var tm;function wake(){b.classList.remove("fab-idle");clearTimeout(tm);tm=setTimeout(function(){b.classList.add("fab-idle")},2600)}
-    ["pointerdown","touchstart","mouseenter","focus"].forEach(function(ev){b.addEventListener(ev,wake,{passive:true})});
-    window.addEventListener("scroll",function(){if(!b.classList.contains("fab-idle"))return;},{passive:true});wake();return wake}
+  function fabSeeThru(b){           // شفاف بس لما يكون فوق محتوى حقيقي، ثابت على الخلفية
+    var r=b.getBoundingClientRect(),x=r.left+r.width/2,y=r.top+r.height/2,els;
+    try{els=document.elementsFromPoint(x,y)}catch(e){return}
+    var under=false;
+    for(var i=0;i<els.length;i++){var el=els[i];
+      if(b.contains(el))continue;
+      if(el.matches("img,article,.surface-card,.home-cat,h1,h2,h3,h4,p,a,input,textarea,.req-note,.pinfo-box")){under=true;break}
+    }
+    b.classList.toggle("fab-clear",under);
+  }
+  var fabSeeTick=false;
+  function fabSeeAll(){if(fabSeeTick)return;fabSeeTick=true;requestAnimationFrame(function(){fabSeeTick=false;["floating-cart-btn","floating-chat-btn"].forEach(function(id){var b=document.getElementById(id);if(b&&getComputedStyle(b).display!=="none")fabSeeThru(b)})})}
+  window.addEventListener("scroll",fabSeeAll,{passive:true});
+  window.addEventListener("resize",fabSeeAll,{passive:true});
+  setInterval(fabSeeAll,1500);
+  function idle(b){var f=function(){fabSeeThru(b)};f();return f}
   function chatFab(){
     if(document.getElementById("floating-chat-btn"))return;
     var b=document.createElement("button");b.id="floating-chat-btn";b.type="button";b.className="sm-fab";b.setAttribute("aria-label","محادثة المتجر");b.setAttribute("title","محادثة المتجر");
@@ -7158,7 +7249,7 @@ window.SMSND_FILE=function(){return((window.SM_SET||{}).ringtones||{}).customer|
 </script>
 <script>
 (()=>{
-const selectors='#sheet-modal,#checkout-modal,#request-product-modal,#acct-modal,#admin-overlay,#cart-overlay,#search-panel,#menu-panel,.smd-o,#cc-pdim,#cc-gov,[data-sm-escape]';
+const selectors='#sheet-modal,#checkout-modal,#request-product-modal,#acct-modal,#admin-overlay,#cart-overlay,#search-panel,#menu-panel,.smd-o,#cc-pdim,#cc-gov,#pinfo-ov,[data-sm-escape]';
 const states=new WeakMap();let serial=0,busy=false;
 const visible=e=>e&&e.isConnected&&!e.classList.contains('hidden')&&getComputedStyle(e).display!=='none'&&getComputedStyle(e).visibility!=='hidden'&&e.getClientRects().length;
 function scan(){document.querySelectorAll(selectors).forEach(e=>{if(visible(e)){if(!states.has(e))states.set(e,{n:++serial,dirty:false,focus:document.activeElement})}else states.delete(e)})}
@@ -7169,6 +7260,7 @@ function dismiss(e){
  if(e.classList.contains('smd-o')){e.querySelector('.smd-c').click();return}
  if(e.hasAttribute('data-sm-escape')){const b=e.querySelector('#smng-no');if(b)b.click();return}
  if(e.id==='cc-pdim'){ccPopClose();return}
+ if(e.id==='pinfo-ov'){closeProductInfo();return}
  if(e.id==='cc-gov'){if(typeof ccGBack==='function')ccGBack();return}
  if(e.id==='acct-modal'){closeAcct();return}
  if(e.id==='admin-overlay'){closeAdmin();return}
@@ -7195,6 +7287,67 @@ function addX(){document.querySelectorAll(selectors).forEach(e=>{if(!visible(e)|
 new MutationObserver(addX).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['class']});addX();
 })();
 
+</script>
+<style>
+/* ===== دفعة تعديلات ٢٥ نوفمبر ===== */
+/* فويس المحادثة: ضغطة تبدأ وتكمل + نبضة واضحة + زر حذف */
+#cc-act.rec-on .cc-i-mic{display:none!important}
+#cc-act.rec-on .cc-i-snd{display:inline-flex!important}
+#cc-act.rec-on{animation:ccRecPulse 1.1s ease-in-out infinite;background:linear-gradient(180deg,#F58AA0,#D8435D)!important;color:#fff!important;box-shadow:0 8px 22px rgba(216,67,93,.45)}
+@keyframes ccRecPulse{0%,100%{transform:scale(1.18)}50%{transform:scale(1.32)}}
+.cc-rdel{width:34px;height:34px;border-radius:50%;border:0;background:#E5566D;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;margin-inline-start:6px}
+.cc-rdel .ic{width:18px;height:18px}
+.cc-rec .cc-sw{padding-inline-end:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:11.5px}
+.cc-glass .cc-bar>#cc-rec,#cc-bar>#cc-rec{position:absolute!important;inset-inline-start:8px;inset-inline-end:70px;top:50%;transform:translateY(-50%);height:46px;z-index:5}
+.cc-bar.recording #cc-in{visibility:hidden}
+#cc-act{touch-action:manipulation}
+/* منع تظليل/نسخ المتصفح جوه شريط المحادثة وفقاعات الرسايل */
+#cc-bar,#cc-bar .cc-ib,#cc-bar .cc-send{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+#cc-list .cc-b{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+/* أيقونات السلة والمحادثة: شفافة بس فوق محتوى حقيقي */
+#floating-cart-btn.fab-clear,.sm-fab.fab-clear{opacity:.45}
+/* كارت المنتج: INFO مكان القلب، والقلب قصاد السعر */
+.pcard .info-btn{position:absolute;top:7px;left:7px;z-index:2;width:32px;height:32px;border-radius:50%;display:grid;place-items:center;color:var(--text-secondary);background:color-mix(in srgb,var(--surface-card) 88%,transparent);border:1px solid var(--border-subtle);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);cursor:pointer;transition:transform .2s ease}
+.pcard .info-btn .ic{width:60%;height:60%;pointer-events:none}
+@media (hover:hover){.pcard .info-btn:hover{transform:scale(1.1)}}
+.pc-price-row{display:flex;align-items:center;justify-content:space-between;gap:6px}
+.pcard .pc-fav{position:static;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;flex:none;color:#8A7A80;background:var(--surface-elevated);border:1px solid var(--border-subtle);cursor:pointer;transition:transform .2s ease}
+.pcard .pc-fav .ic{width:60%;height:60%;pointer-events:none}
+.pcard .pc-fav.is-fav{color:#E0517F}
+.pcard .pc-fav.is-fav .ic{fill:currentColor}
+/* مربع تفاصيل المنتج الزجاجي */
+.pinfo-ov{position:fixed;inset:0;z-index:90;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;padding:18px;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.pinfo-ov.hidden{display:none}
+.pinfo-box{position:relative;max-width:340px;width:100%;border-radius:24px;padding:16px;background:color-mix(in srgb,var(--surface-card,#fff) 88%,transparent);border:1px solid var(--border-subtle);box-shadow:0 24px 60px rgba(0,0,0,.3);-webkit-backdrop-filter:blur(22px) saturate(160%);backdrop-filter:blur(22px) saturate(160%);color:var(--text-primary);text-align:start}
+.pinfo-box img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:16px;background:var(--surface-elevated)}
+.pinfo-box h4{font-size:15px;font-weight:800;margin:10px 0 2px}
+.pinfo-box .pinfo-cat{font-size:11px;color:var(--text-secondary)}
+.pinfo-box p.pinfo-d{font-size:12.5px;line-height:1.8;color:var(--text-secondary);margin:8px 0}
+.pinfo-box .pinfo-p{font-size:16px;font-weight:800;color:var(--accent-primary)}
+.pinfo-x{position:absolute;top:10px;inset-inline-end:10px;width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:var(--surface-card);color:var(--text-primary);border:1px solid var(--border-subtle);cursor:pointer;z-index:2}
+.pinfo-box .pinfo-x{width:24px!important;height:24px!important;top:-8px!important;inset-inline-end:-8px!important;inset-inline-start:auto!important;font-size:12px!important}
+.pinfo-box .pinfo-x .ic{width:11px!important;height:11px!important}
+.pinfo-x .ic{width:16px;height:16px}
+/* أيقونات صفحة الحساب: أكبر، كاملة، زجاجية */
+.pf-row .pf-ic{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;flex:none;background:var(--glass-bg);border:1px solid var(--glass-bd);color:var(--accent-primary);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+.pf-row .pf-ic .ic{width:22px;height:22px;margin:0}
+/* ضغطة الأيقونات: تنور وتكبر من غير قص */
+.dock-btn,.dock-avatar,.info-btn,.pc-fav{transform-origin:center}
+.dock-btn svg,.dock-btn .ic,.dock-avatar svg,.dock-avatar .ic,.pc-fav svg{pointer-events:none}
+.cc-b.me .cc-os span{background:rgba(255,255,255,.22);color:#fff}
+.cc-b.me .cc-os span.x{background:rgba(255,255,255,.14);color:#FFD7DE}
+.cc-b.me .cc-os span.ok{background:rgba(255,255,255,.3);color:#fff}
+.dock-btn:active,.dock-avatar:active,.info-btn:active,.pc-fav:active,.dock-btn.sm-press,.dock-avatar.sm-press,.info-btn.sm-press,.pc-fav.sm-press{transform:scale(1.12)!important;filter:brightness(1.14)}
+.hdr-actions,.hdr-menu-wrap{overflow:visible}
+</style>
+
+<script>
+/* Minimal reliable press feedback for icon buttons (touch-safe) */
+(function(){var SEL='.dock-btn,.dock-avatar,.info-btn,.pc-fav';var cur=null;
+function up(){if(cur){cur.classList.remove('sm-press');cur=null;}}
+document.addEventListener('pointerdown',function(e){var t=e.target&&e.target.closest?e.target.closest(SEL):null;if(cur&&cur!==t)up();cur=t;if(cur)cur.classList.add('sm-press');},{passive:true});
+document.addEventListener('pointerup',up,{passive:true});
+document.addEventListener('pointercancel',up,{passive:true});})();
 </script>
 </body>
 </html>
@@ -7295,7 +7448,7 @@ body{font-family:"Plex","Cairo","Tajawal",sans-serif}
 /* العدسة جوه الخانة على اليمين، والإكس (مسح) على الشمال */
 .hs-field .hs-ico{position:absolute!important;z-index:3!important;right:14px!important;left:auto!important;inset-inline-start:auto!important;color:var(--accent-primary)!important;pointer-events:none!important}
 .hs-field input{position:relative!important;z-index:1!important;padding-left:44px!important;padding-right:44px!important}
-.hs-field #clear-search-btn.hs-clear{left:22px!important;right:auto!important;inset-inline-start:auto!important;z-index:4!important}
+.hs-field #clear-search-btn.hs-clear{left:26px!important;right:auto!important;inset-inline-start:auto!important;z-index:4!important}
 /* قائمة نتائج البحث: نازلة تحت الخانة في النص، زجاجية */
 .site-header .hdr-search{position:relative!important}
 .hdr-search .search-panel{left:50%!important;right:auto!important;transform:translateX(-50%)!important;margin:0!important;width:min(560px,calc(100vw - 24px))!important;top:calc(100% + 8px)!important;background:var(--glass-bg)!important;border:1px solid var(--glass-bd)!important;-webkit-backdrop-filter:blur(22px) saturate(1.6)!important;backdrop-filter:blur(22px) saturate(1.6)!important;box-shadow:var(--glass-sh),0 18px 46px rgba(0,0,0,.22)!important}
@@ -7361,6 +7514,9 @@ body{font-family:"Plex","Cairo","Tajawal",sans-serif}
 /* ===== قائمة المنيو: أصغر وأخف وزجاج شفاف ===== */
 .site-header .hdr-menu-wrap .search-panel{width:min(88vw,300px)!important;padding:6px!important;border-radius:22px!important;background:rgba(255,255,255,.42)!important;border:1px solid rgba(255,255,255,.65)!important;-webkit-backdrop-filter:blur(22px) saturate(1.7)!important;backdrop-filter:blur(22px) saturate(1.7)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 16px 40px rgba(20,50,46,.16)!important}
 [data-theme="dark"] .site-header .hdr-menu-wrap .search-panel{background:rgba(26,18,24,.5)!important;border-color:rgba(255,255,255,.16)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 16px 40px rgba(0,0,0,.42)!important}
+/* ===== قائمة المنيو: تثبيت عند الزر + زجاج أوضح ===== */
+#menu-panel.search-panel{top:auto!important;left:auto!important;right:auto!important;transform:none!important;background:color-mix(in srgb,var(--surface-card,#fff) 90%,transparent)!important;border:1px solid var(--border-subtle)!important;box-shadow:0 18px 46px rgba(0,0,0,.22)!important}
+[data-theme="dark"] #menu-panel.search-panel{background:color-mix(in srgb,var(--surface-card,#1D171D) 92%,transparent)!important;border-color:var(--border-subtle)!important;box-shadow:0 18px 46px rgba(0,0,0,.45)!important}
 .site-header .hdr-menu-wrap .search-panel .sp-row{gap:10px;padding:6px 8px;border-radius:14px}
 .site-header .hdr-menu-wrap .search-panel .sp-ico{width:34px;height:34px;border-radius:11px;font-size:17px}
 .site-header .hdr-menu-wrap .search-panel .sp-name{font-size:12.5px}
