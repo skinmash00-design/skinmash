@@ -1,0 +1,13 @@
+[
+{"id":"hamam","name":"حمام سوء إشارة","file":"hamam.mp3"},
+{"id":"start1","name":"ابدأ الإشارة","file":"start1.mp3"},
+{"id":"start2","name":"ابدأ الإشارة 2","file":"start2.mp3"},
+{"id":"zero","name":"يا صفر ابدأ الإشارة","file":"zero.mp3"},
+{"id":"agent0","name":"العميل صفر","file":"agent0.mp3"},
+{"id":"mission","name":"المأمورية: كوباية قزاز","file":"mission.mp3"},
+{"id":"receive","name":"برجاء التوجه لاستلامها","file":"receive.mp3"},
+{"id":"thanks","name":"تسلم إيدك يا فندم","file":"thanks.mp3"},
+{"id":"lock","name":"قبل ما تطلع","file":"lock.mp3"},
+{"id":"delay","name":"لو قعدت تتمرقع","file":"delay.mp3"},
+{"id":"cold","name":"المأمورية هتبرد","file":"cold.mp3"}
+]
