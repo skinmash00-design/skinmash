@@ -1,0 +1,192 @@
+[
+ {
+  "id": "hamam",
+  "name": "حمام سوء إشارة",
+  "file": "hamam.mp3"
+ },
+ {
+  "id": "start1",
+  "name": "ابدأ الإشارة",
+  "file": "start1.mp3"
+ },
+ {
+  "id": "start2",
+  "name": "ابدأ الإشارة 2",
+  "file": "start2.mp3"
+ },
+ {
+  "id": "zero",
+  "name": "يا صفر ابدأ الإشارة",
+  "file": "zero.mp3"
+ },
+ {
+  "id": "agent0",
+  "name": "العميل صفر",
+  "file": "agent0.mp3"
+ },
+ {
+  "id": "mission",
+  "name": "المأمورية: كوباية قزاز",
+  "file": "mission.mp3"
+ },
+ {
+  "id": "receive",
+  "name": "برجاء التوجه لاستلامها",
+  "file": "receive.mp3"
+ },
+ {
+  "id": "thanks",
+  "name": "تسلم إيدك يا فندم",
+  "file": "thanks.mp3"
+ },
+ {
+  "id": "lock",
+  "name": "قبل ما تطلع",
+  "file": "lock.mp3"
+ },
+ {
+  "id": "delay",
+  "name": "لو قعدت تتمرقع",
+  "file": "delay.mp3"
+ },
+ {
+  "id": "cold",
+  "name": "المأمورية هتبرد",
+  "file": "cold.mp3"
+ },
+ {
+  "id": "thalej",
+  "name": "ذاب الجليد ومات الديك",
+  "file": "thalej.mp3"
+ },
+ {
+  "id": "khotoba",
+  "name": "مخطوبين بقالنا تسع سنين",
+  "file": "khotoba.mp3"
+ },
+ {
+  "id": "jacket",
+  "name": "ينفع القميص؟",
+  "file": "jacket.mp3"
+ },
+ {
+  "id": "ward",
+  "name": "ورد بـ180 جنيه",
+  "file": "ward.mp3"
+ },
+ {
+  "id": "tesaa",
+  "name": "اسمي الحقيقي تسعة",
+  "file": "tesaa.mp3"
+ },
+ {
+  "id": "saqr",
+  "name": "صقر ناقص نقطة",
+  "file": "saqr.mp3"
+ },
+ {
+  "id": "moot",
+  "name": "مش عايز أموت",
+  "file": "moot.mp3"
+ },
+ {
+  "id": "batal",
+  "name": "أنت بطل",
+  "file": "batal.mp3"
+ },
+ {
+  "id": "khtaw",
+  "name": "نفذ الخطة واو",
+  "file": "khtaw.mp3"
+ },
+ {
+  "id": "wajha",
+  "name": "المواجهة المباشرة",
+  "file": "wajha.mp3"
+ },
+ {
+  "id": "nouna",
+  "name": "نائب في حالة الوفاة",
+  "file": "nouna.mp3"
+ },
+ {
+  "id": "kafsh",
+  "name": "كافش فدى",
+  "file": "kafsh.mp3"
+ },
+ {
+  "id": "dolar",
+  "name": "500 دولار في الليلة",
+  "file": "dolar.mp3"
+ },
+ {
+  "id": "sam",
+  "name": "الأعمار بيد الله",
+  "file": "sam.mp3"
+ },
+ {
+  "id": "kholta",
+  "name": "خلطة الخمس دقايق",
+  "file": "kholta.mp3"
+ },
+ {
+  "id": "shawr",
+  "name": "حساب الشاور",
+  "file": "shawr.mp3"
+ },
+ {
+  "id": "dahia",
+  "name": "بنروح في 60 داهية",
+  "file": "dahia.mp3"
+ },
+ {
+  "id": "koko",
+  "name": "شعار الخطة كوكو",
+  "file": "koko.mp3"
+ },
+ {
+  "id": "satr",
+  "name": "سطر في كتب التاريخ",
+  "file": "satr.mp3"
+ },
+ {
+  "id": "nounou",
+  "name": "النونو فين؟",
+  "file": "nounou.mp3"
+ },
+ {
+  "id": "na2es",
+  "name": "هو أنا ناقص؟",
+  "file": "na2es.mp3"
+ },
+ {
+  "id": "dollar10",
+  "name": "10 مليون جنيه",
+  "file": "dollar10.mp3"
+ },
+ {
+  "id": "tawseya",
+  "name": "ملعون أبو التوصية",
+  "file": "tawseya.mp3"
+ },
+ {
+  "id": "ghor",
+  "name": "غور بره",
+  "file": "ghor.mp3"
+ },
+ {
+  "id": "zafan",
+  "name": "بالزعنفة في منطقة حساسة",
+  "file": "zafan.mp3"
+ },
+ {
+  "id": "banana",
+  "name": "بنانا بوت",
+  "file": "banana.mp3"
+ },
+ {
+  "id": "saba7",
+  "name": "احتمال 7%",
+  "file": "saba7.mp3"
+ }
+]
