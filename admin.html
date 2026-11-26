@@ -2428,7 +2428,7 @@ async function chAcc(u,on){try{await api("chat_set_access",{p_user:u,p_on:!!on})
 
 /* ---- الغرفة ---- */
 async function chRoom(id,mon){const r=(mon===2?CH.grooms:mon?CH.mrooms:CH.rooms).find(x=>x.id===id);if(!r)return;chOutSave();CH.reply=null;CH.room=r;if(r.kind==="group")chGcLoad(id);else CH.gcm={};CH.mon=mon?+mon:0;CH.msgs=[];CH.pend=mon?[]:(CHOUT.get(id)||[]);CH.reads={};CH.sig="";CH.read=0;const grp=r.kind==="group";
-W().innerHTML=`<div class="chbg"></div><div class="chhd">${RO()||mon?"":`<button class="gb gl chdots" onclick="chMore()" aria-label="المزيد"><svg class="ic" viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="12" cy="4.5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19.5" r="1.6"/></svg></button>`}<button type="button" class="gb gl chbk" onclick="chBack()" aria-label="رجوع"><svg class="ic chev"><use href="#i-chev"/></svg></button><button class="chti gl" ${grp?'onclick="chInfo()"':r.kind==="cust"&&!mon?'onclick="chCustSheet()"':""}>${rav(r,34,mon)}<span class="f1"><b id="chtn" data-al="${hdAl(r,mon)}">${hdCbr(r,mon)}</b><small id="chst"></small></span></button>${r.kind==="cust"&&!mon?`<a class="gb gl chwa" target="_blank" rel="noopener" href="${wl((S.c.find(x=>d9(x.phone)===d9(r.cust_phone))||{}).wa||r.cust_phone||"","")}" aria-label="واتساب"><svg class="ic hb" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21l1.65-4.9A8.5 8.5 0 1 1 8 19.4L3 21z"/><path d="M9 8.6c.2 2.6 3.2 5.6 5.8 5.8l1.2-1.3-2-1-.9.6c-.9-.4-1.8-1.3-2.2-2.2l.6-.9-1-2L9 8.6z"/></svg></a><a class="gb gl chwa chcall" href="tel:${esc(String((S.c.find(x=>d9(x.phone)===d9(r.cust_phone))||{}).phone||r.cust_phone||"").replace(/[^\d+]/g,""))}" aria-label="اتصال"><svg class="ic hb" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg></a>${CHSLOT}`:""}</div><div class="chms${grp?"":" nav2"}" id="chm"></div>${RO()||mon?`<div class="chro gl">${ic("eye")} ${mon?"مراقبة — قراءة فقط":"دخول المالك — قراءة فقط ومش بيظهر للأدمن إنك قرأت"}</div>`:`<div class="chcp">${stkCan(r)?`<button class="gb gl" id="chstk" onclick="stkOpen()" onpointerdown="event.preventDefault()" aria-label="ستيكرات صوتية">${STKSVG}</button>`:`<button class="gb gl" onclick="chAtt()" onpointerdown="event.preventDefault()" aria-label="إرفاق وسائط"><svg class="ic" viewBox="0 0 24 24"><use href="#i-cpl"/></svg></button>`}<div class="chin gl"><textarea id="chin" rows="1" placeholder="رسالة" enterkeyhint="send" autocomplete="off" oninput="chGrow();chMorph()" onkeydown="chKey(event)"></textarea><button class="inemj" onclick="chEmoji()" onpointerdown="event.preventDefault()" aria-label="إيموجي">${ic("smile")}</button>${aiOK()?`<button class="inemj" id="chai" onclick="chAi()" onpointerdown="event.preventDefault()" aria-label="تحسين الرسالة" title="تحسين">${AISVG}</button>`:""}${stkCan(r)?`<button class="inemj chmed" onclick="chAtt()" onpointerdown="event.preventDefault()" aria-label="إرفاق وسائط" title="وسائط"><svg class="ic" viewBox="0 0 24 24"><use href="#i-cpl"/></svg></button>`:""}<div id="chrec" class="chrec hidden"><button type="button" onclick="chRecStop(false)" aria-label="إلغاء">${ic("trash")}</button><span class="chrd"></span><span id="chrt">0:00</span></div></div><button class="gb snd mic" id="chsnd" onclick="chSndBtn()" onpointerdown="event.preventDefault()" aria-label="تسجيل صوت">${MICSVG}</button></div>`}`;
+W().innerHTML=`<div class="chbg"></div><div class="chhd">${RO()||mon?"":`<button class="gb gl chdots" onclick="chMore()" aria-label="المزيد"><svg class="ic" viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="12" cy="4.5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19.5" r="1.6"/></svg></button>`}<button type="button" class="gb gl chbk" onclick="chBack()" aria-label="رجوع"><svg class="ic chev"><use href="#i-chev"/></svg></button><button class="chti gl" ${grp?'onclick="chInfo()"':r.kind==="cust"&&!mon?'onclick="chCustSheet()"':""}>${rav(r,34,mon)}<span class="f1"><b id="chtn" data-al="${hdAl(r,mon)}">${hdCbr(r,mon)}</b><small id="chst"></small></span></button>${r.kind==="cust"&&!mon?`<a class="gb gl chwa" target="_blank" rel="noopener" href="${wl((S.c.find(x=>d9(x.phone)===d9(r.cust_phone))||{}).wa||r.cust_phone||"","")}" aria-label="واتساب"><svg class="ic hb" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21l1.65-4.9A8.5 8.5 0 1 1 8 19.4L3 21z"/><path d="M9 8.6c.2 2.6 3.2 5.6 5.8 5.8l1.2-1.3-2-1-.9.6c-.9-.4-1.8-1.3-2.2-2.2l.6-.9-1-2L9 8.6z"/></svg></a><a class="gb gl chwa chcall" href="tel:${esc(String((S.c.find(x=>d9(x.phone)===d9(r.cust_phone))||{}).phone||r.cust_phone||"").replace(/[^\d+]/g,""))}" aria-label="اتصال"><svg class="ic hb" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg></a>${CHSLOT}`:""}</div><div class="chms${grp?"":" nav2"}" id="chm"></div>${RO()||mon?`<div class="chro gl">${ic("eye")} ${mon?"مراقبة — قراءة فقط":"دخول المالك — قراءة فقط ومش بيظهر للأدمن إنك قرأت"}</div>`:`<div class="chcp">${stkCan(r)?`<button class="gb gl" id="chstk" onclick="stkOpen()" onpointerdown="event.preventDefault()" aria-label="ستيكرات صوتية">${STKSVG}</button>`:`<button class="gb gl" onclick="chAtt()" onpointerdown="event.preventDefault()" aria-label="إرفاق وسائط"><svg class="ic" viewBox="0 0 24 24"><use href="#i-cpl"/></svg></button>`}<div class="chin gl"><textarea id="chin" rows="1" placeholder="رسالة" enterkeyhint="send" autocomplete="off" onfocus="['chep','stkp','chtp'].forEach(i=>{const e=$(i);if(e)e.remove()})" oninput="chGrow();chMorph()" onkeydown="chKey(event)"></textarea><button class="inemj" onclick="chEmoji()" onpointerdown="event.preventDefault()" aria-label="إيموجي">${ic("smile")}</button>${aiOK()?`<button class="inemj" id="chai" onclick="chAi()" onpointerdown="event.preventDefault()" aria-label="تحسين الرسالة" title="تحسين">${AISVG}</button>`:""}${stkCan(r)?`<button class="inemj chmed" onclick="chAtt()" onpointerdown="event.preventDefault()" aria-label="إرفاق وسائط" title="وسائط"><svg class="ic" viewBox="0 0 24 24"><use href="#i-cpl"/></svg></button>`:""}<div id="chrec" class="chrec hidden"><button type="button" onclick="chRecStop(false)" aria-label="إلغاء">${ic("trash")}</button><span class="chrd"></span><span id="chrt">0:00</span></div></div><button class="gb snd mic" id="chsnd" onclick="chSndBtn()" onpointerdown="event.preventDefault()" aria-label="تسجيل صوت">${MICSVG}</button></div>`}`;
 CH.note=undefined;chStatus();chHold();await chFetch(true)}
 
 async function chAutoSet(on){try{await api("chat_auto_set",{p_on:!!on});CH.auto=!!on;chBody();toast(on?"التوزيع التلقائي اتشغّل ✓":"التوزيع التلقائي اتقفل")}catch(e){toast("فشل: شغّل skinmash-migration-25.sql",1)}}
@@ -2581,11 +2581,11 @@ let stkBody="";
 if(tab==="fav")stkBody=fv.length?`<div class="stkg">${fv.map(x=>stkTile(x)).join("")}</div>`:`<div class="stkempty">${STKST}<b>مفيش ستيكرات في المفضلة</b><span>دوس مطوّل على أي ستيكر واختار «أضف للمفضلة».</span></div>`;
 else if(tab==="top")stkBody=tp.length?`<div class="stkg">${tp.map(t=>stkTile(t.x,t.n)).join("")}</div>`:`<div class="stkempty">${STKST}<b>لسه مفيش إحصائيات</b><span>الستيكرات الأكثر إرسالاً هتظهر هنا.</span></div>`;
 else{const sec=(t,a)=>a.length?`<div class="stksec">${t}</div><div class="stkg">${a.map(x=>stkTile(x)).join("")}</div>`:"";const t1=tp.map(t=>t.x).filter(x=>!fv.includes(x)),rest=vis.filter(x=>!fv.includes(x)&&!t1.includes(x));stkBody=sec("⭐ المفضلة",fv)+sec("🔥 الأكثر استخدامًا",t1)+((fv.length||t1.length)?`<div class="stksec">كل الستيكرات</div>`:"")+`<div class="stkg">${rest.map(x=>stkTile(x)).join("")}${addTile}</div>`}
-p.innerHTML=`<div class="stkh"><span class="stkht">ستيكرات صوتية<i>${vis.length}</i></span>${isOwner()&&!STKM.sel?`<button type="button" class="btn g sm" id="stkmul">تحديد متعدد</button>`:""}${isOwner()&&STKM.hidden.length?`<button type="button" class="btn g sm" id="stkall">${STKM.all?"إخفاء المحذوفة":"المحذوفة ("+STKM.hidden.length+")"}</button>`:""}${cx}</div><div class="stktabs">${tabBtn("all","الكل",vis.length)}${tabBtn("fav","المفضلة",fv.length)}${tabBtn("top","الأكثر",tp.length)}</div>`+(STKM.sel?`<div class="stkbar"><b>${STKM.sel.size} محدد</b><button type="button" class="btn p sm" id="stksendselected"${STKM.sel.size?"":" disabled"}>إرسال المحدد</button><button type="button" class="btn g sm" id="stksa">${vis.every(x=>STKM.sel.has(x.id))?"إلغاء الكل":"تحديد الكل"}</button><button type="button" class="btn p sm" id="stksndp"${STKM.sel.size?"":" disabled"}>إرسال للشركاء</button><button type="button" class="btn p sm" id="stkgv"${STKM.sel.size?"":" disabled"}>إعطاء لشركاء</button><button type="button" class="btn g sm" id="stkrm"${STKM.sel.size?"":" disabled"}>سحب من شركاء</button></div>`:"")+`<div class="stkbody">${stkBody}</div>`;
-let tm=null,lp=false;p.querySelectorAll(".stkt[data-i]").forEach(b=>{let x0=0,y0=0;b.addEventListener("pointermove",ev=>{if(Math.abs(ev.clientX-x0)+Math.abs(ev.clientY-y0)>12)clearTimeout(tm)});b.addEventListener("pointerdown",ev=>{if(ev.pointerType==="mouse")return;x0=ev.clientX;y0=ev.clientY;lp=false;tm=setTimeout(()=>{lp=true;stkChoose(b.dataset.i);stkPrev(b.dataset.i)},450)});b.addEventListener("contextmenu",ev=>{ev.preventDefault();clearTimeout(tm);if(ev.pointerType==="mouse"){lp=false;stkChoose(b.dataset.i);stkPrev(b.dataset.i)}else if(!lp){lp=true;stkChoose(b.dataset.i);stkPrev(b.dataset.i)}});["pointerup","pointerleave","pointercancel"].forEach(n=>b.addEventListener(n,()=>clearTimeout(tm)));b.addEventListener("click",()=>{if(lp){lp=false;return}if(STKM.sel){const i=b.dataset.i;STKM.sel.has(i)?STKM.sel.delete(i):STKM.sel.add(i);stkRender();return}if(!stkInt())return toast("الستيكرات الصوتية محتاجة إذن من المالك",1);if(STKM.hidden.includes(b.dataset.i))return stkChoose(b.dataset.i);stkSend(b.dataset.i,false)})});p.querySelectorAll(".stktab").forEach(b=>b.onclick=()=>{STKM.tab=b.dataset.tab;stkRender()});const ad=$("stkadd");if(ad)ad.onclick=stkAdd;const mu=$("stkmul");if(mu)mu.onclick=()=>{STKM.sel=STKM.sel?null:new Set();stkRender()};const stxcx=$("stkcx");if(stxcx)stxcx.onclick=()=>{STKM.sel=null;stkRender()};const sa=$("stksa");if(sa)sa.onclick=()=>{const all=vis.every(x=>STKM.sel.has(x.id));vis.forEach(x=>all?STKM.sel.delete(x.id):STKM.sel.add(x.id));stkRender()};const sendSelected=$("stksendselected");if(sendSelected)sendSelected.onclick=stkSendSelected;const sndp=$("stksndp");if(sndp)sndp.onclick=stkSendPartners;const gv=$("stkgv");if(gv)gv.onclick=()=>stkBulk(true);const rm=$("stkrm");if(rm)rm.onclick=()=>stkBulk(false);const al=$("stkall");if(al)al.onclick=()=>{STKM.all=!STKM.all;stkRender()};try{chMorph()}catch(e){}}
+p.innerHTML=`<div class="stkh"><span class="stkht">ستيكرات صوتية<i>${vis.length}</i></span>${isOwner()&&!STKM.sel?`<button type="button" class="btn g sm" id="stkmul">تحديد متعدد</button>`:""}${isOwner()&&STKM.hidden.length?`<button type="button" class="btn g sm" id="stkall">${STKM.all?"إخفاء المحذوفة":"المحذوفة ("+STKM.hidden.length+")"}</button>`:""}${cx}</div><div class="stktabs">${tabBtn("all","الكل",vis.length)}${tabBtn("fav","المفضلة",fv.length)}${tabBtn("top","الأكثر",tp.length)}</div>`+(STKM.sel?`<div class="stkbar"><b>${STKM.sel.size} محدد</b><button type="button" class="btn p sm" id="stksendselected"${STKM.sel.size?"":" disabled"}>إرسال المحدد</button><button type="button" class="btn g sm" id="stksa">${vis.every(x=>STKM.sel.has(x.id))?"إلغاء الكل":"تحديد الكل"}</button><button type="button" class="btn p sm" id="stksnda"${STKM.sel.size?"":" disabled"}>إرسال لأدمن</button><button type="button" class="btn p sm" id="stksndp"${STKM.sel.size?"":" disabled"}>إرسال للشركاء</button><button type="button" class="btn p sm" id="stkgv"${STKM.sel.size?"":" disabled"}>إعطاء لشركاء</button><button type="button" class="btn g sm" id="stkrm"${STKM.sel.size?"":" disabled"}>سحب من شركاء</button></div>`:"")+`<div class="stkbody">${stkBody}</div>`;
+let tm=null,lp=false;p.querySelectorAll(".stkt[data-i]").forEach(b=>{let x0=0,y0=0;b.addEventListener("pointermove",ev=>{if(Math.abs(ev.clientX-x0)+Math.abs(ev.clientY-y0)>12)clearTimeout(tm)});b.addEventListener("pointerdown",ev=>{if(ev.pointerType==="mouse")return;x0=ev.clientX;y0=ev.clientY;lp=false;tm=setTimeout(()=>{lp=true;stkChoose(b.dataset.i);stkPrev(b.dataset.i)},450)});b.addEventListener("contextmenu",ev=>{ev.preventDefault();clearTimeout(tm);if(ev.pointerType==="mouse"){lp=false;stkChoose(b.dataset.i);stkPrev(b.dataset.i)}else if(!lp){lp=true;stkChoose(b.dataset.i);stkPrev(b.dataset.i)}});["pointerup","pointerleave","pointercancel"].forEach(n=>b.addEventListener(n,()=>clearTimeout(tm)));b.addEventListener("click",()=>{if(lp){lp=false;return}if(STKM.sel){const i=b.dataset.i;STKM.sel.has(i)?STKM.sel.delete(i):STKM.sel.add(i);stkRender();return}if(!stkInt())return toast("الستيكرات الصوتية محتاجة إذن من المالك",1);if(STKM.hidden.includes(b.dataset.i))return stkChoose(b.dataset.i);stkSend(b.dataset.i,false)})});p.querySelectorAll(".stktab").forEach(b=>b.onclick=()=>{STKM.tab=b.dataset.tab;stkRender()});const ad=$("stkadd");if(ad)ad.onclick=stkAdd;const mu=$("stkmul");if(mu)mu.onclick=()=>{STKM.sel=STKM.sel?null:new Set();stkRender()};const stxcx=$("stkcx");if(stxcx)stxcx.onclick=()=>{STKM.sel=null;stkRender()};const sa=$("stksa");if(sa)sa.onclick=()=>{const all=vis.every(x=>STKM.sel.has(x.id));vis.forEach(x=>all?STKM.sel.delete(x.id):STKM.sel.add(x.id));stkRender()};const sendSelected=$("stksendselected");if(sendSelected)sendSelected.onclick=stkSendSelected;const snda=$("stksnda");if(snda)snda.onclick=stkSendAdmins;const sndp=$("stksndp");if(sndp)sndp.onclick=stkSendPartners;const gv=$("stkgv");if(gv)gv.onclick=()=>stkBulk(true);const rm=$("stkrm");if(rm)rm.onclick=()=>stkBulk(false);const al=$("stkall");if(al)al.onclick=()=>{STKM.all=!STKM.all;stkRender()};try{chMorph()}catch(e){}}
 document.addEventListener("contextmenu",e=>{const t=e.target;if(t&&t.closest&&t.closest("#stkp,.stkc"))e.preventDefault()});
 async function stkLoad(){if(demo)return;STKM.loaded=1;try{const ac=await api("sm_sticker_access_state",{});if(ac){STKM.acc=ac.map||{};STKM.mine=ac.mine||[]}}catch(e){}try{const r=await api("sm_sticker_state",{});if(r&&typeof r==="object"){STKM.fav=r.fav||[];STKM.hidden=r.hidden||[];STKM.top=r.top||[];STKM.img=r.images||{};STKM.loaded=1;(r.custom||[]).forEach(c=>{if(!STK.some(s=>s.id===c.id))STK.push({id:c.id,name:c.name,file:c.file,custom:1,priv:c.private?1:0})});stkNames(r.names||{});try{const x=await api("sm_sticker_extra",{});STKM.mh=(x&&x.mh)||[];STKM.pg=(x&&x.purged)||[]}catch(e){}stkRender();if(CH.room){CH.sig="";try{chPaint(true)}catch(e){}}}}catch(e){}}
-function stkOpen(){let p=$("stkp");if(p){p.remove();return}if(!stkCan(CH.room))return;p=D.createElement("div");p.id="stkp";p.className="chep gl stkp";W().appendChild(p);STKM.all=false;STKM.sel=null;stkRender();stkLoad()}
+function stkOpen(){const ep=$("chep");if(ep)ep.remove();const tp=$("chtp");if(tp)tp.remove();let p=$("stkp");if(p){p.remove();return}if(!stkCan(CH.room))return;p=D.createElement("div");p.id="stkp";p.className="chep gl stkp";W().appendChild(p);STKM.all=false;STKM.sel=null;stkRender();stkLoad()}
 async function stkFav(id){const on=!STKM.fav.includes(id);STKM.fav=on?[...STKM.fav,id]:STKM.fav.filter(x=>x!==id);stkRender();if(demo)return;try{await api("sm_sticker_fav",{p_id:id,p_on:on})}catch(e){toast("تعذّر الحفظ: "+e.message+" — شغّل skinmash-migration-21.sql",1)}}
 const ctOpts=cur=>Object.keys(SMSND.presets).map(id=>`<option value="${id}"${id===cur?" selected":""}>${esc(SMSND.presets[id].n)}</option>`).join("")+SMSND.cust().map(c=>`<option value="u:${esc(c.id)}"${"u:"+c.id===cur?" selected":""}>${esc(c.n)}</option>`).join("");
 const ctCard=()=>{const T=STG.customer_tones||{};const row=(k,t)=>`<div class="rw" style="gap:8px;margin-top:8px;align-items:center"><div class="f1"><div class="mt" style="margin-bottom:4px">${t}</div><select class="fld" id="ct-${k}" onchange="ctSet('${k}',this.value)">${ctOpts(T[k]||"file")}</select></div><button type="button" class="btn g sm" onclick="ctPlay('${k}')">▶ سماع</button></div>`;return`<div class="c"><h3 class="t2">${ic("bell")}نغمات العملاء</h3><div class="mt">النغمة اللي بتشتغل عند العميل تلقائي. العميل مالوش اختيار. «الافتراضية» = ملف نغمة العميل فوق.</div>${row("msg","نغمة الرسايل الجديدة")}${row("ntf","نغمة الإشعارات")}${isOwner()?(SMSND.cust().length?`<div class="mt" style="margin-top:12px">النغمات اللي إنت ضفتها</div>`+SMSND.cust().map(c=>`<div class="rw" style="gap:8px;margin-top:6px;align-items:center"><span class="f1">${esc(c.n)}</span><button type="button" class="btn g sm" onclick="SMSND.play('u:${escJ(c.id)}')">▶</button><button type="button" class="dl" onclick="ctDel('${escJ(c.id)}')" aria-label="حذف النغمة">${ic("trash")}</button></div>`).join(""):""):""}${isOwner()?`<div class="rw" style="margin-top:10px"><button type="button" class="btn g sm" onclick="tnAdd()">＋ إضافة نغمة (قص حتى 5 ثواني)</button></div>`:""}</div>`};
@@ -2635,7 +2635,8 @@ function stkPrev(id){const x=STK.find(s=>s.id===id);if(!x)return;const n=Date.no
 function stkChoose(id){const x=STK.find(s=>s.id===id);if(!x)return;const o=D.createElement("div");o.className="stkc";o.innerHTML=`<div class="gl"><b>${esc(x.name)}${x.priv?" 🔒":""}</b>${stkInt()?`<button type="button" class="btn g" data-m="i">${ic("eye")} داخلي: يسمعه لما يفتح</button>`:""}${stkInt()&&stkExt()?`<button type="button" class="btn p" data-m="e">🔊 خارجي: يشتغل بصوت عالي عنده</button>`:""}<button type="button" class="btn g" data-m="f">${STKST} ${STKM.fav.includes(id)?"شيله من المفضلة":"أضف للمفضلة"}</button>${isOwner()?`<button type="button" class="btn g" data-m="s">${ic("users")} الشركاء اللي معاهم الستيكر</button>${stkCanAdd()?`<button type="button" class="btn g" data-m="t">✂️ قص الصوت</button>`:""}<button type="button" class="btn g" data-m="n">${ic("pencil")} تعديل الاسم</button><button type="button" class="btn g" data-m="g">${ic("camera")} ${STKM.img[id]?"تغيير صورة الستيكر":"صورة للستيكر"}</button>${STKM.img[id]?`<button type="button" class="btn g" data-m="G">إزالة الصورة</button>`:""}<button type="button" class="btn g" data-m="d">${ic("trash")} ${STKM.hidden.includes(id)?"استرجاع الستيكر":"نقل للمحذوفة (تقدر ترجّعه)"}</button>`:`<button type="button" class="btn g" data-m="h" style="height:auto;white-space:normal;line-height:1.6;padding:10px 14px">${ic("eye")} <span style="white-space:nowrap">إخفاء عندي بس</span><br><small style="font-weight:500;opacity:.8">مش بيتمسح عند ${ownH()}</small></button>`}${isOwner()||can("sticker_purge")?`<button type="button" class="btn r" data-m="P">${ic("trash")} حذف نهائي للجميع</button>`:""}<button type="button" class="btn g" data-m="x">إلغاء</button></div>`;o.onclick=ev=>{const m=ev.target.closest("[data-m]");if(!m&&ev.target!==o)return;const k=m&&m.dataset.m;if(k==="n"){stkRenMenu(id,o);return}o.remove();if(k==="t")stkEdit(id);if(k==="f")stkFav(id);if(k==="s")stkAcc(id);if(k==="g")stkImg(id);if(k==="G")stkImgSet(id,"");if(k==="d")stkHide(id,!STKM.hidden.includes(id));if(k==="h")stkMine(id);if(k==="P")stkPurge(id);if(k==="i")stkSend(id,false);if(k==="e")stkSend(id,true)};D.body.appendChild(o)}
  function stkRenMenu(id,o){const x=STK.find(s=>s.id===id);if(!x||!isOwner()){o.remove();return}const card=o.querySelector("div");if(!card){o.remove();return}card.innerHTML=`<b>تعديل اسم الستيكر</b><input id="stkrn" class="chfs gl" maxlength="40" value="${esc(x.name)}" dir="auto"><div class="stkrnerr" style="color:#ff9a9a;font-size:12px;min-height:16px"></div><button type="button" class="btn p" data-rn="ok">${ic("check")} حفظ الاسم</button><button type="button" class="btn g" data-rn="cancel">إلغاء</button>`;const inp=card.querySelector("#stkrn");inp.onkeydown=ev=>{if(ev.key==="Enter"&&!ev.isComposing){ev.preventDefault();const b=card.querySelector('[data-rn="ok"]');if(b&&!b.disabled)b.click()}};try{inp.focus();inp.select()}catch(e){}o.onclick=ev=>{const b=ev.target.closest("[data-rn]");if(!b){if(ev.target===o){o.remove();stkChoose(id)}return}if(b.dataset.rn==="cancel"){o.remove();stkChoose(id);return}if(b.dataset.rn!=="ok")return;const v=inp.value.trim().slice(0,40),old=x.name,nn=v||(x.custom?old:STK0[STK.indexOf(x)]);b.disabled=true;(async()=>{try{if(!demo)await api("sm_sticker_rename",{p_id:id,p_name:v});x.name=nn;logA("تعديل اسم ستيكر",id);try{stkRender()}catch(e){}o.remove();stkChoose(id);toast("اتحفظ الاسم ✓")}catch(e){b.disabled=false;const r=card.querySelector(".stkrnerr");if(r)r.textContent="تعذّر الحفظ: "+e.message}})()}}
 let STKBUSY=false;
-async function stkSendPartners(){if(!isOwner()||!STKM.sel||!STKM.sel.size)return;const ids=[...STKM.sel],P=(S.a||[]).filter(a=>a.role!=="owner"&&a.active!==false);if(!P.length)return toast("مفيش شركاء متاحين",1);const o=D.createElement("div");o.className="stkc";const picked=new Set();const draw=()=>{o.innerHTML=`<div class="gl"><b>إرسال ${ids.length} ستيكر لـ:</b><label class="tgl"><input type="checkbox" data-all="1" ${P.every(a=>picked.has(a.user_id))?"checked":""}><b>كل الشركاء</b></label>${P.map(a=>`<label class="tgl"><input type="checkbox" data-u="${a.user_id}" ${picked.has(a.user_id)?"checked":""}>${nb(a)}</label>`).join("")}<button type="button" class="btn p" data-go="1" ${picked.size?"":"disabled"}>إرسال</button><button type="button" class="btn g" data-x="1">إلغاء</button></div>`};draw();o.onclick=async ev=>{const c=ev.target.closest('input[type="checkbox"]');if(c){if(c.dataset.all){c.checked?P.forEach(a=>picked.add(a.user_id)):picked.clear()}else{c.dataset.u&&(c.checked?picked.add(c.dataset.u):picked.delete(c.dataset.u))}draw();return}if(ev.target.closest("[data-x]")){o.remove();return}if(!ev.target.closest("[data-go]")||!picked.size||STKBUSY)return;STKBUSY=true;const btn=ev.target.closest("[data-go]");btn.disabled=true;let ok=0,fail=0;for(const uid of picked){try{const rid=await api("chat_start_dm",{p_user:uid});for(const id of ids){const good=await stkSend(id,false,String(rid));if(!good)throw Error("send_failed")}ok++}catch(e){fail++}}STKBUSY=false;o.remove();STKM.sel=null;stkRender();toast(fail?("اتبعت لـ "+ok+" وتعذّر "+fail):"اتبعت للشركاء ✓",fail?1:0)};D.body.appendChild(o)}
+async function stkSendAdmins(){if(!isOwner()||!STKM.sel||!STKM.sel.size)return;const ids=[...STKM.sel],P=(S.a||[]).filter(a=>a.role!=="owner"&&!a.is_partner&&a.active!==false);if(!P.length)return toast("مفيش أدمنز متاحين",1);const o=D.createElement("div");o.className="stkc";const picked=new Set();const draw=()=>{o.innerHTML=`<div class="gl"><b>إرسال ${ids.length} ستيكر لأدمن:</b><label class="tgl"><input type="checkbox" data-all="1" ${P.every(a=>picked.has(a.user_id))?"checked":""}><b>كل الأدمنز</b></label>${P.map(a=>`<label class="tgl"><input type="checkbox" data-u="${a.user_id}" ${picked.has(a.user_id)?"checked":""}>${nb(a)}</label>`).join("")}<button type="button" class="btn p" data-go="1" ${picked.size?"":"disabled"}>إرسال</button><button type="button" class="btn g" data-x="1">إلغاء</button></div>`};draw();o.onclick=async ev=>{const c=ev.target.closest('input[type="checkbox"]');if(c){if(c.dataset.all){c.checked?P.forEach(a=>picked.add(a.user_id)):picked.clear()}else{c.dataset.u&&(c.checked?picked.add(c.dataset.u):picked.delete(c.dataset.u))}draw();return}if(ev.target.closest("[data-x]")){o.remove();return}if(!ev.target.closest("[data-go]")||!picked.size||STKBUSY)return;STKBUSY=true;const btn=ev.target.closest("[data-go]");btn.disabled=true;let ok=0,fail=0;for(const uid of picked){try{const rid=await api("chat_start_dm",{p_user:uid});for(const id of ids){const good=await stkSend(id,false,String(rid));if(!good)throw Error("send_failed")}ok++}catch(e){fail++}}STKBUSY=false;o.remove();STKM.sel=null;stkRender();toast(fail?("اتبعت لـ "+ok+" وتعذّر "+fail):"اتبعت للأدمن ✓",fail?1:0)};D.body.appendChild(o)}
+function stkSendPartners(){if(!isOwner()||!STKM.sel||!STKM.sel.size)return;const ids=[...STKM.sel],P=(S.a||[]).filter(a=>a.role!=="owner"&&a.active!==false);if(!P.length)return toast("مفيش شركاء متاحين",1);const o=D.createElement("div");o.className="stkc";const picked=new Set();const draw=()=>{o.innerHTML=`<div class="gl"><b>إرسال ${ids.length} ستيكر لـ:</b><label class="tgl"><input type="checkbox" data-all="1" ${P.every(a=>picked.has(a.user_id))?"checked":""}><b>كل الشركاء</b></label>${P.map(a=>`<label class="tgl"><input type="checkbox" data-u="${a.user_id}" ${picked.has(a.user_id)?"checked":""}>${nb(a)}</label>`).join("")}<button type="button" class="btn p" data-go="1" ${picked.size?"":"disabled"}>إرسال</button><button type="button" class="btn g" data-x="1">إلغاء</button></div>`};draw();o.onclick=async ev=>{const c=ev.target.closest('input[type="checkbox"]');if(c){if(c.dataset.all){c.checked?P.forEach(a=>picked.add(a.user_id)):picked.clear()}else{c.dataset.u&&(c.checked?picked.add(c.dataset.u):picked.delete(c.dataset.u))}draw();return}if(ev.target.closest("[data-x]")){o.remove();return}if(!ev.target.closest("[data-go]")||!picked.size||STKBUSY)return;STKBUSY=true;const btn=ev.target.closest("[data-go]");btn.disabled=true;let ok=0,fail=0;for(const uid of picked){try{const rid=await api("chat_start_dm",{p_user:uid});for(const id of ids){const good=await stkSend(id,false,String(rid));if(!good)throw Error("send_failed")}ok++}catch(e){fail++}}STKBUSY=false;o.remove();STKM.sel=null;stkRender();toast(fail?("اتبعت لـ "+ok+" وتعذّر "+fail):"اتبعت للشركاء ✓",fail?1:0)};D.body.appendChild(o)}
 async function stkSendSelected(){if(STKBUSY||!CH.room||!stkCan(CH.room)||!stkInt()||!STKM.sel?.size)return;const rid=CH.room.id,ids=[...STKM.sel],panel=$("stkp");STKBUSY=true;if(panel)panel.style.pointerEvents="none";let done=0;try{for(const id of ids){if(CH.room?.id!==rid)throw Error("اتغيرت المحادثة، وقفنا باقي الإرسال");const ok=await stkSend(id,false,rid);if(!ok)throw Error("الإرسال غير متاح");STKM.sel?.delete(id);done++}if(panel)panel.remove();STKM.sel=null;toast("اتبعت "+done+" ستيكر ✓")}catch(e){toast("اتبعت "+done+" من "+ids.length+". "+e.message,1);if(panel?.isConnected){panel.style.pointerEvents="";stkRender()}}finally{STKBUSY=false}}
 const STKSENDING=new Set();
 async function stkSend(id,ext,batchRoom){if(!CH.room||!stkCan(CH.room))return;if(!stkInt())return toast("الستيكرات الصوتية محتاجة إذن من المالك",1);if(ext&&!stkExt())return toast("الصوت الخارجي محتاج إذن من المالك",1);if(demo)return toast("غير متاح في الوضع التجريبي",1);const rid=CH.room.id,key=rid+":"+id;if(STKSENDING.has(key))return;STKSENDING.add(key);const p=$("stkp"),cid=Date.now().toString(36)+Math.random().toString(36).slice(2,7);if(p)p.style.pointerEvents="none";try{await api("sm_send_sticker",{p_room:rid,p_id:id,p_ext:!!ext,p_cid:cid});if(p&&p.isConnected&&!batchRoom)p.remove();if(CH.room?.id===rid){try{await chFetch(true)}catch(e){toast("اتبعت الستيكر، لكن تعذّر تحديث عرضه. هنحاول مع التحديث القادم",1)}}}catch(e){if(batchRoom)throw e;toast("تعذّر الإرسال: "+(/not_allowed|no_access/.test(e.message)?"الستيكرات للمالك والشركاء بس":/ext/.test(e.message)?"الصوت الخارجي محتاج إذن من المالك":e.message),1)}finally{STKSENDING.delete(key);if(p&&p.isConnected&&!batchRoom)p.style.pointerEvents=""}return true}
@@ -2658,7 +2659,7 @@ if(!r.ok||j.error)throw new Error(r.status===404?"دالة sm-improve-text غي�
 function chMorph(){const ta=$("chin"),b=$("chsnd");if(!b)return;const has=!!(ta&&ta.value.trim())||!!REC||!!(window.STKM&&STKM.sel&&STKM.sel.size);b.classList.toggle("mic",!has);b.innerHTML=has?ic("send"):MICSVG;b.setAttribute("aria-label",has?"إرسال":"تسجيل صوت")}
 function chSndBtn(){const ta=$("chin");if(REC)return chRecStop(true);if(ta&&ta.value.trim())return chSend();if(window.STKM&&STKM.sel&&STKM.sel.size)return stkSendSelected();chRecStart()}
 function chAttClose(){const p=$("chtp");if(p)p.remove()}
-function chAtt(){const r=CH.room;if(!r||RO()||CH.mon)return;let p=$("chtp");if(p){chAttClose();return}const ep=$("chep");if(ep)ep.remove();p=document.createElement("div");p.id="chtp";p.className="chep gl chattp";p.innerHTML=`<button type="button" class="chatt-tile" onclick="chAttPick('image/*')" aria-label="صورة من الجهاز" title="صورة">${ic("camera")}</button><button type="button" class="chatt-tile" onclick="chAttPick('')" aria-label="ملف" title="ملف">${ic("receipt")}</button>${r.kind==="cust"?`<button type="button" class="chatt-tile" onclick="chAttTpl()" aria-label="قوالب جاهزة" title="قوالب">${ic("mail")}</button>`:""}`;
+function chAtt(){const r=CH.room;if(!r||RO()||CH.mon)return;const ep=$("chep");if(ep)ep.remove();const sp=$("stkp");if(sp)sp.remove();let p=$("chtp");if(p){chAttClose();return}p=document.createElement("div");p.id="chtp";p.className="chep gl chattp";p.innerHTML=`<button type="button" class="chatt-tile" onclick="chAttPick('image/*')" aria-label="صورة من الجهاز" title="صورة">${ic("camera")}</button><button type="button" class="chatt-tile" onclick="chAttPick('')" aria-label="ملف" title="ملف">${ic("receipt")}</button>${r.kind==="cust"?`<button type="button" class="chatt-tile" onclick="chAttTpl()" aria-label="قوالب جاهزة" title="قوالب">${ic("mail")}</button>`:""}`;
 let sx=0,sy=0,sw=false;
 p.addEventListener("pointerdown",e=>{sx=e.clientX;sy=e.clientY;sw=true;try{p.setPointerCapture(e.pointerId)}catch(x){}});
 p.addEventListener("pointerup",e=>{if(!sw)return;sw=false;const dx=e.clientX-sx,dy=e.clientY-sy;if(Math.abs(dx)>42||Math.abs(dy)>48)chAttClose()});
@@ -2679,7 +2680,7 @@ try{if(img)await api("chat_send_media",{p_room:rid,p_img:img,p_body:"",p_cid:cid
 pending.pending=0;pending.sent=1;if(CH.room?.id!==rid)return;
 try{await chFetch(true)}catch(e){toast("اتبعتت الرسالة، لكن تعذّر تحديث المحادثة. هنحاول عرضها مع التحديث القادم",1);chPaint(true)}
 chProf(true).then(()=>{if(CH.room?.id===rid)chPaint(false)}).catch(()=>{});chRooms().catch(()=>{})}
-function chEmoji(){let p=$("chep");if(p){p.remove();return}p=D.createElement("div");p.id="chep";p.className="chep gl";p.innerHTML=`<div class="cet">${EC.map((c,i)=>`<button type="button" onpointerdown="event.preventDefault()" onclick="chEc(${i})">${emj(c[0])}</button>`).join("")}</div><div class="ceg" id="ceg"></div>`;W().appendChild(p);chEc(0)}
+function chEmoji(){const sp=$("stkp");if(sp)sp.remove();const tp=$("chtp");if(tp)tp.remove();let p=$("chep");if(p){p.remove();return}p=D.createElement("div");p.id="chep";p.className="chep gl";p.innerHTML=`<div class="cet">${EC.map((c,i)=>`<button type="button" onpointerdown="event.preventDefault()" onclick="chEc(${i})">${emj(c[0])}</button>`).join("")}</div><div class="ceg" id="ceg"></div>`;W().appendChild(p);chEc(0)}
 function chEc(i){const g=$("ceg");if(!g)return;g.innerHTML=(EC[i][1].match(EMR)||[]).map(e=>`<button type="button" onpointerdown="event.preventDefault()" onclick="chIns(this.dataset.e)" data-e="${e}">${emj(e)}</button>`).join("")}
 function chIns(e){const t=$("chin");if(!t)return;const s=t.selectionStart==null?t.value.length:t.selectionStart,n=t.selectionEnd==null?s:t.selectionEnd;t.value=t.value.slice(0,s)+e+t.value.slice(n);const c=s+e.length;try{t.setSelectionRange(c,c)}catch(x){}chGrow();chMorph()}
 
@@ -2730,6 +2731,47 @@ if(CH.room){if(tk%4===0)chFetch().catch(()=>{});if(tk%20===0)chPeople().then(chS
 D.addEventListener("visibilitychange",()=>{if(D.hidden||!CH.ok)return;if(CH.on&&CH.room)chFetch().catch(()=>{});else chRooms().catch(()=>{})});
 const boot=setInterval(()=>{if(typeof ME!=="undefined"&&ME&&!$("app").classList.contains("hidden")){clearInterval(boot);chInit();setInterval(()=>{if(!CH.ok)chInit()},60000)}},600);
 Object.assign(window,{chAi,chDelMsg,chRowDel,chRowSt,chCopyMsg,chRpSet,chRpX,stkEdit,stkInfo,chTagToggle,chFiltOpen,chFiltSet,chReqStep,rqCard,rqSave,ctDel,ctCard,ctSet,ctPlay,tnAdd,stkTrim,stkAdd,chFwdList,chFwdPick,chFwdGo,chFwdRoom,chHideMsg,rbdg,chGoMsg,chRestoreMsg,chMsgMenu,STK,prDecide,trmRestore,stkMine,stkPurge,chAutoSet,chXfPick,chXfGo,chUnblockCur,stkHeart,STKM,aiSetImp,stkImg,stkImgSet,stkAdd,stkRen,stkFav,stkHide,stkOpen,chAtt,chAttPick,chAttTpl,stkSendPartners,stkSetExt,stkSetInt,stkAcc,stkBulk,stkChoose,stkSend,api,pfCount,chLPt2,chLP,chLPx,chLpHit,chRowMenu,chXfer,chXferDo,chTrMenu,chTrPick,chTrSel,chTrXfer,chTrDo,chTrTg,chMonPick,chMonOpen,chMonCfg,chMonTg,chGrTg,chMorph,chSndBtn,chRecStop,chOpen,chClose,chTab,chRoom,chBack,chNew,chDM,chInfo,chGrpForm,chGrpSave,chGrpDel,chSend,chKey,chGrow,chEmoji,chEc,chIns,chAcc,chSup,chCf,chOrd,chOrdX,chOrdY,chGoPhone,chSheetClose,chBody,chPerm,chRestoreRoom,chPurgeRoom,chUnblock,chBlockCur,chDelCur,chMore,chCustSheet,chOrdSheet,chStSheet,chNoteSave,chGq});
+
+  /* D. Swipe recording bar toward trash/sticker to cancel record + larger wave bars */
+  (function() {
+    var recStartX = 0, recStartY = 0, recTracking = false, recCanceledBySwipe = false;
+    document.addEventListener("pointerdown", function(e) {
+      var chrec = document.getElementById("chrec");
+      if (!chrec || chrec.classList.contains("hidden") || !window.REC) return;
+      if (e.target.closest("#chrec, #chsnd, .chcp")) {
+        recStartX = e.clientX;
+        recStartY = e.clientY;
+        recTracking = true;
+        recCanceledBySwipe = false;
+      }
+    }, { capture: true, passive: true });
+
+    document.addEventListener("pointermove", function(e) {
+      if (!recTracking || recCanceledBySwipe || !window.REC) return;
+      var dx = e.clientX - recStartX;
+      var dy = e.clientY - recStartY;
+      var chrec = document.getElementById("chrec");
+      if (chrec && !chrec.classList.contains("hidden")) {
+        var clamped = Math.max(-90, Math.min(90, dx));
+        chrec.style.transform = "translateX(" + clamped + "px)";
+        if (Math.abs(dx) > 55 && Math.abs(dx) > Math.abs(dy) * 1.2) {
+          recCanceledBySwipe = true;
+          recTracking = false;
+          chrec.style.transform = "";
+          if (typeof chRecStop === "function") chRecStop(false);
+          if (typeof toast === "function") toast("تم حذف التسجيل الصوتي");
+        }
+      }
+    }, { capture: true, passive: true });
+
+    function endRecTrack() {
+      recTracking = false;
+      var chrec = document.getElementById("chrec");
+      if (chrec) chrec.style.transform = "";
+    }
+    document.addEventListener("pointerup", endRecTrack, { capture: true, passive: true });
+    document.addEventListener("pointercancel", endRecTrack, { capture: true, passive: true });
+  })();
 })();
 </script><script>
 /* ===== إدارة الأقسام والصور (Part 21): تغيير اسم/حذف/صورة/أيقونة لكل قسم + صور الموقع (الموديل). المالك دايمًا، والأدمن بمفتاح «categories». ===== */
@@ -3092,7 +3134,7 @@ window.ndUpload=function(k){const i=document.createElement('input');i.type='file
 <script>
 /* One Escape dismisses one top layer, using that layer's own close handler. */
 (()=>{
-const selector='#md,#cf,#chs,#stkt,.stkc,#chep,#stkp,.notice-stack';
+const selector='#md,#cf,#chs,#stkt,.stkc,.notice-stack';
 const state=new WeakMap();let seq=0,lastFocus=null,busy=false;
 const visible=e=>e&&e.isConnected&&!e.classList.contains('hidden')&&getComputedStyle(e).display!=='none'&&getComputedStyle(e).visibility!=='hidden';
 function remember(e){if(!visible(e))return;let s=state.get(e);if(!s){s={n:++seq,dirty:false,focus:document.activeElement===document.body?lastFocus:document.activeElement};state.set(e,s)}return s}
@@ -3536,7 +3578,7 @@ body{font-family:"Plex","Cairo","Tajawal",sans-serif;background:var(--bg-primary
       if(innerWidth>=1100||navIsOpen())return;
       if(document.querySelector(".ov:not(.hidden),#chx"))return;
       var t=e.touches[0],rtl=getComputedStyle(document.documentElement).direction==="rtl";
-      if((rtl&&t.clientX>innerWidth-48)||(!rtl&&t.clientX<48)){openSw=true;osx=t.clientX;osy=t.clientY}
+      if((rtl&&t.clientX>innerWidth*0.5)||(!rtl&&t.clientX<innerWidth*0.5)){openSw=true;osx=t.clientX;osy=t.clientY}
     },{passive:true});
     document.addEventListener("touchend",function(e){
       if(!openSw)return;openSw=false;
@@ -3865,7 +3907,8 @@ body{font-family:"Plex","Cairo","Tajawal",sans-serif;background:var(--bg-primary
     }
   }, true);
 
-  window.addEventListener("popstate", function() {
+  window.addEventListener("popstate", function(ev) {
+    ev.stopImmediatePropagation();
     if (backLock) { backLock = false; return; }
     var cf = document.getElementById("cf");
     if (cf && !cf.classList.contains("hidden")) {
@@ -3887,6 +3930,12 @@ body{font-family:"Plex","Cairo","Tajawal",sans-serif;background:var(--bg-primary
     }
     var chx = document.getElementById("chx");
     if (chx) {
+      var stkc = document.querySelector(".stkc");
+      if (stkc) {
+        stkc.remove();
+        pushGuard();
+        return;
+      }
       if (document.getElementById("chtp")) {
         document.getElementById("chtp").remove();
         pushGuard();
@@ -3909,6 +3958,11 @@ body{font-family:"Plex","Cairo","Tajawal",sans-serif;background:var(--bg-primary
       }
       if (window.CH && CH.room && typeof chBack === "function") {
         chBack();
+        pushGuard();
+        return;
+      }
+      if (window.CH && CH.tab && CH.tab !== "all" && typeof chTab === "function") {
+        chTab("all");
         pushGuard();
         return;
       }
@@ -3982,9 +4036,9 @@ body{font-family:"Plex","Cairo","Tajawal",sans-serif;background:var(--bg-primary
     div.id = "sm-push-alert";
     div.className = "sm-push-banner";
     if (perm === "denied") {
-      div.innerHTML = '<span>🔔 الإشعارات الخارجية مقفولة من إعدادات المتصفح — افتحها من قفل الرابط فوق عشان توصلك الطلبات والرسائل.</span><button type="button" class="ib" style="width:28px;height:28px" onclick="this.parentNode.remove()">✕</button>';
+      div.innerHTML = '<span>🔔 الإشعارات الخارجية مقفولة — فعّلها من هنا أو من قفل الرابط فوق.</span><div style="display:flex;gap:6px;flex:none"><button type="button" class="btn p sm" onclick="enableAdminPush()">تشغيل</button><button type="button" class="ib" style="width:28px;height:28px" onclick="this.parentNode.parentNode.remove()">✕</button></div>';
     } else {
-      div.innerHTML = '<span>🔔 الإشعارات الخارجية متوقفة حالياً — فعّلها عشان توصلك تنبيهات الطلبات والرسائل فوراً.</span><button type="button" class="btn p sm" onclick="enableAdminPush()">تفعيل الإشعارات</button>';
+      div.innerHTML = '<span>🔔 الإشعارات الخارجية متوقفة حالياً — فعّلها عشان توصلك تنبيهات الطلبات والرسائل فوراً.</span><div style="display:flex;gap:6px;flex:none"><button type="button" class="btn p sm" onclick="enableAdminPush()">تشغيل الإشعارات</button><button type="button" class="ib" style="width:28px;height:28px" onclick="this.parentNode.parentNode.remove()">✕</button></div>';
     }
     main.insertBefore(div, main.firstChild);
   }
@@ -4084,5 +4138,192 @@ body{font-family:"Plex","Cairo","Tajawal",sans-serif;background:var(--bg-primary
   inset-inline-end: 16px !important;
   width: 48px !important;
   height: 48px !important;
+}
+</style>
+<style id="sm-chat-compact-and-panels">
+/* 1. Natural Compact WhatsApp Message Bubbles */
+.chx .chms {
+  gap: 5px !important;
+  padding-inline: 10px !important;
+}
+.chx .cmr {
+  gap: 5px !important;
+}
+.chx .cb,
+.chx .chms .cb {
+  max-width: 74% !important;
+  padding: 6px 11px 5px !important;
+  border-radius: 16px !important;
+  font-size: 14px !important;
+  line-height: 1.45 !important;
+}
+.chx .cmr.ot .cb {
+  border-radius: 16px 16px 5px 16px !important;
+}
+.chx .cmr.me .cb {
+  border-radius: 16px 16px 16px 5px !important;
+}
+.chx .cb .cs {
+  font-size: 11px !important;
+  margin-bottom: 1px !important;
+}
+.chx .cb .cmt {
+  font-size: 10px !important;
+  margin-top: 2px !important;
+}
+.chx .cb .snd {
+  font-size: 10px !important;
+  padding: 1px 8px !important;
+  margin-top: 4px !important;
+}
+.chx .cb .cq {
+  font-size: 12px !important;
+  padding: 4px 8px !important;
+  margin-bottom: 4px !important;
+}
+.chx .cb .vp {
+  padding: 2px 0 !important;
+  min-width: 170px !important;
+}
+
+/* 2. Emoji (#chep) & Sticker (#stkp) Panels in Keyboard Slot (Bottom Docked, 275px height) */
+.chx:has(#chep) .chcp,
+.chx:has(#stkp) .chcp {
+  bottom: 275px !important;
+  transition: bottom 0.18s ease !important;
+}
+.chx:has(#chep) .chms,
+.chx:has(#stkp) .chms {
+  padding-bottom: 345px !important;
+}
+.chx #chep,
+.chx #stkp {
+  position: absolute !important;
+  inset-inline: 0 !important;
+  bottom: 0 !important;
+  height: 275px !important;
+  max-height: 275px !important;
+  border-radius: 22px 22px 0 0 !important;
+  margin: 0 !important;
+  z-index: 6 !important;
+  box-shadow: 0 -6px 24px rgba(0, 0, 0, 0.16) !important;
+}
+/* Remove any 'X' close button inside Emoji picker */
+.chx #chep .sm-window-x {
+  display: none !important;
+}
+
+/* 3. Compact Media (+) Menu below/above bar like WhatsApp */
+.chx #chtp.chattp {
+  position: absolute !important;
+  inset-inline: 12px !important;
+  left: 12px !important;
+  right: 12px !important;
+  transform: none !important;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 64px) !important;
+  width: auto !important;
+  height: auto !important;
+  max-height: none !important;
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: space-evenly !important;
+  gap: 8px !important;
+  padding: 10px 12px !important;
+  border-radius: 20px !important;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.22) !important;
+}
+.chx #chtp.chattp .chatt-tile {
+  width: 46px !important;
+  height: 46px !important;
+  min-width: 46px !important;
+  min-height: 46px !important;
+  border-radius: 14px !important;
+  display: grid !important;
+  place-items: center !important;
+}
+.chx #chtp.chattp .chatt-tile .ic {
+  width: 22px !important;
+  height: 22px !important;
+}
+</style>
+<style id="sm-v28-polish">
+/* 1. Recording bar: trash button larger & toward sticker/right side + bigger waveform */
+#chrec {
+  display: flex !important;
+  align-items: center !important;
+  flex-direction: row-reverse !important;
+  gap: 8px !important;
+  transition: transform 0.12s ease-out !important;
+}
+#chrec button[aria-label="إلغاء"] {
+  width: 34px !important;
+  height: 34px !important;
+  min-width: 34px !important;
+  min-height: 34px !important;
+  border-radius: 50% !important;
+  display: grid !important;
+  place-items: center !important;
+  color: #E5566D !important;
+  background: rgba(229, 86, 109, 0.14) !important;
+  flex: none !important;
+}
+#chrec button[aria-label="إلغاء"] .ic {
+  width: 20px !important;
+  height: 20px !important;
+}
+#chrec .ch-wave {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 2.5px !important;
+  height: 30px !important;
+  flex: 1 !important;
+  justify-content: center !important;
+}
+#chrec .ch-wave i {
+  display: block !important;
+  width: 3.5px !important;
+  min-height: 5px !important;
+  max-height: 28px !important;
+  border-radius: 999px !important;
+  background: var(--accent-primary) !important;
+  transition: height 0.06s ease !important;
+}
+
+/* 2. Sticker bubbles: bubble-free & WhatsApp-sized */
+.chx .cmr .cb:has(.stk),
+.chx .cmr.me .cb:has(.stk),
+.chx .cmr.ot .cb:has(.stk),
+.chx .cb.stkb {
+  background: transparent !important;
+  background-image: none !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  padding: 2px 4px !important;
+  max-width: 140px !important;
+}
+.chx .cb:has(.stk)::before,
+.chx .cb:has(.stk)::after {
+  display: none !important;
+  content: none !important;
+}
+.chx .stk img.stkimg,
+.chx .stkimg img {
+  width: 104px !important;
+  height: 104px !important;
+  max-width: 104px !important;
+  max-height: 104px !important;
+  object-fit: contain !important;
+  border-radius: 12px !important;
+}
+.chx .stk .stkcap {
+  font-size: 10px !important;
+}
+.chx .stk .vp {
+  min-width: 125px !important;
+  transform: scale(0.88);
+  transform-origin: center;
 }
 </style>
