@@ -2729,7 +2729,7 @@ if(!CH.on){if(tk%10===0)chRooms().catch(()=>{});return}
 if(CH.room){if(tk%4===0)chFetch().catch(()=>{});if(tk%20===0)chPeople().then(chStatus).catch(()=>{});if(tk%15===0&&!CH.mon)chRooms().catch(()=>{})}else if(tk%4===0)chLoad().catch(()=>{})},2000);
 D.addEventListener("visibilitychange",()=>{if(D.hidden||!CH.ok)return;if(CH.on&&CH.room)chFetch().catch(()=>{});else chRooms().catch(()=>{})});
 const boot=setInterval(()=>{if(typeof ME!=="undefined"&&ME&&!$("app").classList.contains("hidden")){clearInterval(boot);chInit();setInterval(()=>{if(!CH.ok)chInit()},60000)}},600);
-Object.assign(window,{chAi,chRowDel,chRowSt,chCopyMsg,chRpSet,chRpX,stkEdit,stkInfo,chTagToggle,chFiltOpen,chFiltSet,chReqStep,rqCard,rqSave,ctDel,ctCard,ctSet,ctPlay,tnAdd,stkTrim,stkAdd,chFwdList,chFwdPick,chFwdGo,chFwdRoom,chHideMsg,rbdg,chGoMsg,chRestoreMsg,chMsgMenu,STK,prDecide,trmRestore,stkMine,stkPurge,chAutoSet,chXfPick,chXfGo,chUnblockCur,stkHeart,STKM,aiSetImp,stkImg,stkImgSet,stkAdd,stkRen,stkFav,stkHide,stkOpen,chAtt,chAttPick,chAttTpl,stkSendPartners,stkSetExt,stkSetInt,stkAcc,stkBulk,stkChoose,stkSend,api,pfCount,chLPt2,chLP,chLPx,chLpHit,chRowMenu,chXfer,chXferDo,chTrMenu,chTrPick,chTrSel,chTrXfer,chTrDo,chTrTg,chMonPick,chMonOpen,chMonCfg,chMonTg,chGrTg,chMorph,chSndBtn,chRecStop,chOpen,chClose,chTab,chRoom,chBack,chNew,chDM,chInfo,chGrpForm,chGrpSave,chGrpDel,chSend,chKey,chGrow,chEmoji,chEc,chIns,chAcc,chSup,chCf,chOrd,chOrdX,chOrdY,chGoPhone,chSheetClose,chBody,chPerm,chRestoreRoom,chPurgeRoom,chUnblock,chBlockCur,chDelCur,chMore,chCustSheet,chOrdSheet,chStSheet,chNoteSave,chGq});
+Object.assign(window,{chAi,chDelMsg,chRowDel,chRowSt,chCopyMsg,chRpSet,chRpX,stkEdit,stkInfo,chTagToggle,chFiltOpen,chFiltSet,chReqStep,rqCard,rqSave,ctDel,ctCard,ctSet,ctPlay,tnAdd,stkTrim,stkAdd,chFwdList,chFwdPick,chFwdGo,chFwdRoom,chHideMsg,rbdg,chGoMsg,chRestoreMsg,chMsgMenu,STK,prDecide,trmRestore,stkMine,stkPurge,chAutoSet,chXfPick,chXfGo,chUnblockCur,stkHeart,STKM,aiSetImp,stkImg,stkImgSet,stkAdd,stkRen,stkFav,stkHide,stkOpen,chAtt,chAttPick,chAttTpl,stkSendPartners,stkSetExt,stkSetInt,stkAcc,stkBulk,stkChoose,stkSend,api,pfCount,chLPt2,chLP,chLPx,chLpHit,chRowMenu,chXfer,chXferDo,chTrMenu,chTrPick,chTrSel,chTrXfer,chTrDo,chTrTg,chMonPick,chMonOpen,chMonCfg,chMonTg,chGrTg,chMorph,chSndBtn,chRecStop,chOpen,chClose,chTab,chRoom,chBack,chNew,chDM,chInfo,chGrpForm,chGrpSave,chGrpDel,chSend,chKey,chGrow,chEmoji,chEc,chIns,chAcc,chSup,chCf,chOrd,chOrdX,chOrdY,chGoPhone,chSheetClose,chBody,chPerm,chRestoreRoom,chPurgeRoom,chUnblock,chBlockCur,chDelCur,chMore,chCustSheet,chOrdSheet,chStSheet,chNoteSave,chGq});
 })();
 </script><script>
 /* ===== إدارة الأقسام والصور (Part 21): تغيير اسم/حذف/صورة/أيقونة لكل قسم + صور الموقع (الموديل). المالك دايمًا، والأدمن بمفتاح «categories». ===== */
@@ -3206,6 +3206,23 @@ body.nav-open #app>#nav{touch-action:pan-y;overscroll-behavior:contain}
 #stkp .stktab.on{background:var(--accent-primary,#3cc9bd);color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.18)}
 #stkp .stktab i{font-style:normal;opacity:.75;font-size:11px}
 #stkp .stksec{font-size:12px;font-weight:800;opacity:.7;margin:8px 4px 6px}
+
+/* v26b: desktop header - name gets its own slot, icons never sit under it */
+@media(min-width:1100px){
+  html body #app>.hd .hi{display:flex!important;flex-direction:row!important;align-items:center!important;gap:14px!important;padding:6px 16px!important;min-height:64px}
+  html body #app>.hd .hi>#smPage{position:static!important;inset:auto!important;transform:none!important;order:-1!important;flex:0 0 auto!important;display:flex!important;align-items:center;max-width:min(38%,420px);min-width:0}
+  html body #app>.hd .hi>#smPage .sm-who{display:inline-flex!important;align-items:center;gap:8px;min-width:0;max-width:100%}
+  html body #app>.hd .hi .hact{position:static!important;flex:1 1 0!important;min-width:0!important;display:flex!important;justify-content:space-evenly!important;align-items:center!important;gap:10px!important;margin:0!important}
+  html body #app>.hd .hi .hact>.ib{width:52px!important;height:52px!important;min-width:52px!important;flex:0 0 auto!important}
+  html body #app>.hd .hi .hact>.ib .ic,html body #app>.hd .hi .hact>.ib svg{width:30px!important;height:30px!important}
+}
+
+@media(max-width:1099.98px){
+  html body #app>.hd .hi .hact>.ib{width:50px!important;height:50px!important;min-width:50px!important}
+  html body #app>.hd .hi .hact>.ib .ic,html body #app>.hd .hi .hact>.ib svg{width:30px!important;height:30px!important}
+  html body #app>.hd .hi>#smWhoM{position:static!important;transform:none!important;inset:auto!important}
+  html body #app>.hd .hi .hact{flex-wrap:wrap!important;row-gap:4px}
+}
 </style>
 <script id="sm-v26-js">
 (function(){
