@@ -2224,6 +2224,7 @@ html,body{margin:0;padding:0;width:100%;min-width:0;max-width:100%}
                     <svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><use href="#i-check"/></svg>
                 </div>
                 <h4 id="request-result-title" class="text-xl font-bold"></h4>
+                <div id="request-notif-note" data-i18n-skip></div>
                 <p id="request-attach-reminder" class="text-xs leading-relaxed p-3 rounded-2xl"
                    style="background-color: var(--surface-elevated); color: var(--text-secondary); border: 1px solid var(--border-subtle);"></p>
                 <div class="flex flex-col gap-2.5 pt-1">
@@ -4365,7 +4366,7 @@ const waResetLink = (ph, nm, g) => {
             const link = document.getElementById("manual-wa-order-link");
             link.classList.remove("hidden");
             link.removeAttribute("target"); link.href = "#";
-            link.onclick = function (e) { e.preventDefault(); openSheet("chat"); };
+            link.onclick = function (e) { e.preventDefault(); openSheet("chat"); try { setTimeout(smShowChatNotifNote, 900); } catch (x) {} };
             link.innerHTML = `<svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><use href="#i-chat"/></svg><span>${t("فتح المحادثة مع المتجر")}</span>`;
             const box = document.getElementById("order-pay-box");
             if (order.pay.method !== "cod") {
@@ -5491,6 +5492,7 @@ const waResetLink = (ph, nm, g) => {
                 link.onclick = null;
                 link.innerHTML = `<svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><use href="#i-wa"/></svg><span>${isEN() ? "Send the request on WhatsApp" : "إرسال الطلب على واتساب"}</span>`;
             }
+            try { smFillNotifNote("request-notif-note"); } catch (e) {}
             document.getElementById("request-close-btn").textContent = t("إغلاق");
             document.getElementById("request-product-form").classList.add("hidden");
             document.getElementById("request-success-view").classList.remove("hidden");
@@ -7641,7 +7643,8 @@ body::before{inset:auto!important;top:0!important;left:0!important;width:100%!im
 .sm-nn{display:flex;align-items:center;gap:10px;padding:11px 13px;border-radius:18px;text-align:start;font-size:12px;line-height:1.6;color:var(--text-primary);
   background:var(--glass-bg,color-mix(in srgb,var(--surface-card) 55%,transparent));border:1px solid var(--glass-bd,var(--border-subtle));
   -webkit-backdrop-filter:blur(14px) saturate(160%);backdrop-filter:blur(14px) saturate(160%);box-shadow:var(--glass-sh,0 8px 24px rgba(0,0,0,.12))}
-.sm-nn .bell{flex:none;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-size:17px;background:var(--accent-soft);color:var(--accent-primary)}
+.sm-nn .bell{flex:none;width:42px;height:42px;border-radius:50%;display:grid;place-items:center;font-size:21px;background:var(--accent-soft);color:var(--accent-primary);border:1px solid var(--accent-primary);cursor:pointer;animation:smBell 1.6s ease-in-out infinite}
+@keyframes smBell{0%,100%{transform:rotate(0)}10%{transform:rotate(14deg)}20%{transform:rotate(-12deg)}30%{transform:rotate(8deg)}40%{transform:rotate(0)}}
 .sm-nn .tx{flex:1;min-width:0}
 .sm-nn .go{flex:none;padding:7px 14px;border-radius:999px;font-size:12px;font-weight:700;background:var(--accent-primary);color:var(--btn-primary-text,#fff);white-space:nowrap;cursor:pointer;border:0}
 .sm-nn .xx{flex:none;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:15px;line-height:1;color:var(--text-muted);background:transparent;border:0;cursor:pointer}
@@ -7657,7 +7660,7 @@ body::before{inset:auto!important;top:0!important;left:0!important;width:100%!im
     var en=(typeof isEN==="function"&&isEN()), denied=Notification.permission==="denied";
     var tx=denied?(en?"Notifications are blocked in your browser settings. Allow them to follow your order.":"الإشعارات متقفلة من إعدادات المتصفح. فعّلها من هناك عشان تتابع طلبك.")
       :(en?"Turn on the bell notification to follow your order status and our replies, even when the site is closed.":"فعّل إشعار الجرس 🔔 عشان تتابع حالة طلبك وردود المتجر حتى لو الموقع مقفول.");
-    return '<div class="sm-nn'+(floating?' sm-nn-float':'')+'" dir="auto"><span class="bell">🔔</span><span class="tx">'+tx+'</span>'
+    return '<div class="sm-nn'+(floating?' sm-nn-float':'')+'" dir="auto"><button type="button" class="bell" aria-label="'+(en?"Enable notifications":"تفعيل الإشعارات")+'" onclick="smNnEnable(this)">🔔</button><span class="tx">'+tx+'</span>'
       +(denied?'':'<button type="button" class="go" onclick="smNnEnable(this)">'+(en?"Enable":"تفعيل")+'</button>')
       +(floating?'<button type="button" class="xx" aria-label="close" onclick="this.closest(\'.sm-nn\').remove()">×</button>':'')+'</div>';
   }
@@ -7669,6 +7672,7 @@ body::before{inset:auto!important;top:0!important;left:0!important;width:100%!im
     setTimeout(function(){var n=root.querySelector(".sm-nn-float");if(n)n.remove()},20000);
   };
   window.smNnEnable=function(btn){
+    if(Notification.permission==="denied"){try{showToast((typeof isEN==="function"&&isEN())?"Allow notifications from your browser settings":"فعّل الإشعارات من إعدادات المتصفح")}catch(e){}return}
     try{window.enablePush()}catch(e){}
     setTimeout(function(){document.querySelectorAll(".sm-nn").forEach(function(n){if(Notification.permission==="granted")n.remove()})},1800);
   };
