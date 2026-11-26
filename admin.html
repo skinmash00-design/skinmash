@@ -618,6 +618,411 @@ html[data-theme="light"] body #app>.hd,html[data-theme="dark"] body #app>.hd,bod
 .hact{margin-inline-start:auto;display:flex;align-items:center;gap:4px;flex:1;justify-content:space-evenly}
 .hi{gap:4px}
 </style>
+<style id="sm-whatsapp-ios-chat-v2">
+/* ===== 1. WhatsApp iOS Style, Crisp Icons, Typography & Smooth Performance ===== */
+:root, [data-theme="light"] {
+  --wa-bg: #EFEAE2;
+  --wa-header: rgba(246, 246, 246, 0.90);
+  --wa-bar: rgba(246, 246, 246, 0.94);
+  --wa-in: #FFFFFF;
+  --wa-out: #D9FDD3;
+  --wa-out-text: #111B21;
+  --wa-in-text: #111B21;
+  --wa-meta: #667781;
+  --wa-ios-blue: #007AFF;
+  --wa-ios-green: #25D366;
+  --wa-border: rgba(0, 0, 0, 0.08);
+  --wa-input-bg: #FFFFFF;
+}
+[data-theme="dark"] {
+  --wa-bg: #0B141A;
+  --wa-header: rgba(31, 44, 52, 0.90);
+  --wa-bar: rgba(31, 44, 52, 0.94);
+  --wa-in: #202C33;
+  --wa-out: #005C4B;
+  --wa-out-text: #E9EDEF;
+  --wa-in-text: #E9EDEF;
+  --wa-meta: #8696A0;
+  --wa-ios-blue: #0A84FF;
+  --wa-ios-green: #00A884;
+  --wa-border: rgba(255, 255, 255, 0.08);
+  --wa-input-bg: #2A3942;
+}
+
+/* Chat Container & Crisp Typography */
+.chx {
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Arabic", "SF Pro Text", "Cairo", sans-serif !important;
+  -webkit-font-smoothing: antialiased;
+}
+.chw {
+  background: var(--wa-bg) !important;
+}
+@media (min-width: 700px) {
+  .chw {
+    width: 440px !important;
+    height: min(94dvh, 840px) !important;
+    border-radius: 38px !important;
+    border: 1px solid var(--wa-border) !important;
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.38) !important;
+  }
+}
+
+/* Subtle WhatsApp Doodle Pattern Overlay */
+.chbg {
+  background: var(--wa-bg) !important;
+  opacity: 1 !important;
+}
+.chbg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.045;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80' fill='none' stroke='%2354656F' stroke-width='1.4'%3E%3Cpath d='M16 20h12a4 4 0 0 1 4 4v6a4 4 0 0 1-4 4h-6l-4 4v-4h-2a4 4 0 0 1-4-4v-6a4 4 0 0 1 4-4z'/%3E%3Ccircle cx='58' cy='24' r='6'/%3E%3Cpath d='M52 56l6-6 6 6M22 52a5 5 0 1 0 0 10 5 5 0 0 0 0-10z'/%3E%3C/svg%3E");
+  background-size: 84px 84px;
+}
+[data-theme="dark"] .chbg::after {
+  opacity: 0.06;
+}
+
+/* iOS Frosted Glass Header & Fixed Icon Alignment */
+.chhd, .chtp {
+  background: var(--wa-header) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  border-bottom: 0.5px solid var(--wa-border) !important;
+  min-height: 58px !important;
+  padding: calc(env(safe-area-inset-top, 0px) + 6px) 10px 6px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+.chti {
+  flex: 1 !important;
+  min-width: 0 !important;
+  overflow: hidden !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  padding: 2px 4px !important;
+  gap: 10px !important;
+  display: flex !important;
+  align-items: center !important;
+}
+.chti .f1 {
+  min-width: 0 !important;
+  flex: 1 !important;
+  overflow: hidden !important;
+}
+.chti b, .ownn {
+  display: block !important;
+  font-size: 16px !important;
+  font-weight: 700 !important;
+  line-height: 1.3 !important;
+  letter-spacing: -0.01em;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  color: var(--wa-in-text) !important;
+}
+.chti small {
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  color: var(--wa-meta) !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+/* Standardized iOS Buttons & Crisp Icons */
+.chx .gb {
+  width: 38px !important;
+  height: 38px !important;
+  min-width: 38px !important;
+  min-height: 38px !important;
+  flex: 0 0 38px !important;
+  border-radius: 50% !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  color: var(--wa-ios-blue) !important;
+  transform: none !important;
+  transition: opacity 0.15s ease, transform 0.15s ease !important;
+}
+.chx .gb:hover {
+  background: rgba(0, 122, 255, 0.09) !important;
+  transform: none !important;
+}
+.chx .gb:active {
+  transform: scale(0.9) !important;
+  opacity: 0.7;
+}
+.chx .gb .ic {
+  width: 22px !important;
+  height: 22px !important;
+  font-size: 22px !important;
+  stroke-width: 2 !important;
+  filter: none !important;
+}
+.chx .gb.pl {
+  background: var(--wa-ios-green) !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 3px 10px rgba(37, 211, 102, 0.3) !important;
+}
+.chx .gb.snd {
+  background: var(--wa-ios-blue) !important;
+  color: #FFFFFF !important;
+  width: 34px !important;
+  height: 34px !important;
+  min-width: 34px !important;
+  min-height: 34px !important;
+  flex: 0 0 34px !important;
+  margin-bottom: 2px;
+  box-shadow: 0 2px 8px rgba(0, 122, 255, 0.32) !important;
+}
+.chx .gb.snd .ic {
+  width: 18px !important;
+  height: 18px !important;
+  font-size: 18px !important;
+}
+
+/* Chat List Rows */
+.chls {
+  padding: 8px 14px 100px !important;
+  contain: content;
+}
+.chh {
+  font-size: 28px !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.02em;
+  margin: 4px 2px 10px !important;
+}
+.chsr {
+  height: 38px !important;
+  border-radius: 12px !important;
+  background: rgba(118, 118, 128, 0.12) !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  padding: 0 12px !important;
+}
+.chsr input {
+  font-size: 15px !important;
+}
+.chr {
+  padding: 10px 4px !important;
+  border-bottom: 0.5px solid var(--wa-border) !important;
+  gap: 12px !important;
+}
+.chn {
+  font-size: 16px !important;
+  font-weight: 700 !important;
+  line-height: 1.35 !important;
+}
+.chp {
+  font-size: 14px !important;
+  line-height: 1.4 !important;
+  color: var(--wa-meta) !important;
+}
+.chu {
+  background: var(--wa-ios-blue) !important;
+  min-width: 20px !important;
+  height: 20px !important;
+  font-size: 11.5px !important;
+}
+
+/* Messages Stream & Authentic iOS WhatsApp Bubbles */
+.chms {
+  padding: calc(env(safe-area-inset-top, 0px) + 68px) 12px 76px !important;
+  gap: 4px !important;
+  contain: content;
+  will-change: scroll-position;
+}
+.chd {
+  margin: 10px 0 8px !important;
+}
+.chd span {
+  background: rgba(255, 255, 255, 0.85) !important;
+  color: #54656F !important;
+  font-size: 11.5px !important;
+  font-weight: 700 !important;
+  padding: 4px 12px !important;
+  border-radius: 8px !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06) !important;
+}
+[data-theme="dark"] .chd span {
+  background: rgba(31, 44, 52, 0.9) !important;
+  color: #8696A0 !important;
+}
+.cmr {
+  margin-bottom: 2px;
+  gap: 6px !important;
+}
+.cb {
+  max-width: 80% !important;
+  padding: 7px 11px 6px !important;
+  border-radius: 17px !important;
+  font-size: 15px !important;
+  line-height: 1.48 !important;
+  letter-spacing: -0.005em;
+  box-shadow: 0 1px 1.5px rgba(0, 0, 0, 0.08) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+.ot .cb {
+  background: var(--wa-in) !important;
+  color: var(--wa-in-text) !important;
+  border: 0 !important;
+  border-bottom-right-radius: 4px !important;
+}
+.ot .cb::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  right: -6px;
+  width: 10px;
+  height: 14px;
+  background: var(--wa-in);
+  clip-path: polygon(0 0, 0 100%, 100% 100%);
+}
+.me .cb {
+  background: var(--wa-out) !important;
+  color: var(--wa-out-text) !important;
+  border: 0 !important;
+  border-bottom-left-radius: 4px !important;
+}
+.me .cb::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: -6px;
+  width: 10px;
+  height: 14px;
+  background: var(--wa-out);
+  clip-path: polygon(100% 0, 100% 100%, 0 100%);
+}
+.cs {
+  font-size: 12.5px !important;
+  font-weight: 700 !important;
+  color: var(--wa-ios-blue) !important;
+  margin-bottom: 2px !important;
+}
+.cmt {
+  font-size: 11px !important;
+  color: var(--wa-meta) !important;
+  opacity: 0.95 !important;
+  margin-top: 2px !important;
+  gap: 4px !important;
+  align-items: center;
+}
+.me .cmt {
+  color: var(--wa-meta) !important;
+}
+.tk.rd {
+  color: #34B7F1 !important;
+  font-weight: 800 !important;
+}
+.cb.stkb::after {
+  display: none !important;
+}
+.chhash, .chsb {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  background: rgba(120, 128, 138, 0.12) !important;
+}
+
+/* iOS Input Composer Bar */
+.chcp {
+  background: var(--wa-bar) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  border-top: 0.5px solid var(--wa-border) !important;
+  padding: 7px 10px calc(env(safe-area-inset-bottom, 0px) + 8px) !important;
+  gap: 6px !important;
+  align-items: flex-end !important;
+}
+.chin {
+  background: var(--wa-input-bg) !important;
+  border: 0.5px solid var(--wa-border) !important;
+  border-radius: 20px !important;
+  padding: 4px 12px !important;
+  min-height: 36px !important;
+  align-items: center !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+.chin textarea {
+  font-size: 15.5px !important;
+  line-height: 1.42 !important;
+  padding: 4px 0 !important;
+  max-height: 110px !important;
+  color: var(--wa-in-text) !important;
+}
+.chin textarea::placeholder {
+  color: var(--wa-meta) !important;
+  opacity: 0.85;
+}
+.chdock {
+  background: var(--wa-bar) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  border: 0.5px solid var(--wa-border) !important;
+  border-radius: 999px !important;
+  padding: 4px !important;
+}
+.chdock button.on {
+  color: var(--wa-ios-blue) !important;
+  background: rgba(0, 122, 255, 0.1) !important;
+}
+
+/* ===== 2. Owner Diamond Badge in Top Bar Matching Header Icons ===== */
+.sm-who .sm-role.owner {
+  width: 34px !important;
+  height: 34px !important;
+  border-radius: 50% !important;
+  background: var(--accent-soft) !important;
+  border: 1px solid var(--border-subtle) !important;
+  color: var(--accent-primary) !important;
+  display: inline-grid !important;
+  place-items: center !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 3px 8px rgba(0, 0, 0, 0.12) !important;
+}
+.sm-who .sm-role.owner .ic {
+  width: 20px !important;
+  height: 20px !important;
+  stroke: currentColor !important;
+  fill: none !important;
+  filter: none !important;
+}
+[data-theme="dark"] .sm-who .sm-role.owner {
+  background: rgba(216, 155, 168, 0.14) !important;
+  border-color: rgba(216, 155, 168, 0.28) !important;
+  color: var(--accent-primary) !important;
+}
+
+/* ===== 3. Mobile & Tablet Only Speed Optimization (Desktop Untouched) ===== */
+@media (max-width: 1099.98px) {
+  body::before {
+    display: none !important;
+  }
+  .gl, .chhd, .chtp, .chcp, .chdock, .toast, .chpop, .chdd, .tydd, .cfb {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+  .chhd, .chtp, .chcp, .chdock {
+    background: var(--surface-card) !important;
+  }
+  .pc, .c.cl, .chr, .cmr {
+    transition: none !important;
+  }
+}
+</style>
 </head><body>
 <svg xmlns="http://www.w3.org/2000/svg" style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true"><defs><linearGradient id="g3d" x1="0" y1="0" x2="1" y2="1"><stop offset="0" style="stop-color:var(--accent-secondary)"/><stop offset="1" style="stop-color:var(--accent-primary)"/></linearGradient></defs><symbol id="i-search" viewBox="0 0 24 24"><circle class="d" cx="10.5" cy="10.5" r="6.5"/><circle cx="10.5" cy="10.5" r="6.5"/><path d="M8 8.3a3.6 3.6 0 0 1 2.6-1.1"/><path d="m15.4 15.4 4.9 4.9" stroke-width="2.2"/></symbol><symbol id="i-x" viewBox="0 0 24 24"><path d="M6.5 6.5l11 11"/><path d="M17.5 6.5l-11 11"/></symbol><symbol id="i-bag" viewBox="0 0 24 24"><path class="d" d="M5.1 8.2h13.8l.9 11a1.7 1.7 0 0 1-1.7 1.8H5.9a1.7 1.7 0 0 1-1.7-1.8z"/><path d="M5.1 8.2h13.8l.9 11a1.7 1.7 0 0 1-1.7 1.8H5.9a1.7 1.7 0 0 1-1.7-1.8z"/><path d="M8.6 8.2V7a3.4 3.4 0 0 1 6.8 0v1.2"/><path d="M9.2 12.3a2.8 2.8 0 0 0 5.6 0"/></symbol><symbol id="i-cart" viewBox="0 0 24 24"><path class="d" d="M6.4 7.2h13.6l-1.6 6.2a1.7 1.7 0 0 1-1.6 1.3H8.7z"/><path d="M2.8 4h2.3l.9 3.4 1.4 5.8a1.7 1.7 0 0 0 1.6 1.3h7.9a1.7 1.7 0 0 0 1.6-1.3l1.6-6.3H6"/><circle cx="9.6" cy="19" r="1.5"/><circle cx="16.6" cy="19" r="1.5"/></symbol><symbol id="i-plus" viewBox="0 0 24 24"><path d="M5.5 12h13"/><path d="M12 5.5v13"/></symbol><symbol id="i-minus" viewBox="0 0 24 24"><path d="M5.5 12h13"/></symbol><symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.8 4.4 4.4L19 7.4"/></symbol><symbol id="i-arrow-down" viewBox="0 0 24 24"><path d="M12 5v14"/><path d="m6 13 6 6 6-6"/></symbol><symbol id="i-arrow-left" viewBox="0 0 24 24"><path d="M19 12H5.2"/><path d="m11.2 6-6 6 6 6"/></symbol><symbol id="i-home" viewBox="0 0 24 24"><path class="d" d="M5 10.4 12 4.5l7 5.9V19a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1z"/><path d="M3.6 11.3 12 4.2l8.4 7.1"/><path d="M5.6 9.9V19a1 1 0 0 0 1 1h10.8a1 1 0 0 0 1-1V9.9"/><path d="M10 20v-5h4v5"/></symbol><symbol id="i-wand" viewBox="0 0 24 24"><path class="d" d="M10 4.6 11.9 9.7 17 11.6l-5.1 1.9L10 18.6l-1.9-5.1L3 11.6l5.1-1.9z"/><path d="M10 4.6 11.9 9.7 17 11.6l-5.1 1.9L10 18.6l-1.9-5.1L3 11.6l5.1-1.9z"/><path d="M18.5 3.2v3.6M16.7 5h3.6"/><path d="M18.5 16.6v3.6M16.7 18.4h3.6"/></symbol><symbol id="i-upload" viewBox="0 0 24 24"><path class="d" d="M4.5 15.2h15v3a1.8 1.8 0 0 1-1.8 1.8H6.3a1.8 1.8 0 0 1-1.8-1.8z"/><path d="M12 15V4.5"/><path d="m7.6 8.8 4.4-4.4 4.4 4.4"/><path d="M4.5 15.2v3A1.8 1.8 0 0 0 6.3 20h11.4a1.8 1.8 0 0 0 1.8-1.8v-3"/></symbol><symbol id="i-info" viewBox="0 0 24 24"><circle class="d" cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="9"/><path d="M12 11v5.2"/><path d="M12 7.7v.01" stroke-width="2.2"/></symbol><symbol id="i-trash" viewBox="0 0 24 24"><path class="d" d="M6.6 8.2h10.8l-.8 10.9a1.6 1.6 0 0 1-1.6 1.5H9a1.6 1.6 0 0 1-1.6-1.5z"/><path d="M4.4 8.2h15.2"/><path d="M9.2 8.2V5.6A1.6 1.6 0 0 1 10.8 4h2.4a1.6 1.6 0 0 1 1.6 1.6v2.6"/><path d="M6.6 8.2l.8 10.9A1.6 1.6 0 0 0 9 20.6h6a1.6 1.6 0 0 0 1.6-1.5l.8-10.9"/><path d="M10.2 11.6v5.2M13.8 11.6v5.2"/></symbol><symbol id="i-lotion" viewBox="0 0 24 24"><rect class="d" x="6.4" y="10.2" width="11.2" height="10.8" rx="3"/><rect x="6.4" y="10.2" width="11.2" height="10.8" rx="3"/><path d="M9.6 10.2V8.2h4.8v2"/><path d="M12 8.2V4.4h3.8"/><path d="M9.6 15.6h4.8"/></symbol><symbol id="i-hair" viewBox="0 0 24 24"><path class="d" d="M5.5 3.6c3.4 1.2 5.5 5 5.5 8.9 0 3.5-1.6 6.3-3.9 8"/><path d="M7.6 3.2c-2.4 3.2 2 5.5 0 9.2-1.4 2.6-.8 5.2.8 8.4"/><path d="M12.4 3.2c-2.4 3.2 2 5.5 0 9.2-1.4 2.6-.8 5.2.8 8.4"/><path d="M17.2 3.2c-2.4 3.2 2 5.5 0 9.2-1.4 2.6-.8 5.2.8 8.4"/></symbol><symbol id="i-droplet" viewBox="0 0 24 24"><path class="d" d="M12 3.4c3.1 3.8 6.2 6.7 6.2 10.5a6.2 6.2 0 0 1-12.4 0c0-3.8 3.1-6.7 6.2-10.5z"/><path d="M12 3.4c3.1 3.8 6.2 6.7 6.2 10.5a6.2 6.2 0 0 1-12.4 0c0-3.8 3.1-6.7 6.2-10.5z"/><path d="M9 14.4a3.2 3.2 0 0 0 2.4 2.8"/></symbol><symbol id="i-spray" viewBox="0 0 24 24"><rect class="d" x="5.4" y="10.4" width="11.2" height="10.4" rx="3.2"/><rect x="5.4" y="10.4" width="11.2" height="10.4" rx="3.2"/><path d="M8.8 10.4V8.6h4.4v1.8"/><rect x="8" y="5.2" width="6" height="3.4" rx="1"/><path d="M17.8 6.4h2.6M17.6 4.2l2.2-1M17.6 8.6l2.2 1"/><path d="M8.6 15.6h4.8"/></symbol><symbol id="i-gem" viewBox="0 0 24 24"><path class="d" d="M6.6 4h10.8L21 9.2 12 20 3 9.2z"/><path d="M6.6 4h10.8L21 9.2 12 20 3 9.2z"/><path d="M3 9.2h18"/><path d="m9.6 4 2.4 5.2L14.4 4"/><path d="m8.6 9.2 3.4 10.8 3.4-10.8"/></symbol><symbol id="i-star" viewBox="0 0 24 24"><path class="d" d="M12 3.2l2.6 5.3 5.8.8-4.2 4.1 1 5.8L12 16.5 6.8 19.2l1-5.8-4.2-4.1 5.8-.8z"/><path d="M12 3.2l2.6 5.3 5.8.8-4.2 4.1 1 5.8L12 16.5 6.8 19.2l1-5.8-4.2-4.1 5.8-.8z"/></symbol><symbol id="i-leaf" viewBox="0 0 24 24"><path class="d" d="M5 19c-.5-7 3-13 14-14 .5 8.5-3.5 13.8-11 14z"/><path d="M5 19c-.5-7 3-13 14-14 .5 8.5-3.5 13.8-11 14z"/><path d="M5 19c3-4 6-6.6 9-8.4"/></symbol><symbol id="i-wind" viewBox="0 0 24 24"><path d="M3 9.5h11.2a2.7 2.7 0 1 0-2.7-2.7"/><path d="M3 14h15a2.7 2.7 0 1 1-2.7 2.7"/><path d="M3 18.2h7.4"/></symbol><symbol id="i-sun" viewBox="0 0 24 24"><circle class="d" cx="12" cy="12" r="4.2"/><circle cx="12" cy="12" r="4.2"/><path d="M12 2.8v2M12 19.2v2M2.8 12h2M19.2 12h2M5.5 5.5l1.4 1.4M17.1 17.1l1.4 1.4M5.5 18.5l1.4-1.4M17.1 6.9l1.4-1.4"/></symbol><symbol id="i-moon" viewBox="0 0 24 24"><path class="d" d="M20.2 14.6A8.2 8.2 0 0 1 9.4 3.8 8.4 8.4 0 1 0 20.2 14.6z"/><path d="M20.2 14.6A8.2 8.2 0 0 1 9.4 3.8 8.4 8.4 0 1 0 20.2 14.6z"/></symbol><symbol id="i-globe" viewBox="0 0 24 24"><circle class="d" cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="9"/><path d="M3.2 12h17.6"/><path d="M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z"/></symbol><symbol id="i-mars" viewBox="0 0 24 24"><circle class="d" cx="10" cy="14" r="5.6"/><circle cx="10" cy="14" r="5.6"/><path d="m14 10 6-6"/><path d="M15.2 4H20v4.8"/></symbol><symbol id="i-chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol><symbol id="i-wa" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"></path></symbol><symbol id="i-fb" viewBox="0 0 24 24"><path class="d" d="M12 2C6.477 2 2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987H7.898V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12c0-5.523-4.477-10-10-10z"/><path d="M15.905 14.89l.443-2.89h-2.773v-1.876c0-.79.387-1.562 1.63-1.562h1.26v-2.46s-1.144-.195-2.238-.195c-2.285 0-3.777 1.384-3.777 3.89V12H7.898v2.89h2.552v6.988a10.12 10.12 0 003.105 0V14.89h2.35z"/></symbol><symbol id="i-user" viewBox="0 0 24 24"><circle class="d" cx="12" cy="8.2" r="3.9"/><circle cx="12" cy="8.2" r="3.9"/><path class="d" d="M4.6 20c.6-3.6 3.6-5.8 7.4-5.8s6.8 2.2 7.4 5.8z"/><path d="M4.6 20c.6-3.6 3.6-5.8 7.4-5.8s6.8 2.2 7.4 5.8"/></symbol><symbol id="i-more" viewBox="0 0 24 24"><circle cx="12" cy="5.5" r="1.6" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/><circle cx="12" cy="18.5" r="1.6" fill="currentColor" stroke="none"/></symbol><symbol id="i-settings" viewBox="0 0 24 24"><path class="d" d="M12 8a4 4 0 100 8 4 4 0 000-8z"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></symbol><symbol id="i-heart" viewBox="0 0 24 24"><path class="d" d="M12 20.2s-7.6-4.6-7.6-10.2A4.3 4.3 0 0 1 12 7.6a4.3 4.3 0 0 1 7.6 2.4c0 5.6-7.6 10.2-7.6 10.2z"/><path d="M12 20.2s-7.6-4.6-7.6-10.2A4.3 4.3 0 0 1 12 7.6a4.3 4.3 0 0 1 7.6 2.4c0 5.6-7.6 10.2-7.6 10.2z"/></symbol><symbol id="i-receipt" viewBox="0 0 24 24"><path class="d" d="M5 4.5a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1V21l-2.6-1.8L14 21l-2-1.8L10 21l-2.4-1.8L5 21z"/><path d="M5 4.5a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1V21l-2.6-1.8L14 21l-2-1.8L10 21l-2.4-1.8L5 21z"/><path d="M8.8 8.4h6.4M8.8 12h6.4"/></symbol><symbol id="i-phone" viewBox="0 0 24 24"><path class="d" d="M5 4h3.2l1.6 4-2 1.3a11 11 0 0 0 5.9 5.9l1.3-2 4 1.6V18a2 2 0 0 1-2.2 2A15 15 0 0 1 3 6.2 2 2 0 0 1 5 4z"/><path d="M5 4h3.2l1.6 4-2 1.3a11 11 0 0 0 5.9 5.9l1.3-2 4 1.6V18a2 2 0 0 1-2.2 2A15 15 0 0 1 3 6.2 2 2 0 0 1 5 4z"/></symbol><symbol id="i-pencil" viewBox="0 0 24 24"><path class="d" d="M4 20l1-4.2L16.6 4.2a2 2 0 0 1 2.8 0l.4.4a2 2 0 0 1 0 2.8L8.2 19z"/><path d="M4 20l1-4.2L16.6 4.2a2 2 0 0 1 2.8 0l.4.4a2 2 0 0 1 0 2.8L8.2 19z"/><path d="m14.5 6.3 3.2 3.2"/></symbol><symbol id="i-camera" viewBox="0 0 24 24"><path class="d" d="M4 8.5A1.5 1.5 0 0 1 5.5 7h2l1.2-2h6.6l1.2 2h2A1.5 1.5 0 0 1 20 8.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 17.5z"/><path d="M4 8.5A1.5 1.5 0 0 1 5.5 7h2l1.2-2h6.6l1.2 2h2A1.5 1.5 0 0 1 20 8.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 17.5z"/><circle cx="12" cy="13" r="3.3"/></symbol><symbol id="i-pin" viewBox="0 0 24 24"><path class="d" d="M12 21s6.5-5.6 6.5-11a6.5 6.5 0 0 0-13 0c0 5.4 6.5 11 6.5 11z"/><path d="M12 21s6.5-5.6 6.5-11a6.5 6.5 0 0 0-13 0c0 5.4 6.5 11 6.5 11z"/><circle cx="12" cy="10" r="2.4"/></symbol><symbol id="i-alert" viewBox="0 0 24 24"><path class="d" d="M12 4 21 19.5H3z"/><path d="M12 4 21 19.5H3z"/><path d="M12 10v4.4"/><path d="M12 17v.01" stroke-width="2.2"/></symbol><symbol id="i-mail" viewBox="0 0 24 24"><rect class="d" x="3.5" y="5.5" width="17" height="13" rx="2.5"/><rect x="3.5" y="5.5" width="17" height="13" rx="2.5"/><path d="M4.5 7.7l7.5 5.8 7.5-5.8"/></symbol><symbol id="i-bell" viewBox="0 0 24 24"><path class="d" d="M6 17V11a6 6 0 0 1 12 0v6l1.5 2h-15z"/><path d="M6 17V11a6 6 0 0 1 12 0v6l1.5 2h-15zM10 21.5a2.2 2.2 0 0 0 4 0"/></symbol>
 <symbol id="i-chart" viewBox="0 0 24 24"><path class="d" d="M4 20V10h4v10zM10 20V4h4v16zM16 20v-7h4v7z"/><path d="M4 20V10h4v10zM10 20V4h4v16zM16 20v-7h4v7z"/></symbol>
@@ -2396,7 +2801,7 @@ b.innerHTML=mbk+chips+(L.length?L.map(r=>rrow(r,mon)).join(""):`<div class="chem
 function rrow(r,mon){const l=r.last,u=+r.unread||0,mine=l&&l.sender_id===me(),cu=r.kind==="cust";let pv="ابدأ المحادثة";if(l)pv=l.deleted?"🚫 رسالة محذوفة":l.kind==="order"?"🛍️ طلب جديد":l.kind==="sticker"?"🔊 ستيكر صوتي":(l.img&&!l.body)?"📷 صورة":(mine?"أنت: ":cu?(l.sender_id===r.cust_id?"":esc(pn(P(l.sender_id)))+": "):r.kind==="group"?esc(pn(P(l.sender_id)))+": ":"")+emj(esc(String(l.body).replace(/\s+/g," ").slice(0,90)));
 return`<div class="chr" ${(!mon&&CH.owner&&cu&&!RO())?`oncontextmenu="return chRowMenu(event,'${r.id}')" ontouchstart="chLP('${r.id}')" ontouchend="chLPx()" ontouchmove="chLPx()" ontouchcancel="chLPx()"`:""} onclick="if(chLpHit())return;chRoom('${r.id}',${mon===2?2:mon?1:0})">${rav(r,52,mon)}<div class="f1 chwa-body"><div class="chl1"><div class="chn">${cbr(r,mon)}</div><span class="cht2${u?" un":""}">${l?stm(l.created_at):""}</span></div><div class="chl2"><div class="chp">${pv}</div>${u?`<b class="chu">${u}</b>`:""}</div>${cu&&!mon?`<div class="chl3"><i class="chsb chsb-l" data-k="${esc(cfk(r))}">${r.req==="working"?"جاري تجهيز الطلب":esc((CFS.find(c=>c[0]===cfk(r))||[,"استفسار"])[1])}</i>${r.ord?`<span class="ost chchip ${esc(r.ord.status)}">${ST[r.ord.status]||esc(r.ord.status)}</span>`:""}${(r.tags||[]).map(k=>`<i class="chhash">#${esc((CFS.find(c=>c[0]===k)||[,k])[1])}</i>`).join("")}</div>`:""}</div></div>`}
 
-function chMonPick(){chSheetOpen(SX("اختار الأدمن")+`<div class="chsl">${(CH.madm||[]).map(a=>`<button class="chr" onclick="chSheetClose();chMonOpen('${a.user_id}')">${cav(a,44)}<div class="f1"><div class="chn">${nb(a)}</div><div class="chp">${+a.rooms||0} محادثة</div></div>${a.user_id===CH.monu?ic("check"):""}</button>`).join("")||`<div class="chem">مفيش أدمنز متاحين للمراقبة</div>`}</div>`)}
+function chMonPick(){chSheetOpen(SX("اختار الأدمن")+`<div class="chsl">${(CH.madm||[]).map(a=>`<button class="chr" onclick="chSheetClose();chMonOpen('${a.user_id}')">${cav(a,44)}<div class="f1"><div class="chn">${nb(a)}</div><div class="chp">${+a.rooms||0} محادثة</div></div>${a.user_id===CH.monu?ic("check"):""}</button>`).join("")||`<div class="chem">${esc(CH.err || "مفيش أدمنز متاحين للمراقبة")}</div>`}</div>`)}
 let chLPt=0,chLPd=0;
 function chLP(id){chLPx();chLPt=setTimeout(()=>{chLPd=Date.now();chRowMenu(null,id)},520)}
 function chLPx(){clearTimeout(chLPt)}
@@ -3230,6 +3635,39 @@ body.nav-open #app>#nav{touch-action:pan-y;overscroll-behavior:contain}
     var ok=false;try{ok=!!(window.ME&&!window.IMP&&!window.demo&&"serviceWorker" in navigator&&"PushManager" in window&&"Notification" in window&&Notification.permission!=="denied")}catch(e){}
     b.classList.toggle("hidden",!ok);try{b.classList.toggle("on",ok&&Notification.permission==="granted")}catch(e){}}
   setInterval(pushIcon,2500);pushIcon();
+})();
+</script>
+<script id="sm-sticker-audio-fix">
+(function() {
+  var unlocked = false;
+  function unlockAudio() {
+    if (unlocked) return;
+    unlocked = true;
+    try {
+      var a = new Audio("data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=");
+      a.volume = 0;
+      a.play().catch(function(){});
+    } catch (e) {}
+  }
+  document.addEventListener("pointerdown", unlockAudio, { capture: true, passive: true });
+
+  document.addEventListener("click", function(e) {
+    var stk = e.target.closest && e.target.closest(".stk");
+    if (!stk) return;
+    var vp = stk.querySelector(".vp");
+    if (vp && vp.dataset.u && !e.target.closest(".vp-b, .vp-s")) {
+      var btn = vp.querySelector(".vp-b");
+      if (btn) btn.click();
+    }
+    if (vp && vp._a && !vp._errHooked) {
+      vp._errHooked = 1;
+      vp._a.addEventListener("error", function() {
+        if (typeof toast === "function") {
+          toast("ملف صوت الستيكر غير موجود أو تعذّر تشغيله: " + vp.dataset.u, 1);
+        }
+      });
+    }
+  }, true);
 })();
 </script>
 </body></html>
