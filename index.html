@@ -2144,6 +2144,7 @@ html,body{margin:0;padding:0;width:100%;min-width:0;max-width:100%}
                     <div class="pay-note text-start"><svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><use href="#i-info"/></svg><span>تنبيه: الدفع يتم عن طريق إنستا باي أو محفظة إلكترونية فقط.</span></div>
                     <div id="order-pay-box" class="hidden text-start text-xs leading-relaxed p-3.5 rounded-2xl"
                          style="background-color: var(--surface-elevated); border: 1px solid var(--border-subtle); color: var(--text-secondary);"></div>
+                    <div id="order-notif-note" data-i18n-skip></div>
                 </div>
                 <div class="flex flex-col gap-2.5">
                     <a id="manual-wa-order-link" href="#" target="_blank" rel="noopener noreferrer" class="btn-acc hidden"></a>
@@ -4359,6 +4360,7 @@ const waResetLink = (ph, nm, g) => {
             document.getElementById("order-result-title").textContent = t(ok ? "تم إرسال طلبك بنجاح!" : "تم تسجيل طلبك");
             document.getElementById("order-no-label").textContent = t("رقم الطلب:");
             document.getElementById("generated-order-id").textContent = order.id;
+            try { smFillNotifNote("order-notif-note"); } catch (e) {}
             document.getElementById("order-result-text").textContent = t(gv("وصل طلبك لفريق SKIN MASH وهتلاقي تفاصيله في محادثتك مع المتجر. هنرد عليكي هناك لتأكيد الطلب والشحن.", "وصل طلبك لفريق SKIN MASH وهتلاقي تفاصيله في محادثتك مع المتجر. هنرد عليك هناك لتأكيد الطلب والشحن."));
             const link = document.getElementById("manual-wa-order-link");
             link.classList.remove("hidden");
@@ -4790,7 +4792,7 @@ const waResetLink = (ph, nm, g) => {
 
             // الصف الثاني: الأقسام الفرعية (تبويبات بخط سفلي) - بدون "الكل"
             const subs = CATEGORY_STRUCTURE[activeMainCategory] || [];
-            tier2Wrap.style.display = (currentView === "search" || (!subFilterOpen && window.innerWidth < 1024)) ? "none" : "flex";
+            tier2Wrap.style.display = (currentView === "search" || !subFilterOpen) ? "none" : "flex";
             tier2.innerHTML = subs.map(sub => {
                 const isActive = (currentView === "category" && activeSubCategory === sub);
                 const isMen = (sub === "رجالي");
@@ -5469,7 +5471,7 @@ const waResetLink = (ph, nm, g) => {
             if (window.chatRequest) {           // الطلب بيتفتح في شات المتجر بدل واتساب
                 let sent = false;
                 try { sent = await window.chatRequest(name, desc, res.image || ""); } catch (e) {}
-                if (sent) { try { document.getElementById("request-product-form").reset(); clearRequestImage(); } catch (e) {} closeRequestModal(); openStoreChat(); return; }
+                if (sent) { try { document.getElementById("request-product-form").reset(); clearRequestImage(); } catch (e) {} closeRequestModal(); openStoreChat(); try { setTimeout(smShowChatNotifNote, 900); } catch (e) {} return; }
             }
             const ric = document.getElementById("request-result-icon");
             ric.innerHTML = `<svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><use href="#${res.ok ? "i-check" : "i-alert"}"/></svg>`;
@@ -7623,6 +7625,55 @@ body::before{inset:auto!important;top:0!important;left:0!important;width:100%!im
   #tier2-wrap .sub-tab.is-active .c{background:rgba(255,255,255,.25)!important;color:inherit!important}
 }
 </style>
+<style id="sm-patch-1126-nn">
+/* أسهم فلتر الأقسام الفرعية على الكمبيوتر: نفس شكل الموبايل (مربع شفاف) */
+@media(min-width:1024px){
+  .cat-cell{position:relative;display:inline-flex;flex:none}
+  .cat-cell .cat-tile{width:100%}
+  .cat-sub-toggle{position:absolute;left:50%;transform:translateX(-50%);bottom:-35px;width:30px;height:30px;border-radius:9px;background:transparent;border:1.5px solid var(--border-subtle);color:var(--text-muted);display:grid;place-items:center;cursor:pointer;transition:border-color .2s,color .2s,background-color .2s}
+  .cat-sub-toggle .ic{width:15px;height:15px;transition:transform .25s}
+  .cat-sub-toggle:hover{border-color:var(--accent-primary);color:var(--accent-primary)}
+  .cat-sub-toggle.is-open{border-color:var(--accent-primary);color:var(--accent-primary);background:var(--accent-soft)}
+  .cat-sub-toggle.is-open .ic{transform:rotate(180deg)}
+  .catnav-main{padding-bottom:44px}
+}
+/* رسالة تفعيل إشعار الجرس: مربع زجاجي شفاف يتلون مع الوضع (فاتح/غامق) */
+.sm-nn{display:flex;align-items:center;gap:10px;padding:11px 13px;border-radius:18px;text-align:start;font-size:12px;line-height:1.6;color:var(--text-primary);
+  background:var(--glass-bg,color-mix(in srgb,var(--surface-card) 55%,transparent));border:1px solid var(--glass-bd,var(--border-subtle));
+  -webkit-backdrop-filter:blur(14px) saturate(160%);backdrop-filter:blur(14px) saturate(160%);box-shadow:var(--glass-sh,0 8px 24px rgba(0,0,0,.12))}
+.sm-nn .bell{flex:none;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-size:17px;background:var(--accent-soft);color:var(--accent-primary)}
+.sm-nn .tx{flex:1;min-width:0}
+.sm-nn .go{flex:none;padding:7px 14px;border-radius:999px;font-size:12px;font-weight:700;background:var(--accent-primary);color:var(--btn-primary-text,#fff);white-space:nowrap;cursor:pointer;border:0}
+.sm-nn .xx{flex:none;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:15px;line-height:1;color:var(--text-muted);background:transparent;border:0;cursor:pointer}
+.sm-nn-float{position:absolute;z-index:40;top:calc(env(safe-area-inset-top,0px) + 70px);inset-inline:12px;animation:smNnIn .35s ease}
+@keyframes smNnIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+.cc-glass{position:relative}
+</style>
+<script id="sm-patch-1126-nn-js">
+(function(){
+  function supported(){return "Notification" in window}
+  function html(floating){
+    if(!supported()||Notification.permission==="granted") return "";
+    var en=(typeof isEN==="function"&&isEN()), denied=Notification.permission==="denied";
+    var tx=denied?(en?"Notifications are blocked in your browser settings. Allow them to follow your order.":"الإشعارات متقفلة من إعدادات المتصفح. فعّلها من هناك عشان تتابع طلبك.")
+      :(en?"Turn on the bell notification to follow your order status and our replies, even when the site is closed.":"فعّل إشعار الجرس 🔔 عشان تتابع حالة طلبك وردود المتجر حتى لو الموقع مقفول.");
+    return '<div class="sm-nn'+(floating?' sm-nn-float':'')+'" dir="auto"><span class="bell">🔔</span><span class="tx">'+tx+'</span>'
+      +(denied?'':'<button type="button" class="go" onclick="smNnEnable(this)">'+(en?"Enable":"تفعيل")+'</button>')
+      +(floating?'<button type="button" class="xx" aria-label="close" onclick="this.closest(\'.sm-nn\').remove()">×</button>':'')+'</div>';
+  }
+  window.smFillNotifNote=function(id){var e=document.getElementById(id);if(e)e.innerHTML=html(false)};
+  window.smShowChatNotifNote=function(){
+    var h=html(true); if(!h) return;
+    var root=document.querySelector("#sheet-modal .cc-glass"); if(!root||root.querySelector(".sm-nn-float")) return;
+    root.insertAdjacentHTML("beforeend",h);
+    setTimeout(function(){var n=root.querySelector(".sm-nn-float");if(n)n.remove()},20000);
+  };
+  window.smNnEnable=function(btn){
+    try{window.enablePush()}catch(e){}
+    setTimeout(function(){document.querySelectorAll(".sm-nn").forEach(function(n){if(Notification.permission==="granted")n.remove()})},1800);
+  };
+})();
+</script>
 </body>
 </html>
 <script data-sm-scrollbars>
