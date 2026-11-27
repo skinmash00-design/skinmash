@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>تجربة صوت الفويس</title>
+<style>
+body{font-family:system-ui,sans-serif;background:#f4f5f7;color:#1c1e21;margin:0;padding:16px;max-width:480px;margin-inline:auto}
+section{background:#fff;border-radius:14px;padding:14px;margin-bottom:12px}
+h1{font-size:20px}h2{font-size:17px;margin:0 0 10px}
+button{width:100%;border:0;border-radius:10px;padding:14px;font-size:16px;background:#0a7cff;color:#fff}
+button.on{background:#d93025}button:disabled{opacity:.4}
+audio{width:100%;margin-top:10px}
+</style></head>
+<body>
+<h1>تجربة صوت الفويس</h1>
+<p>سجل <b>نفس الجملة</b> في كل اختيار، من نفس المسافة، واسمعهم وقول أنهي رقم أحسن.</p>
+<div id="list"></div>
+<script>
+var P = [
+  { n: "5) تنقية قوية + عالي وواضح (جربه الأول)", ec: true, ns: true, iso: true, fx: { presence: 4, thr: -26, ratio: 3, gain: 1.8 } },
+  { n: "1) واضح وعالي", ec: false, ns: true, fx: { presence: 3, thr: -24, ratio: 3, gain: 1.6 } },
+  { n: "2) معالجة الموبايل بس", ec: true, ns: true },
+  { n: "3) طبيعي من غير عزل ضوضاء", ec: false, ns: false, fx: { presence: 2, thr: -20, ratio: 2.5, gain: 1.4 } },
+  { n: "4) الحالي في الموقع", ec: true, ns: true, fx: { presence: 0, thr: -30, ratio: 3.5, gain: 3.2 } }
+];
+var busy = null;
+function chain(cx, stream, f) {
+  var src = cx.createMediaStreamSource(stream), hp = cx.createBiquadFilter(), pk = cx.createBiquadFilter(),
+      cp = cx.createDynamicsCompressor(), mk = cx.createGain(), lm = cx.createDynamicsCompressor(), out = cx.createMediaStreamDestination();
+  hp.type = "highpass"; hp.frequency.value = 85;
+  pk.type = "peaking"; pk.frequency.value = 3000; pk.Q.value = 0.9; pk.gain.value = f.presence;
+  cp.threshold.value = f.thr; cp.knee.value = 18; cp.ratio.value = f.ratio; cp.attack.value = .006; cp.release.value = .28;
+  mk.gain.value = f.gain;
+  lm.threshold.value = -3; lm.knee.value = 0; lm.ratio.value = 20; lm.attack.value = .002; lm.release.value = .08;
+  src.connect(hp); hp.connect(pk); pk.connect(cp); cp.connect(mk); mk.connect(lm); lm.connect(out);
+  return out.stream;
+}
+P.forEach(function (p) {
+  var s = document.createElement("section");
+  s.innerHTML = "<h2></h2><button>سجل</button><audio controls hidden></audio>";
+  s.querySelector("h2").textContent = p.n;
+  var b = s.querySelector("button"), a = s.querySelector("audio");
+  b.onclick = function () {
+    if (busy) { busy.stop(); return; }
+    var all = document.querySelectorAll("button"); all.forEach(function (x) { x.disabled = x !== b; });
+    var cx = p.fx ? new (window.AudioContext || window.webkitAudioContext)() : null;
+    if (cx) cx.resume();
+    function reset() { busy = null; b.textContent = "سجل تاني"; b.classList.remove("on"); all.forEach(function (x) { x.disabled = false; }); if (cx) cx.close(); }
+    navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: p.ec, noiseSuppression: p.ns, autoGainControl: true, voiceIsolation: !!p.iso, channelCount: 1 } }).then(function (st) {
+      var rs = cx ? chain(cx, st, p.fx) : st;
+      var mime = ["audio/webm;codecs=opus", "audio/mp4", "audio/webm"].filter(function (m) { return MediaRecorder.isTypeSupported(m); })[0] || "";
+      var mr = new MediaRecorder(rs, mime ? { mimeType: mime, audioBitsPerSecond: 96000 } : {}), ch = [];
+      mr.ondataavailable = function (e) { if (e.data.size) ch.push(e.data); };
+      mr.onstop = function () { st.getTracks().forEach(function (t) { t.stop(); }); a.src = URL.createObjectURL(new Blob(ch, { type: mr.mimeType })); a.hidden = false; reset(); };
+      mr.start(); busy = mr; b.textContent = "إيقاف"; b.classList.add("on");
+    }).catch(function (e) { reset(); alert("الميكروفون مش شغال: " + e.message); });
+  };
+  document.getElementById("list").appendChild(s);
+});
+</script>
+</body></html>
