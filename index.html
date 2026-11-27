@@ -7410,20 +7410,10 @@ window.SMSND_FILE=function(){return((window.SM_SET||{}).ringtones||{}).customer|
     if (REC) return;
     if (!navigator.mediaDevices || !window.MediaRecorder) { showToast(en() ? "Voice notes aren't supported on this browser" : "التسجيل الصوتي مش مدعوم في المتصفح ده"); return; }
     var btn = e.currentTarget;
-    navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true, sampleRate: 48000, channelCount: 1 } }).then(function (stream) {
+    navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: true, autoGainControl: true, sampleRate: 48000, channelCount: 1 } }).then(function (stream) {
       if (REC) { stream.getTracks().forEach(function (q) { q.stop(); }); return; }
       var mime = ["audio/webm;codecs=opus", "audio/mp4", "audio/webm"].filter(function (m) { return MediaRecorder.isTypeSupported(m); })[0] || "";
       var recStream = stream, chain = null;
-      try {
-        var AC0 = window.AudioContext || window.webkitAudioContext, cx = new AC0({ sampleRate: 48000 }), sr = cx.createMediaStreamSource(stream), hp = cx.createBiquadFilter();
-        hp.type = "highpass"; hp.frequency.value = 85;
-        var cp = cx.createDynamicsCompressor(); cp.threshold.value = -30; cp.knee.value = 18; cp.ratio.value = 3.5; cp.attack.value = .006; cp.release.value = .28;
-        var mk = cx.createGain(); mk.gain.value = 3.2;
-        var lm = cx.createDynamicsCompressor(); lm.threshold.value = -3; lm.knee.value = 0; lm.ratio.value = 20; lm.attack.value = .002; lm.release.value = .08;
-        var ds = cx.createMediaStreamDestination();
-        sr.connect(hp); hp.connect(cp); cp.connect(mk); mk.connect(lm); lm.connect(ds); cx.resume().catch(function () {});
-        recStream = ds.stream; chain = cx;
-      } catch (e) { recStream = stream; chain = null; }
       var mr = new MediaRecorder(recStream, mime ? { mimeType: mime, audioBitsPerSecond: 96000 } : { audioBitsPerSecond: 96000 }), chunks = [];
       mr.ondataavailable = function (d) { if (d.data && d.data.size) chunks.push(d.data); };
       mr.start();
@@ -7979,6 +7969,10 @@ html:not(#x) body #cc-rp .cc-rq{border-inline-start:4px solid #f7a0b3!important;
 html:not(#x) body #cc-rp .cc-rq b{font-size:13px!important;color:#f7a0b3!important}
 html:not(#x) body #cc-rp .cc-rq span{font-size:12.5px!important}
 html:not(#x) body #cc-rp .cc-rpx{background:rgba(120,128,138,.16)!important}</style>
+<style id="sm-fix-layout">
+@media (max-width:639px){#products-grid.is-dense{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important}}
+@media (min-width:640px){html:not(.hh-hero) body #hero h1.font-calligraphy{line-height:1.35!important}}
+</style>
 </body>
 </html>
 <script data-sm-scrollbars>
